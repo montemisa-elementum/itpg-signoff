@@ -1,0 +1,4 @@
+.DS_Store
+*.log
+.tf/
+node_modules/
