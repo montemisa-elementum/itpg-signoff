@@ -626,6 +626,396 @@ const APPS = [
   },
 ];
 
+const LIFECYCLE = {
+  "governance-foundation": [
+    {
+      involved: [
+        "The requester (usually a process owner, architect or portfolio lead) opens a Governance Model Change Request.",
+        "They name the change target — hierarchy, product register, scoring model, gate model, authority threshold or routing rule — and write the proposed change plus rationale.",
+        "Affected applications are flagged so impact is visible before anyone publishes.",
+      ],
+      next: "When the required fields are complete, the requester submits. An automation assigns the governance approver for that change target and moves the record to Review.",
+      nextStage: "Review",
+    },
+    {
+      involved: [
+        "The assigned governance approver reviews the proposal against current published versions.",
+        "Impact assessment is completed: which in-flight Demand Requests, Investment Decisions and Initiatives would start using the new rule, and from which date.",
+        "Supporting files and the previous version identifier stay on the record for the audit trail.",
+      ],
+      next: "Approve with an Effective from date to move to Approved. Reject with a recorded reason to move to Rejected. There is no silent edit of a live model from this stage.",
+      nextStage: "Approved",
+    },
+    {
+      involved: [
+        "The change is authorized but not yet live. Effective from is set; in-flight work keeps the previous version until that date.",
+        "Publication is a controlled action, not an accidental save — the new version identifier is prepared here, not invented later.",
+      ],
+      next: "At the effective date (or immediately if the approver chose ‘now’), a publish action writes the new version, marks what it supersedes, and moves the record to Published.",
+      nextStage: "Published",
+    },
+    {
+      involved: [
+        "The new model version is the one downstream apps read: demand types, product owners, scoring weights, gates and authority thresholds.",
+        "Published version and Supersedes version are stamped on the record. Old versions remain readable for records that started under them.",
+      ],
+      next: "This is the happy-path end state. A later correction is a new change request, not an edit of this one.",
+      nextStage: null,
+    },
+    {
+      involved: [
+        "The proposal is declined. The reason stays on the record so the same change is not silently re-raised.",
+        "No version is published. Downstream apps keep using the last live model.",
+      ],
+      next: "Terminal. If the idea is still needed, a new change request is raised — this record does not return to Proposed.",
+      nextStage: null,
+    },
+  ],
+  "enterprise-demand-intake": [
+    {
+      involved: [
+        "The requester (often with a sponsor) captures the ask against an Intake Form Template that changes with demand type.",
+        "Save-and-resume is the point of this stage: Title and Problem statement can exist before Demand type, product and outcome are complete.",
+        "Attachments can be added. No routing or scoring happens yet.",
+      ],
+      next: "Submit is allowed only when the type-specific mandatory fields are present (demand type, product, problem, desired outcome). Automation then moves the record to Submitted and runs quality checks.",
+      nextStage: "Submitted",
+    },
+    {
+      involved: [
+        "The submitted form is treated as a complete ask. Quality rules confirm required fields and attachments for that demand type.",
+        "The record is now visible on triage and pipeline views, but an owner has not yet been assigned.",
+      ],
+      next: "If checks pass, automation moves it to Classify. If they fail, it stays in Submitted with the missing items listed for the requester — it does not skip forward.",
+      nextStage: "Classify",
+    },
+    {
+      involved: [
+        "Work type (run / change / mandatory) and Classification Result are set.",
+        "Routing Rule plus Product & Platform Register identify the triage owner; the assignee is written on the record.",
+        "Duplicate Match Candidates are compared against open demand, in-flight initiatives and the product backlog.",
+      ],
+      next: "If the owner needs more from the requester, a Clarification Request is opened and the record moves to Clarify. Otherwise it moves to Triage with the owner already assigned.",
+      nextStage: "Triage",
+    },
+    {
+      involved: [
+        "A Clarification Request hangs off the Demand Request: question, target date, requested-from (usually the requester).",
+        "The requester answers on that task; the demand form itself is not reopened as a blank draft.",
+      ],
+      next: "When outstanding clarification tasks are answered (or cancelled), the record returns to Classify so routing and duplicate screening can run on the completed information, then proceeds to Triage.",
+      nextStage: "Triage",
+    },
+    {
+      involved: [
+        "The triage owner decides the disposition: backlog, accept as investment, merge, defer, reject or redirect.",
+        "Disposition reason comes from Triage Reason Code. Overlap with execution and the backlog is visible on the record.",
+        "Initial sizing may inform the decision but does not score the investment.",
+      ],
+      next: "Recording a disposition and reason moves the record to Disposed. Automation notifies the requester. If the disposition is ‘accepted as investment’, a Portfolio ID is minted and an Investment Decision is created in Prioritization.",
+      nextStage: "Disposed",
+    },
+    {
+      involved: [
+        "The Demand Request is read-mostly. Outcome, reason, related demand (for merges) and the Investment Decision relation are the lasting facts.",
+        "Accepted demand keeps the same Portfolio ID that Prioritization, Execution and Value will carry.",
+      ],
+      next: "Terminal for this app. Further work happens on the Investment Decision if one was created, or on the linked backlog item if it was disposed that way.",
+      nextStage: null,
+    },
+  ],
+  "prioritization": [
+    {
+      involved: [
+        "The Investment Decision is created from accepted demand, already carrying Portfolio ID, type, product and objectives.",
+        "The case owner structures the Business Case: options (including do-nothing and reuse-platform), Cost Lines rolling up to TCO, and Outcome Statements with a benefit owner.",
+      ],
+      next: "The record can move to Assess when the case has named options, a TCO from cost lines, and at least one outcome statement. Incomplete cases stay here.",
+      nextStage: "Assess",
+    },
+    {
+      involved: [
+        "Architecture & Security Assessment is completed against the published principles and standards.",
+        "Exception required is set if the option leaves the target state. Option Analysis is the supporting record, not a second app.",
+      ],
+      next: "When the assessment is complete (or an exception is explicitly recorded), the record moves to Score so independent scoring is not done on an unassessed case.",
+      nextStage: "Score",
+    },
+    {
+      involved: [
+        "The published Scoring Model & Weighting version is selected. Assessors enter the six criterion scores; Composite Score is calculated, not typed.",
+        "Authority level is derived from Delegation of Authority Threshold using value band and investment type. Variance against peers can be flagged.",
+      ],
+      next: "With a composite score and authority level, the record moves to Scenario so it can be compared with other candidates against live capacity — scoring alone is not a funding decision.",
+      nextStage: "Scenario",
+    },
+    {
+      involved: [
+        "Funding Scenarios and Scenario Lines place this investment in or out of a proposed portfolio.",
+        "Capacity Plan returns the binding constraint, net position and recommended trade-off. Capacity verdict is written back onto this record.",
+      ],
+      next: "When the scenario the board will see is chosen (and any capacity trade-off is explicit), the record moves to Board. A constrained item does not skip this stage.",
+      nextStage: "Board",
+    },
+    {
+      involved: [
+        "The investment board meeting records decision, rationale, date and attendees.",
+        "Decision Condition tasks are opened if the decision is conditional. Approve / conditionally approve / reject / defer are the closed set.",
+      ],
+      next: "Approve or conditionally approve moves to Baseline. Reject or defer moves to Closed with no Initiative created. Conditions must be listed before baseline lock if the decision was conditional.",
+      nextStage: "Baseline",
+    },
+    {
+      involved: [
+        "Approved funding and the date baseline are locked. Decision conditions that were required before lock must be closed.",
+        "An Initiative is created in Execution, carrying the same Portfolio ID. Outcome statements are ready for Value to open Outcome Records.",
+      ],
+      next: "Locking the baseline closes this decision record (Closed) because the living object from here is the Initiative. Unlocking later is a Baseline Change Request, not an edit.",
+      nextStage: "Closed",
+    },
+    {
+      involved: [
+        "The Investment Decision is complete: funded with a locked baseline, or rejected/deferred with a recorded reason.",
+        "The audit trail (scores, scenarios, board minutes, conditions) stays here even after delivery starts elsewhere.",
+      ],
+      next: "Terminal. Delivery is Execution; realized value is Value; a later re-plan is a new scenario or a baseline change, not a rewind of this stage.",
+      nextStage: null,
+    },
+  ],
+  "capacity": [
+    {
+      involved: [
+        "A planner opens a Capacity Plan for a period and a scope (hierarchy node, product or team).",
+        "Funding Envelope and Capacity Supply lines are the first inputs. Demand has not yet been fully modelled.",
+      ],
+      next: "When period, scope and at least a first cut of supply exist, the plan moves to Model so demand from candidate investments can be laid on.",
+      nextStage: "Model",
+    },
+    {
+      involved: [
+        "Capacity Demand from Prioritization is compared with supply. Run / change / mandatory split and scarce-specialist conflicts are calculated.",
+        "Net position, over-committed flag and binding constraint appear as derived fields, not as typed opinions.",
+      ],
+      next: "If the plan is within envelope and supply, it can move to Agreed. If anything is over-committed, it must go to Trade-off — the constraint cannot be ignored.",
+      nextStage: "Trade-off",
+    },
+    {
+      involved: [
+        "Trade-off Options spell out what to defer, split or re-sequence. Recommended trade-off is written on the plan.",
+        "Engineering leadership, workforce planning and finance are the usual forum — the plan does not silently drop work.",
+      ],
+      next: "Endorsement of a specific option (who endorsed, when) moves the plan to Agreed. Rejecting all options keeps it here until a viable cut exists.",
+      nextStage: "Agreed",
+    },
+    {
+      involved: [
+        "The endorsed position is the one Prioritization uses for board scenarios and Execution will later consume.",
+        "It is still reversible until the planning cutoff.",
+      ],
+      next: "At the planning-cycle cutoff, a snapshot is taken and the plan moves to Locked so later actuals cannot rewrite what was agreed.",
+      nextStage: "Locked",
+    },
+    {
+      involved: [
+        "The plan is the official allocation for the period: funding, team capacity and specialist pools.",
+        "Execution variance and actual consumption still flow back as inputs to the next cycle — they do not unlock this plan.",
+      ],
+      next: "When the next cycle’s plan is locked, this one moves to Archived and remains readable history.",
+      nextStage: "Archived",
+    },
+    {
+      involved: [
+        "Read-only snapshot: supply, demand, trade-off and who endorsed it.",
+        "Forecast-accuracy conversations later compare this archive with what Execution actually consumed.",
+      ],
+      next: "Terminal. A correction is a new plan for a new period, not an edit of the archive.",
+      nextStage: null,
+    },
+  ],
+  "execution": [
+    {
+      involved: [
+        "The Initiative is created from the locked Investment Decision. Portfolio ID, approved funding, gate model, delivery owner and team are copied in.",
+        "First Milestone and Control Gate records are opened. Delivery tooling (work items, releases) is linked on Portfolio ID.",
+      ],
+      next: "Kick-off complete — owner, team, cadence and the first reporting date set — moves the record to Execute. Delivery evidence is not required yet.",
+      nextStage: "Execute",
+    },
+    {
+      involved: [
+        "Period Status Reports, RAG, forecast at completion and actual cost (from finance, matched on Portfolio ID) are the heartbeat.",
+        "Milestones, risks, issues and vendor/dependency exceptions are visible on the command-center views.",
+        "Amber or Red requires a recovery action on the same cadence.",
+      ],
+      next: "A control event — due gate, baseline-breaking change, overdue red status, or a breached dependency — moves the record to Control. Successful delivery with evidence can move it to Close without a control detour.",
+      nextStage: "Control",
+    },
+    {
+      involved: [
+        "This is the exception overlay, not a quieter delivery stage. Change Requests, Control Gate evidence or waivers, and Escalation Items are worked here.",
+        "Governance packs and exception views are generated from this state so the board sees only what needs attention.",
+      ],
+      next: "Recovered work returns to Execute (the strip is a loop, not a one-way street). If the initiative is delivered or cancelled through change control, it moves to Close.",
+      nextStage: "Close",
+    },
+    {
+      involved: [
+        "Delivered capability and closure summary are required. Actual cost and engineering evidence are frozen for Value.",
+        "Open risks and issues must be closed or explicitly accepted. Remaining vendor and dependency commitments are handed off or cancelled.",
+      ],
+      next: "Terminal for Execution. Outcome Records in Value stay open; this Initiative does not keep moving stages after close.",
+      nextStage: null,
+    },
+  ],
+  "value": [
+    {
+      involved: [
+        "Outcome Records are opened from the Investment Decision’s outcome statements — often before delivery finishes.",
+        "Outcome type, measure, method, data source, benefit owner, baseline and target profile must exist. Claim status starts as Projected.",
+      ],
+      next: "Once the Initiative has something in production (or an earlier measurable baseline period starts), the record moves to Measuring so actuals have a place to land.",
+      nextStage: "Measuring",
+    },
+    {
+      involved: [
+        "Actuals and adoption ingest from named tables (telemetry, cloud cost, finance) on the outcome key / Portfolio ID.",
+        "Realization to date is calculated. Benefit owner may raise a claim; Double-Count Flags are checked against other outcomes.",
+      ],
+      next: "A claim (Claimed) with supporting Evidence Items moves the record to Validating. If nothing is ever claimed, the owner can close it as not realized from here.",
+      nextStage: "Validating",
+    },
+    {
+      involved: [
+        "Finance or assurance independently validates the claim. Validated by / at is the human checkpoint — agents do not pass this gate.",
+        "Forecast accuracy (business-case estimate versus actual) is calculated once validation succeeds or fails.",
+      ],
+      next: "Validated claims move to Realized. Failed validation returns to Measuring with the claim rejected, or to Closed as not realized if the outcome is abandoned.",
+      nextStage: "Realized",
+    },
+    {
+      involved: [
+        "The outcome is independently confirmed. Portfolio-level realization reporting can include it without double counting.",
+        "Post-implementation review can start here while the record is still the system of record for the outcome.",
+      ],
+      next: "Completing the post-implementation review (lessons captured for scoring and gates) moves the record to Closed.",
+      nextStage: "Closed",
+    },
+    {
+      involved: [
+        "Lessons Learned feed Governance Foundation and future Investment Decisions. The outcome no longer accepts actuals.",
+        "Historical actuals and the validation stamp remain readable.",
+      ],
+      next: "Terminal. A new benefit from a later investment is a new Outcome Record, not a reopen.",
+      nextStage: null,
+    },
+  ],
+  "dependencies": [
+    {
+      involved: [
+        "The receiving Initiative (or planner) raises a Dependency: providing party, description, need-by date and criticality.",
+        "Lead time met is calculated against the shared function’s Standard Lead Time. This is a request, not yet a commitment.",
+      ],
+      next: "The provider’s explicit acceptance (who, when, commitment date) moves it to Accepted. The provider can instead refuse, which cancels the request rather than leaving it hanging.",
+      nextStage: "Accepted",
+    },
+    {
+      involved: [
+        "Both sides now have a dated commitment. Escalation path is copied from the shared function.",
+        "The dependency counts toward shared-function load and Execution’s downstream impact.",
+      ],
+      next: "When the provider starts the work, the record moves to In Progress. Withdrawal by either side with a reason moves it to Cancelled.",
+      nextStage: "In Progress",
+    },
+    {
+      involved: [
+        "The commitment is being worked. Status history and milestone dates stay current so Execution can see exposure.",
+        "This is the default healthy delivery state.",
+      ],
+      next: "On track → Delivered when the receiver accepts the result. Date or lead-time threat → At Risk. Missed commitment → Breached. Either party can still Cancel with a reason.",
+      nextStage: "Delivered",
+    },
+    {
+      involved: [
+        "An exception state, not the next happy step. Need-by is in doubt; downstream impact is written for affected milestones and gates.",
+        "Escalation path is followed. Execution sees this on the command center.",
+      ],
+      next: "Recovered dates return the record to In Progress. A missed date moves it to Breached. It can still be Cancelled.",
+      nextStage: "Breached",
+    },
+    {
+      involved: [
+        "The commitment was missed. Breach Record, reason and recovery plan are required.",
+        "Downstream impact is pushed to Execution so gate and milestone slips are not discovered late.",
+      ],
+      next: "A recovered delivery can still move to Delivered. Otherwise Cancelled, or it remains Breached as the lasting status if the work is abandoned without a clean cancel.",
+      nextStage: "Delivered",
+    },
+    {
+      involved: [
+        "The receiver has accepted the result. The commitment is met and drops out of exception views.",
+      ],
+      next: "Terminal happy path. A follow-on need is a new Dependency.",
+      nextStage: null,
+    },
+    {
+      involved: [
+        "The request or commitment is withdrawn. Reason is retained so capacity load is released honestly.",
+      ],
+      next: "Terminal. Reinstating the need is a new Proposed dependency.",
+      nextStage: null,
+    },
+  ],
+  "vendors": [
+    {
+      involved: [
+        "A vendor manager opens a Vendor Engagement against existing vendor and contract records in the sourcing / TPRM system — those masters are not copied.",
+        "Engagement type, commercial construct, internal owner and supported initiatives or products are set. Renewal / notice date is captured.",
+      ],
+      next: "When the commercial construct is in force and at least one initiative or product is linked, the engagement moves to Active. Scoping without a contract stays here.",
+      nextStage: "Active",
+    },
+    {
+      involved: [
+        "Vendor Commitments, Deliverables and Milestones are tracked. Spend (committed / invoiced / forecast) is read from ERP tables.",
+        "Risk rating is looked up from the third-party risk system. Exceptions flow to Execution for the initiatives this engagement supports.",
+      ],
+      next: "At the scorecard cadence the record moves to Review. A notice or exit decision can skip to Closing. Concentration or overlap findings can send it to Optimizing.",
+      nextStage: "Review",
+    },
+    {
+      involved: [
+        "Vendor Performance Score is taken for the period. Deterioration against the threshold, SLA measures and key-person exposure are visible.",
+        "This is a periodic overlay on Active work, not a replacement for delivery tracking.",
+      ],
+      next: "Satisfactory review returns the engagement to Active. Material overlap, concentration or rate issues move it to Optimizing. Expiry or termination moves it to Closing.",
+      nextStage: "Active",
+    },
+    {
+      involved: [
+        "Optimization Actions (consolidate, re-compete, exit, reduce key-person risk) are worked while the engagement may still be delivering.",
+        "Value attribution and savings reconciliation with Value happen here when the action is commercial rather than delivery-shaped.",
+      ],
+      next: "Completed actions return the engagement to Active under the new construct, or move it to Closing if the outcome is exit.",
+      nextStage: "Closing",
+    },
+    {
+      involved: [
+        "Notice is running. Remaining deliverables are accepted or waived. Contractor assignments and spend forecasts are wound down.",
+        "Supported initiatives must either be re-homed or explicitly accept the residual risk.",
+      ],
+      next: "When remaining commitments are closed or transferred, the engagement moves to Closed.",
+      nextStage: "Closed",
+    },
+    {
+      involved: [
+        "The engagement is historical. Contract, spend and performance remain readable; no new commitments are added.",
+      ],
+      next: "Terminal. A renewal is a new Vendor Engagement linked to the same vendor, not a reopen of this record.",
+      nextStage: null,
+    },
+  ],
+};
+
 const FLOWS = [
   {
     id: "investment",
@@ -795,7 +1185,8 @@ function appDetail(app) {
       <p class="permalink"><a class="anchor" href="#app-${app.id}" data-permalink>Link to this application</a></p>
 
       <h4>Proposed lifecycle</h4>
-      <div class="stage-strip">${app.stages.map((stage) => `<span>${escapeHtml(stage)}</span>`).join("")}</div>
+      <p class="small stage-hint">Click a stage to see what is involved and how the record moves to the next one.</p>
+      <div class="stage-strip">${app.stages.map((stage, index) => `<button class="stage-chip" type="button" data-stage-app="${app.id}" data-stage-index="${index}">${escapeHtml(stage)}</button>`).join("")}</div>
 
       <div class="grid two spec-grid">
         <div><h4>What this app owns</h4>${list(app.capabilities, "checklist")}</div>
@@ -906,6 +1297,84 @@ function wireSchemaModal() {
   });
 }
 
+function stageDetail(app, index) {
+  const rows = LIFECYCLE[app.id] || [];
+  const row = rows[index];
+  if (!row) return null;
+  return {
+    name: app.stages[index],
+    involved: row.involved,
+    next: row.next,
+    nextStage: row.nextStage,
+    previous: index > 0 ? app.stages[index - 1] : null,
+    isLast: index === app.stages.length - 1,
+  };
+}
+
+function openStage(appId, index) {
+  const app = byId.get(appId);
+  const modal = document.getElementById("stage-modal");
+  const stage = app && stageDetail(app, index);
+  if (!app || !modal || !stage) return;
+  activeStage = { appId, index };
+
+  const nextLabel = stage.nextStage
+    ? `Moves to ${stage.nextStage}`
+    : "End of this lifecycle";
+
+  modal.querySelector(".modal-eyebrow").textContent = `${app.name} · stage ${index + 1} of ${app.stages.length}`;
+  modal.querySelector(".modal-flow").textContent = `${app.record} lifecycle`;
+  modal.querySelector(".modal-actor").textContent = app.short;
+  modal.querySelector(".modal-title").textContent = stage.name;
+  modal.querySelector(".modal-body").innerHTML = `
+    <p class="modal-what">${escapeHtml(app.record)} in <strong>${escapeHtml(stage.name)}</strong>.</p>
+    <h5>What is involved</h5>
+    ${list(stage.involved.map(escapeHtml), "checklist")}
+    <h5>${escapeHtml(nextLabel)}</h5>
+    <p class="modal-what">${escapeHtml(stage.next)}</p>
+    ${stage.nextStage ? `<p class="small">Next stage: <strong>${escapeHtml(stage.nextStage)}</strong>. Use the footer to walk the strip in order — some stages (especially exception states) are branches, not a single happy path.</p>` : `<p class="small">No further stage on this record. Remaining work, if any, happens on another app or a new record.</p>`}
+    <p class="permalink"><a class="anchor" href="#stage-${app.id}-${index}" data-permalink>Link straight to this stage</a></p>`;
+  modal.querySelector('[data-nav="prev"]').disabled = index === 0;
+  modal.querySelector('[data-nav="next"]').disabled = index === app.stages.length - 1;
+  if (!modal.open) {
+    if (typeof modal.showModal === "function") modal.showModal();
+    else modal.setAttribute("open", "");
+  }
+}
+
+function closeStage() {
+  const modal = document.getElementById("stage-modal");
+  if (!modal) return;
+  if (typeof modal.close === "function") modal.close();
+  else modal.removeAttribute("open");
+  activeStage = null;
+}
+
+function stageBy(delta) {
+  if (!activeStage) return;
+  openStage(activeStage.appId, activeStage.index + delta);
+}
+
+function wireStageModal() {
+  const modal = document.getElementById("stage-modal");
+  if (!modal) return;
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal || event.target.closest(".modal-close")) {
+      closeStage();
+      return;
+    }
+    const nav = event.target.closest("[data-nav]");
+    if (nav && !nav.disabled) {
+      stageBy(nav.dataset.nav === "next" ? 1 : -1);
+    }
+  });
+  modal.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight") stageBy(1);
+    if (event.key === "ArrowLeft") stageBy(-1);
+  });
+  modal.addEventListener("close", () => { activeStage = null; });
+}
+
 function openApp(id) {
   const detail = document.getElementById(`app-${id}`);
   if (!detail) return;
@@ -939,6 +1408,7 @@ function layoutSnakes() {
 }
 
 let activeStep = null;
+let activeStage = null;
 
 function openStep(flowId, index) {
   const flow = FLOWS.find((candidate) => candidate.id === flowId);
@@ -1026,6 +1496,13 @@ function init() {
   }
 
   document.body.addEventListener("click", (event) => {
+    const stage = event.target.closest("[data-stage-app]");
+    if (stage) {
+      event.preventDefault();
+      event.stopPropagation();
+      openStage(stage.dataset.stageApp, Number(stage.dataset.stageIndex));
+      return;
+    }
     const schema = event.target.closest("[data-schema]");
     if (schema) {
       event.preventDefault();
@@ -1046,8 +1523,13 @@ function init() {
   window.addEventListener("resize", layoutSnakes);
   wireModal();
   wireSchemaModal();
+  wireStageModal();
 
-  if (location.hash.startsWith("#schema-")) {
+  const stageHash = location.hash.match(/^#stage-([a-z0-9-]+)-(\d+)$/);
+  if (stageHash) {
+    openApp(stageHash[1]);
+    openStage(stageHash[1], Number(stageHash[2]));
+  } else if (location.hash.startsWith("#schema-")) {
     const id = location.hash.replace("#schema-", "");
     openApp(id);
     openSchema(id);

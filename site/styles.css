@@ -844,8 +844,34 @@ tr:last-child td { border-bottom: 0; }
 .app-identity span { display: block; margin-bottom: 3px; color: var(--muted); font-size: 10px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .app-identity strong { color: var(--navy); }
 .stage-strip { display: flex; flex-wrap: wrap; gap: 0; }
-.stage-strip span { position: relative; margin-right: 20px; padding: 8px 11px; border: 1px solid #a9ccc8; border-radius: 7px; background: var(--teal-soft); color: #155b56; font-size: 12px; font-weight: 800; }
-.stage-strip span:not(:last-child)::after { position: absolute; top: 50%; right: -16px; color: #78918c; content: "→"; transform: translateY(-50%); }
+.stage-hint { margin: 0 0 10px; }
+.stage-chip {
+  position: relative;
+  margin: 0 20px 8px 0;
+  padding: 8px 11px;
+  border: 1px solid #a9ccc8;
+  border-radius: 7px;
+  background: var(--teal-soft);
+  color: #155b56;
+  cursor: pointer;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+}
+.stage-chip:hover, .stage-chip:focus-visible {
+  border-color: var(--teal);
+  background: #fff;
+  outline: none;
+}
+.stage-chip:not(:last-child)::after {
+  position: absolute;
+  top: 50%;
+  right: -16px;
+  color: #78918c;
+  content: "→";
+  pointer-events: none;
+  transform: translateY(-50%);
+}
 .spec-grid { margin-top: 4px; }
 
 .entity-pills { display: flex; flex-wrap: wrap; gap: 7px; }

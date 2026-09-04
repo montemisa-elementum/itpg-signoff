@@ -153,7 +153,7 @@
         <div class="section-head">
           <p class="eyebrow">5 · Application detail</p>
           <h2>What each app owns, consumes and hands off</h2>
-          <p class="lede">Open an application to inspect its proposed lifecycle, requirement count, supporting task records, shared data, external sources, handoffs and the configuration the client owns. Warnings are open questions, not hidden decisions.</p>
+          <p class="lede">Open an application to inspect its proposed lifecycle, requirement count, supporting task records, shared data, external sources, handoffs and the configuration the client owns. Click a lifecycle stage for what happens there and how the record advances. Warnings are open questions, not hidden decisions.</p>
         </div>
         <div id="app-specs"></div>
       </section>
@@ -217,6 +217,25 @@
         <button class="modal-close" type="button" aria-label="Close">×</button>
       </header>
       <div class="modal-body"></div>
+    </div>
+  </dialog>
+
+  <dialog class="modal" id="stage-modal" aria-labelledby="stage-modal-title">
+    <div class="modal-inner">
+      <header>
+        <p class="modal-eyebrow"></p>
+        <p class="modal-flow"></p>
+        <div class="modal-head">
+          <span class="step-actor modal-actor"></span>
+          <h3 class="modal-title" id="stage-modal-title"></h3>
+        </div>
+        <button class="modal-close" type="button" aria-label="Close">×</button>
+      </header>
+      <div class="modal-body"></div>
+      <footer>
+        <button class="ghost-button" type="button" data-nav="prev">← Previous stage</button>
+        <button class="ghost-button" type="button" data-nav="next">Next stage →</button>
+      </footer>
     </div>
   </dialog>
 
