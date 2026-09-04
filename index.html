@@ -21,8 +21,8 @@
       <div class="hero-inner">
         <p class="eyebrow">Build specification · for sign-off</p>
         <h1>IT Portfolio &amp; Governance on Elementum</h1>
-        <p class="hero-sub">We see IT portfolio and governance as falling into two buckets: the <strong>demand</strong> arriving from the business, and the <strong>investments</strong> the organization decides to fund. Managing those well is the whole job — knowing what was asked for and what happened to it, deciding what gets funded on a consistent basis, and staying honest about delivery and value afterwards.</p>
-        <p>This document sets out the Elementum components that implement it — the apps, elements, automations, and integration points — so each piece can be approved before any authoring starts.</p>
+        <p class="hero-sub">We see IT portfolio and governance as two lifecycles: the <strong>demand</strong> arriving from the business, and the <strong>investments</strong> the organization decides to fund. The whole solution is moving records through those two lifecycles honestly — and everything else exists to make that possible.</p>
+        <p>This document sets out the Elementum components that implement it — the two apps that hold the process, the records that configure it, the work that hangs off it, the automations that move it, and the systems it reads — so each piece can be approved before any authoring starts.</p>
         <dl class="meta">
           <div><dt>Platform</dt><dd>Elementum (EDK / TypeScript)</dd></div>
           <div><dt>Status</dt><dd>Draft for sign-off</dd></div>
@@ -35,7 +35,7 @@
     <div class="page">
       <nav class="tabs" aria-label="On this page">
         <a href="#buckets">1 · The two buckets</a>
-        <a href="#hangs-off">2 · What hangs off them</a>
+        <a href="#hangs-off">2 · The supporting cast</a>
         <a href="#map">3 · Relationship map</a>
         <a href="#flow">4 · How it flows</a>
         <a href="#explorer">5 · Component explorer</a>
@@ -45,8 +45,9 @@
 
       <section class="section" id="buckets">
         <div class="section-head">
-          <div><p class="eyebrow">1 · The two buckets</p><h2>Demand Request and Portfolio Item</h2></div>
-          <p class="lede">These two Elementum apps carry the whole process. A request enters as demand; if it needs funding or governance it becomes a portfolio item, and the same identifier follows it to the end.</p>
+          <p class="eyebrow">1 · The two buckets</p>
+          <h2>Two apps hold the process</h2>
+          <p class="lede">Demand Request and Portfolio Item each have stages, and ITPG is the business of moving a record from one stage to the next with a recorded reason. A request enters as demand; if it needs funding or governance it becomes a portfolio item, and the same identifier follows it to the end.</p>
         </div>
 
         <div class="grid two">
@@ -86,26 +87,58 @@
           <div class="flow-node"><strong>Portfolio Item</strong><span>Case → decision → delivery</span></div>
           <div class="flow-node"><strong>Outcome</strong><span>Value after go-live</span></div>
         </div>
+        <p class="small" style="margin-top:12px">Read the rest of this document against that sentence: every remaining component either tells a stage what to do, holds work the stage needs, performs the move itself, or supplies a fact from outside.</p>
       </section>
 
       <section class="section" id="hangs-off">
         <div class="section-head">
-          <div><p class="eyebrow">2 · What hangs off them</p><h2>Everything else supports one of the two</h2></div>
-          <p class="lede">We think of the remaining apps as “child apps”. That is our shorthand for how they behave, not an Elementum feature — each one is an ordinary app with a relation back to its parent record.</p>
+          <p class="eyebrow">2 · The supporting cast</p>
+          <h2>Everything else does one of four jobs</h2>
+          <p class="lede">The useful split is not “app or not an app” — it is what a component does for the two lifecycles. Every piece in this build falls into one of these four jobs, which is also how the map and the explorer filters are organized.</p>
         </div>
 
-        <div class="grid three">
-          <article class="card">
-            <h3>Why they are separate apps</h3>
-            <p>A supporting object gets its own app when it repeats or needs its own owner and dates. A portfolio item has many cost lines, several conditions, and a list of milestones — none of which fit in a single field.</p>
+        <div class="grid two">
+          <article class="card job">
+            <span class="job-n">1</span>
+            <span class="badge badge-element">Elements</span>
+            <h3>Prerequisite data — what the stages need to know</h3>
+            <p>Who is allowed to approve at what value, which categories exist, which scoring weights and gate model apply, which products and owners are real. These answer <em>who, what kind, which model, which authority</em>.</p>
+            <p class="small">They are elements rather than apps because they have no lifecycle of their own: a governance admin edits records, and the behavior of both lifecycles changes without a redeploy.</p>
           </article>
+
+          <article class="card job">
+            <span class="job-n">2</span>
+            <span class="badge badge-app">Child apps</span>
+            <h3>Structured work that hangs off a record</h3>
+            <p>Cost lines, clarification requests, conditions of approval, milestones, gate records, risks and issues. Each exists because one field cannot hold “many rows, each with its own owner and dates”.</p>
+            <p class="small">Some <strong>gate</strong> the lifecycle — open conditions block Execute, a gate needs evidence or a waiver. Others simply <strong>feed</strong> it, the way cost lines roll up into total cost of ownership.</p>
+          </article>
+
+          <article class="card job">
+            <span class="job-n">3</span>
+            <span class="badge badge-auto">Automations</span>
+            <h3>The moves themselves</h3>
+            <p>Submit, route to the accountable owner, mint the Portfolio ID, match the approval authority, lock the baseline, flag an overdue status. These are the transitions — the part that must be exact and identical every time.</p>
+            <p class="small">Not apps, and not agents: an agent can summarize or challenge, but nothing an agent does changes a stage. The register is in <a href="site/config.html#automations">Rules &amp; access</a>.</p>
+          </article>
+
+          <article class="card job">
+            <span class="job-n">4</span>
+            <span class="badge badge-table">Table ports</span>
+            <h3>Facts from outside</h3>
+            <p>The engineering backlog, finance actuals, cloud spend, the staff directory. Read-only feeds with no stages of their own, whose entire purpose is that nobody retypes what another system already knows.</p>
+            <p class="small">These are the components that depend on you: each needs a join key before the data can be attributed. See <a href="#configure">what you configure</a>.</p>
+          </article>
+        </div>
+
+        <div class="grid two" style="margin-top:16px">
           <article class="card">
-            <h3>What stays a field instead</h3>
-            <p>The demand disposition is a status plus a reason. Health rating and narrative are fields. Status history is native. The source data inventory listed these as separate tables; most should not become apps.</p>
+            <h3>What deliberately stays a field</h3>
+            <p>A disposition is a status plus a reason. Health rating, narrative, and recovery action are fields. Status history is native to the platform. The source data inventory listed several of these as separate tables; most should not become apps.</p>
           </article>
           <article class="card">
             <h3>What is deferred</h3>
-            <p>Capacity, outcomes, dependencies, vendors, and scenario planning are grouped into <a href="#optional">optional modules</a> at the end of this document. Each is a decision on its own, and several wait on an integration.</p>
+            <p>Capacity, outcomes, dependencies, vendors, and scenario planning are grouped into <a href="#optional">optional modules</a> at the end of this document. They add more of the same four jobs — each is a decision on its own, and several wait on an integration.</p>
           </article>
         </div>
 
@@ -121,24 +154,26 @@
 
       <section class="section" id="map">
         <div class="section-head">
-          <div><p class="eyebrow">3 · Relationship map</p><h2>How the pieces connect</h2></div>
-          <p class="lede">Configuration flows down into the two spine apps; supporting records and modules hang below them; external systems feed in from the bottom. Hover to trace a connection, or click any box to open its detail.</p>
+          <p class="eyebrow">3 · Relationship map</p>
+          <h2>How the four jobs connect</h2>
+          <p class="lede">Prerequisite data flows down into the two lifecycles, the work that hangs off them sits below, and outside facts feed in from the bottom. Hover to trace a connection, or click any box to open its detail.</p>
         </div>
         <div class="map-wrap" id="relationship-map"></div>
         <div class="legend">
-          <span><i class="swatch t-spine"></i> Spine app</span>
-          <span><i class="swatch"></i> Child app</span>
+          <span><i class="swatch t-spine"></i> Spine app · the lifecycle</span>
+          <span><i class="swatch"></i> Child app · structured work</span>
+          <span><i class="swatch t-element"></i> Element · prerequisite data</span>
+          <span><i class="swatch t-table"></i> Table port · outside facts</span>
           <span><i class="swatch t-optional"></i> Optional module</span>
-          <span><i class="swatch t-element"></i> Element (configuration)</span>
-          <span><i class="swatch t-table"></i> Table port (external system)</span>
         </div>
-        <p class="small" style="margin-top:10px">The map shows the load-bearing connections only. Each component's full relationship list is in its tile below.</p>
+        <p class="small" style="margin-top:10px">The map shows the load-bearing connections only, and automations are not drawn — they are the arrows between stages rather than boxes. Each component's full relationship list is in its tile below.</p>
       </section>
 
       <section class="section" id="flow">
         <div class="section-head">
-          <div><p class="eyebrow">4 · How it flows</p><h2>Where every component actually shows up</h2></div>
-          <p class="lede">Five walkthroughs, from the long funded path to the quiet background one. Each step names the components it touches and what they do there — click any of them to open its detail. The table at the end proves every component in the build appears somewhere.</p>
+          <p class="eyebrow">4 · How it flows</p>
+          <h2>Watch the two lifecycles advance</h2>
+          <p class="lede">Five walkthroughs, from the long funded path to the quiet background one. Follow the boxes left to right and back again; open any box to see exactly which components it touches and what each one does there. The table at the end proves every component in the build appears somewhere.</p>
         </div>
         <div id="flows"></div>
         <h3 id="coverage-head">Component coverage</h3>
@@ -148,7 +183,8 @@
 
       <section class="section" id="explorer">
         <div class="section-head">
-          <div><p class="eyebrow">5 · Component explorer</p><h2>Every component in the core build</h2></div>
+          <p class="eyebrow">5 · Component explorer</p>
+          <h2>Every component in the core build</h2>
           <p class="lede">The reference view: open a tile for stages, status options, the field list, views, layouts, and relationships. Field types are Elementum field types, and the wave number is deployment order — both are specified in full in <a href="docs/for-agent.md">docs/for-agent.md</a>.</p>
         </div>
         <div class="explorer-bar">
@@ -164,7 +200,8 @@
 
       <section class="section" id="configure">
         <div class="section-head">
-          <div><p class="eyebrow">6 · What you configure</p><h2>What we need from you, and when</h2></div>
+          <p class="eyebrow">6 · What you configure</p>
+          <h2>What we need from you, and when</h2>
           <p class="lede">The apps, fields, rules, and automations are the product. Your structure, your approvers, your thresholds, and your data are configuration — which is what makes the same build reusable, and what we need from you to stand it up.</p>
         </div>
         <div id="client-config"></div>
@@ -173,7 +210,8 @@
 
       <section class="section" id="optional">
         <div class="section-head">
-          <div><p class="eyebrow">7 · Optional modules</p><h2>Grouped separately, decided separately</h2></div>
+          <p class="eyebrow">7 · Optional modules</p>
+          <h2>Grouped separately, decided separately</h2>
           <p class="lede">These are ordinary apps, elements, and table ports — nothing special about how they are built. They are set apart because the core build works without them, each is its own go or no-go, and several wait on an integration that does not exist yet. Each block says where it would plug into the flows in section 4.</p>
         </div>
         <div id="modules"></div>
@@ -184,6 +222,25 @@
   </main>
 
   <footer class="footer"><div class="footer-inner">Rules, integrations, and access: <a href="site/config.html">Rules &amp; access</a> · Process context: <a href="site/pm.html">stories and pain points</a> · Agent specification: <a href="docs/for-agent.md">docs/for-agent.md</a></div></footer>
+  <dialog class="modal" id="step-modal" aria-labelledby="step-modal-title">
+    <div class="modal-inner">
+      <header>
+        <p class="modal-eyebrow"></p>
+        <p class="modal-flow"></p>
+        <div class="modal-head">
+          <span class="step-actor modal-actor"></span>
+          <h3 class="modal-title" id="step-modal-title"></h3>
+        </div>
+        <button class="modal-close" type="button" aria-label="Close">×</button>
+      </header>
+      <div class="modal-body"></div>
+      <footer>
+        <button class="ghost-button" type="button" data-nav="prev">← Previous step</button>
+        <button class="ghost-button" type="button" data-nav="next">Next step →</button>
+      </footer>
+    </div>
+  </dialog>
+
   <script src="site/explorer.js"></script>
 </body>
 </html>

@@ -980,32 +980,120 @@ function chipRef(id, note) {
   return `<a class="chip-ref ${TYPES[entity.type].cls}" href="#entity-${id}" data-jump="${id}"><span class="chip-name">${entity.name}</span><span class="chip-note">${note}</span></a>`;
 }
 
+function stepDots(step) {
+  return step.uses
+    .map(([id]) => {
+      const entity = byId.get(id);
+      return entity ? `<i class="dot ${TYPES[entity.type].cls}"></i>` : "";
+    })
+    .join("");
+}
+
 function flowBlock(flow) {
-  const steps = flow.steps
+  const cards = flow.steps
     .map(
-      (step) => `
-      <li>
-        <div class="step-head"><span class="step-actor">${step.actor}</span><h4>${step.title}</h4></div>
-        <p>${step.what}</p>
-        <div class="chips">${step.uses.map(([id, note]) => chipRef(id, note)).join("")}</div>
-      </li>`,
+      (step, i) => `
+      <button class="snake-card" type="button" data-flow="${flow.id}" data-step="${i}">
+        <span class="snake-top"><span class="snake-n">${i + 1}</span><span class="step-actor">${step.actor}</span></span>
+        <span class="snake-title">${step.title}</span>
+        <span class="snake-foot"><span class="dots">${stepDots(step)}</span><span class="snake-count">${step.uses.length} component${step.uses.length === 1 ? "" : "s"}</span></span>
+      </button>`,
     )
     .join("");
   return `
     <article class="journey" id="flow-${flow.id}">
       <header>
-        <div>
-          <span class="tile-type">Scenario ${flow.tag}</span>
-          <h3>${flow.name}</h3>
-          <p>${flow.lede}</p>
-        </div>
-        <dl class="journey-meta">
-          <div><dt>Starts</dt><dd>${flow.starts}</dd></div>
-          <div><dt>Ends</dt><dd>${flow.ends}</dd></div>
-        </dl>
+        <span class="tile-type">Scenario ${flow.tag}</span>
+        <h3>${flow.name}</h3>
+        <p>${flow.lede}</p>
+        <p class="journey-meta"><span><b>Starts</b> ${flow.starts}</span><span><b>Ends</b> ${flow.ends}</span></p>
       </header>
-      <ol class="journey-steps">${steps}</ol>
+      <div class="snake" data-flow="${flow.id}">${cards}</div>
     </article>`;
+}
+
+function snakeColumns() {
+  if (window.matchMedia("(max-width: 720px)").matches) return 1;
+  if (window.matchMedia("(max-width: 1080px)").matches) return 2;
+  return 4;
+}
+
+function layoutSnakes() {
+  const cols = snakeColumns();
+  document.querySelectorAll(".snake").forEach((board) => {
+    const cards = [...board.children];
+    board.style.gridTemplateColumns = `repeat(${cols}, minmax(0, 1fr))`;
+    cards.forEach((card, i) => {
+      const row = Math.floor(i / cols);
+      const slot = i % cols;
+      const leftToRight = row % 2 === 0;
+      card.style.gridColumn = String((leftToRight ? slot : cols - 1 - slot) + 1);
+      card.style.gridRow = String(row + 1);
+      const endOfRow = slot === cols - 1;
+      card.dataset.dir = i === cards.length - 1 ? "end" : endOfRow ? "down" : leftToRight ? "right" : "left";
+    });
+  });
+}
+
+let activeStep = null;
+
+function openStep(flowId, index) {
+  const flow = FLOWS.find((f) => f.id === flowId);
+  const modal = document.getElementById("step-modal");
+  if (!flow || !modal || !flow.steps[index]) return;
+  const step = flow.steps[index];
+  activeStep = { flowId, index };
+
+  modal.querySelector(".modal-eyebrow").textContent = `Scenario ${flow.tag} · step ${index + 1} of ${flow.steps.length}`;
+  modal.querySelector(".modal-flow").textContent = flow.name;
+  modal.querySelector(".modal-actor").textContent = step.actor;
+  modal.querySelector(".modal-title").textContent = step.title;
+  modal.querySelector(".modal-body").innerHTML = `
+    <p class="modal-what">${step.what}</p>
+    <h5>Components involved</h5>
+    <div class="chips">${step.uses.map(([id, note]) => chipRef(id, note)).join("")}</div>`;
+  modal.querySelector('[data-nav="prev"]').disabled = index === 0;
+  modal.querySelector('[data-nav="next"]').disabled = index === flow.steps.length - 1;
+
+  if (!modal.open) {
+    if (typeof modal.showModal === "function") modal.showModal();
+    else modal.setAttribute("open", "");
+  }
+}
+
+function closeStep() {
+  const modal = document.getElementById("step-modal");
+  if (!modal) return;
+  if (typeof modal.close === "function") modal.close();
+  else modal.removeAttribute("open");
+  activeStep = null;
+}
+
+function stepBy(delta) {
+  if (!activeStep) return;
+  openStep(activeStep.flowId, activeStep.index + delta);
+}
+
+function wireModal() {
+  const modal = document.getElementById("step-modal");
+  if (!modal) return;
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal) { closeStep(); return; }
+    const nav = event.target.closest("[data-nav]");
+    if (nav) { stepBy(nav.dataset.nav === "next" ? 1 : -1); return; }
+    if (event.target.closest(".modal-close")) { closeStep(); return; }
+    const jump = event.target.closest("[data-jump]");
+    if (jump) {
+      event.preventDefault();
+      closeStep();
+      openEntity(jump.dataset.jump);
+    }
+  });
+  modal.addEventListener("keydown", (event) => {
+    if (event.key === "ArrowRight") stepBy(1);
+    if (event.key === "ArrowLeft") stepBy(-1);
+  });
+  modal.addEventListener("close", () => { activeStep = null; });
 }
 
 function coverageTable() {
@@ -1126,7 +1214,13 @@ function init() {
   const flows = document.getElementById("flows");
   if (flows) {
     flows.innerHTML = FLOWS.map(flowBlock).join("");
-    jumpOnClick(flows);
+    flows.addEventListener("click", (event) => {
+      const card = event.target.closest(".snake-card");
+      if (card) openStep(card.dataset.flow, Number(card.dataset.step));
+    });
+    layoutSnakes();
+    window.addEventListener("resize", layoutSnakes);
+    wireModal();
   }
 
   const coverage = document.getElementById("coverage");
