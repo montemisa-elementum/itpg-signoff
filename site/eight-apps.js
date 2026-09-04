@@ -848,13 +848,27 @@ function clientTable() {
   </table></div>`;
 }
 
+function isDynamicPicklist(type) {
+  return /\(dynamic\)/i.test(type);
+}
+
+function schemaTypeCell(type, note) {
+  if (!isDynamicPicklist(type)) return `<td>${escapeHtml(type)}</td>`;
+  return `<td>${escapeHtml(type)}<span class="field-source">from ${escapeHtml(note)}</span></td>`;
+}
+
+function schemaNoteCell(type, note) {
+  if (isDynamicPicklist(type)) return `<td>—</td>`;
+  return `<td>${escapeHtml(note)}</td>`;
+}
+
 function schemaTable(app) {
   return `<div class="table-wrap"><table class="schema-table">
     <thead><tr><th>Field</th><th>Type</th><th>Notes</th><th>Required</th></tr></thead>
     <tbody>${app.fields.map(([name, type, note, required]) => `<tr>
       <td><strong>${escapeHtml(name)}</strong></td>
-      <td>${escapeHtml(type)}</td>
-      <td>${escapeHtml(note)}</td>
+      ${schemaTypeCell(type, note)}
+      ${schemaNoteCell(type, note)}
       <td><span class="req req-${required.toLowerCase().replace(/[^a-z]+/g, "-")}">${escapeHtml(required)}</span></td>
     </tr>`).join("")}</tbody>
   </table></div>`;
@@ -867,7 +881,7 @@ function openSchema(id) {
   modal.querySelector(".modal-eyebrow").textContent = `Application ${app.n} · ${app.name}`;
   modal.querySelector(".modal-title").textContent = `${app.record} — proposed record schema`;
   modal.querySelector(".modal-body").innerHTML = `
-    <p class="modal-what">${app.fields.length} fields. Lifecycle: ${app.stages.map(escapeHtml).join(" → ")}. Required column shows when a value must exist — either always, at a particular point in the lifecycle, or derived by the platform.</p>
+    <p class="modal-what">${app.fields.length} fields. Lifecycle: ${app.stages.map(escapeHtml).join(" → ")}. Required column shows when a value must exist — either always, at a particular point in the lifecycle, or derived by the platform. Dynamic dropdowns name the Element or table they read from under the type.</p>
     ${schemaTable(app)}
     <p class="small">Repeating detail (${app.tasks.length} supporting records) is not listed here — those are separate entities, not fields on this record.</p>
     <p class="permalink"><a class="anchor" href="#schema-${app.id}" data-permalink>Link straight to this schema</a></p>`;
