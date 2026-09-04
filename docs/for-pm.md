@@ -67,7 +67,7 @@ The EDB contains **75 Task rows**. This proposal does **not** assume all 75 shou
 - Likely generated artifacts: Governance Reporting Pack, snapshots.
 - Potential external data: some capacity, finance, vendor and telemetry records.
 
-`AspectTask` exists on the platform and in the Terraform provider. It supports fields, records, status options, automations, layouts and relationships, but no stages. The public TypeScript EDK does not currently support it. That is an implementation decision to resolve before build.
+`AspectTask` exists on the platform. It supports fields, records, status options, automations, layouts and relationships, but no stages. Whether it is the intended representation for these workbook rows remains a design decision.
 
 ## What we need from the client
 

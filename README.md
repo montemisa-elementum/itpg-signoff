@@ -18,9 +18,9 @@ The current homepage is rendered from [`site/eight-apps.js`](site/eight-apps.js)
 
 | Document | Audience |
 |---|---|
-| [docs/for-agent.md](docs/for-agent.md) | Full coding-agent EDK implementation specification |
+| [docs/for-agent.md](docs/for-agent.md) | Full coding-agent implementation specification |
 | [docs/for-pm.md](docs/for-pm.md) | Detailed PM and process-owner notes |
 
-The site is the review surface. The agent document now records the eight-app assumption and the unresolved public-EDK gap for `AspectTask`.
+The site is the review surface. The agent document records the eight-app assumption and the unresolved authoring decision for `AspectTask`.
 
 Source requirements (not in this repo): `~/Downloads/Requirements & Acceptance Criteria_ IT Porftolio & Governance - *.csv` (Functional, Acceptance, EDB, Pain Points).

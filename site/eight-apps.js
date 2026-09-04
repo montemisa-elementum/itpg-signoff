@@ -583,8 +583,8 @@ const OPEN_QUESTIONS = [
   },
   {
     title: "Are EDB rows typed Task intended to be AspectTask?",
-    why: "The platform and Terraform provider currently support AspectTask. It has fields, records, statuses, automations, layouts and relationships, but no stages. The public TypeScript EDK does not support it today.",
-    decision: "Confirm the product intent, then either add EDK support or approve provider-HCL authoring for these entities.",
+    why: "The platform supports AspectTask. It has fields, records, statuses, automations, layouts and relationships, but no stages. Whether it is the intended mapping for these workbook rows needs confirmation.",
+    decision: "Confirm the product intent and approved authoring path for these entities.",
   },
   {
     title: "Which Task rows need independent records?",

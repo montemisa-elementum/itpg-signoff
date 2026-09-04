@@ -51,9 +51,9 @@ Use a persistent Portfolio ID to relate Demand Request, Investment Decision, Cap
 
 The eight process areas above have stages, status and a primary record. They may host automations, agents, views and layouts.
 
-### AspectTasks — unresolved public EDK gap
+### AspectTasks — unresolved authoring decision
 
-The EDB contains 75 rows with `Table Type = Task`. The Elementum platform and Terraform provider currently expose `AspectTask` / `elementum_task`.
+The EDB contains 75 rows with `Table Type = Task`. The Elementum platform exposes `AspectTask`.
 
 Current observed contract:
 
@@ -62,10 +62,10 @@ Current observed contract:
 - Does not host AI agents.
 - Is distinct from tasks inside an automation workflow.
 
-The public TypeScript EDK does not currently support Task as an entity kind. Apply the Pause Protocol:
+Before implementation:
 
 1. Confirm the client/product intent for EDB Task rows.
-2. Decide whether to add full EDK Task support or authorize provider-HCL authoring.
+2. Confirm the approved authoring path for AspectTask entities.
 3. Do not silently substitute child Apps or Elements.
 4. Do not implement all 75 mechanically; classify each by behavior.
 
@@ -188,7 +188,7 @@ Concentration Exposure; Deliverable Acceptance; Key-Person Dependency; Realized 
 ## Implementation order after approval
 
 1. Confirm identities and app ownership.
-2. Add/approve EDK Task support strategy.
+2. Confirm the AspectTask authoring strategy.
 3. Build shared Elements and organization groups.
 4. Build the eight Apps with stages/statuses, at least one view and stage layouts.
 5. Build classified AspectTasks and relations.
@@ -203,8 +203,8 @@ Concentration Exposure; Deliverable Acceptance; Key-Person Dependency; Realized 
 - No platform IDs in authored source.
 - No client names, products, authority labels or tool brands in core bag keys.
 - Do not duplicate master data owned by an external source.
-- Do not call a field or Element an AspectTask merely to avoid an EDK gap.
+- Do not call a field or Element an AspectTask merely to avoid an authoring limitation.
 - Do not collapse the eight apps back into two without explicit process-owner approval.
-- Do not implement provider-only Task HCL as an undocumented second dialect.
+- Do not use an undocumented authoring path for Task entities.
 - At least one list view per app; stage-specific layouts where the job changes.
 - Every automation is published with an explicit revision.
