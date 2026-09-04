@@ -8,8 +8,8 @@ Open [`index.html`](index.html) in a browser. No server, package install, or int
 
 | Page | Contents |
 |---|---|
-| [`index.html`](index.html) | The two spine apps and their processes, relationship map, component explorer (fields, stages, views, layouts, relationships), deployment waves, core vs tenant boundary, exclusions, sign-off decisions |
-| [`site/config.html`](site/config.html) | Automation register, integration prerequisites, groups and access, agents |
+| [`index.html`](index.html) | The two spine apps and their processes, relationship map, five flow walkthroughs with component coverage, component explorer (fields, stages, views, layouts, relationships), client configuration and datasets, optional modules |
+| [`site/config.html`](site/config.html) | Automation register, access policy, agents |
 | [`site/pm.html`](site/pm.html) | Process context: pain points and end-to-end stories |
 
 Every app, element, and table port is one record in [`site/explorer.js`](site/explorer.js), which renders both the relationship map and the tiles. Add or change a component there and both stay in sync.

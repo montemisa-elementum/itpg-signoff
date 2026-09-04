@@ -14,19 +14,24 @@ const TYPES = {
 const MODULES = [
   { id: "scenarios", name: "Scenario planning", wave: "2–4",
     blurb: "Compare candidate portfolios before committing: what is in, what is out, and what that costs.",
-    prereq: "No integration needed. Worth deploying once there are enough candidates to trade off." },
+    prereq: "No integration needed. Worth deploying once there are enough candidates to trade off.",
+    plugsIn: "Between scoring and the board decision in scenario A — comparing candidates before any one of them is approved." },
   { id: "capacity", name: "Capacity", wave: "4",
     blurb: "Test funding against the teams and scarce specialists who actually have to deliver the work.",
-    prereq: "Needs the workforce and directory port, and teams willing to declare available capacity." },
+    prereq: "Needs the workforce and directory port, and teams willing to declare available capacity.",
+    plugsIn: "Alongside the board decision in scenario A — testing whether the approved list is deliverable by real teams." },
   { id: "outcomes", name: "Outcomes", wave: "5",
     blurb: "Keep benefits open after delivery closes, measured against a baseline captured before approval.",
-    prereq: "Needs the telemetry and adoption port, or benefit claims stay self-reported." },
+    prereq: "Needs the telemetry and adoption port, or benefit claims stay self-reported.",
+    plugsIn: "Created from the case at qualification in scenario A, and stays open after the close step." },
   { id: "dependencies", name: "Dependencies", wave: "6",
     blurb: "Two-sided commitments between investments and shared functions, with lead times and escalation.",
-    prereq: "Needs shared functions to publish lead times and to accept commitments." },
+    prereq: "Needs shared functions to publish lead times and to accept commitments.",
+    plugsIn: "During execute in scenario A — a breached commitment moves milestones and blocks closure." },
   { id: "vendors", name: "Vendors", wave: "7",
     blurb: "Engagement performance on top of the vendor system of record. No local vendor master.",
-    prereq: "Blocked until the sourcing and third-party risk solution is live in the same environment." },
+    prereq: "Blocked until the sourcing and third-party risk solution is live in the same environment.",
+    plugsIn: "Across execute and close in scenario A, wherever a vendor is delivering the work." },
 ];
 
 const ENTITIES = [
@@ -418,6 +423,377 @@ const MAP_EDGES = [
   ["cloud-consumption", "portfolio-item", "run cost"],
 ];
 
+/* Flow walkthroughs. Every core component must appear in at least one step —
+   the coverage table under the flows is generated from this data. */
+const FLOWS = [
+  {
+    tag: "A",
+    id: "funded",
+    name: "A business request that becomes a funded investment",
+    lede: "The long path, start to finish. Most components appear here at least once.",
+    starts: "A business unit wants a capability that does not exist yet",
+    ends: "Delivery closes against a locked baseline",
+    steps: [
+      {
+        actor: "Governance admin · day 0",
+        title: "Describe the estate",
+        what: "Before a single request is raised, the organization exists as records: the structure, the funding targets and their owners, the teams, what the organization is trying to achieve, and the kinds of request it accepts.",
+        uses: [
+          ["portfolio-hierarchy", "value stream, product, platform, service tree"],
+          ["product-platform", "the durable funding targets and their owners"],
+          ["team-squad", "who actually delivers"],
+          ["strategic-objective", "what the organization is trying to achieve"],
+          ["demand-investment-type", "the request types accepted"],
+          ["workforce", "directory feed that keeps owners current"],
+        ],
+      },
+      {
+        actor: "Requester",
+        title: "Raise the request",
+        what: "One front door. The form changes by demand type so a requester is not asked for infrastructure detail on a reporting request. Drafts can be saved and resumed.",
+        uses: [
+          ["demand-request", "record created in Draft"],
+          ["demand-investment-type", "decides which fields appear"],
+          ["product-platform", "the affected product"],
+          ["strategic-objective", "alignment captured at intake"],
+        ],
+      },
+      {
+        actor: "Automation",
+        title: "Validate and route on submit",
+        what: "Submit enforces the mandatory set, then the affected product decides the accountable owner. Nobody routes by memory or by asking in a channel.",
+        uses: [
+          ["demand-request", "status becomes Submitted, owner assigned"],
+          ["product-platform", "owner lookup drives the assignment"],
+        ],
+      },
+      {
+        actor: "Triage owner",
+        title: "Screen for duplicates and overlap",
+        what: "Check open demand, in-flight investments, and the engineering backlog before anything is accepted. Missing information becomes a tracked question, not an email thread.",
+        uses: [
+          ["work-management", "existing backlog and in-flight work"],
+          ["demand-request", "related demand link for merges and duplicates"],
+          ["clarification-request", "a question with a response target date"],
+        ],
+      },
+      {
+        actor: "Triage owner",
+        title: "Dispose",
+        what: "Every request leaves triage with a recorded outcome and reason. Most are routed to an existing product backlog — that is a legitimate result, and the requester is told.",
+        uses: [
+          ["demand-request", "disposition, reason, and notification"],
+          ["work-management", "where backlog-routed demand actually goes"],
+        ],
+      },
+      {
+        actor: "Automation",
+        title: "Accept as investment",
+        what: "Acceptance mints the identifier and creates the investment record with the case context already in it. Nothing is retyped, and the two records stay linked.",
+        uses: [
+          ["portfolio-item", "created, Portfolio ID minted"],
+          ["demand-request", "linked, with the Portfolio ID written back"],
+          ["portfolio-hierarchy", "the roll-up node it reports into"],
+          ["team-squad", "the accountable team"],
+        ],
+      },
+      {
+        actor: "Product owner",
+        title: "Build the case",
+        what: "A structured case, not an attached spreadsheet: options including do-nothing, cost by year and type, named outcomes, and an honest architecture position.",
+        uses: [
+          ["portfolio-item", "options, outcomes, benefit owner"],
+          ["cost-line", "cost by fiscal year and cost type, rolled into TCO"],
+          ["architecture-domain", "where the investment lands"],
+          ["architecture-principle", "conformance, and any exception being requested"],
+        ],
+      },
+      {
+        actor: "Assessors",
+        title: "Score against the published model",
+        what: "Scoring uses the model version in force, and the version is stamped on the record — so a score from two quarters ago is still explainable.",
+        uses: [
+          ["scoring-model-version", "criteria and weights in force"],
+          ["assessor-score", "independent scores, with variance visible"],
+          ["portfolio-item", "composite score and rank"],
+        ],
+      },
+      {
+        actor: "Investment board",
+        title: "Decide",
+        what: "Value and type select who is allowed to approve. Conditions of approval are recorded with an owner and a due date instead of living in minutes.",
+        uses: [
+          ["doa-threshold", "who may approve at this value and type"],
+          ["value-band", "the bands behind that decision"],
+          ["portfolio-item", "decision, rationale, attendees, date"],
+          ["decision-condition", "each condition, owned and dated"],
+        ],
+      },
+      {
+        actor: "Finance partner · PMO",
+        title: "Lock the baseline",
+        what: "Approved funding and baseline dates are locked. This is what makes every later variance number mean something.",
+        uses: [
+          ["portfolio-item", "approved funding copied, baseline stamped"],
+          ["milestone", "baseline dates set against forecast"],
+          ["stage-gate-model", "the gate model version it entered under"],
+          ["gate-criterion", "the control points it must clear"],
+        ],
+      },
+      {
+        actor: "Delivery team",
+        title: "Execute and report",
+        what: "Health on a cadence with mandatory commentary, gates that need real evidence, and cost read from the finance and cloud systems rather than retyped.",
+        uses: [
+          ["portfolio-item", "RAG, narrative, recovery action"],
+          ["milestone", "forecast against baseline, slippage detected"],
+          ["control-gate-record", "evidence to pass; a waiver needs residual risk and a second approver"],
+          ["portfolio-risk", "risk register with owner and mitigation"],
+          ["portfolio-issue", "realized problems and their resolution plan"],
+          ["work-management", "delivery progress without re-entry"],
+          ["finance-actuals", "actual and committed cost"],
+          ["cloud-consumption", "run cost accruing during delivery"],
+        ],
+      },
+      {
+        actor: "PMO",
+        title: "Handle change beyond tolerance",
+        what: "Scope, cost, schedule, or outcome moving past the agreed tolerance is formal change control against the locked baseline, approved at the right level.",
+        uses: [
+          ["portfolio-change-request", "the requested change and its baseline impact"],
+          ["value-band", "the tolerance that was breached"],
+          ["doa-threshold", "authority for a change of this size"],
+          ["milestone", "re-baselined dates once approved"],
+        ],
+      },
+      {
+        actor: "PMO",
+        title: "Close",
+        what: "Closure requires the conditions closed and the final gate resolved, so nothing quietly ends with open commitments.",
+        uses: [
+          ["portfolio-item", "closure and closure evidence"],
+          ["decision-condition", "all conditions closed"],
+          ["control-gate-record", "final gate resolved or waived"],
+        ],
+      },
+    ],
+  },
+  {
+    tag: "B",
+    id: "backlog",
+    name: "A request that ends at a team backlog",
+    lede: "The common case — and the one that fails today, because a request that is not an investment currently just goes quiet.",
+    starts: "Someone asks for a change to an existing product",
+    ends: "It is on the owning team's backlog and the requester knows",
+    steps: [
+      {
+        actor: "Requester",
+        title: "Raise it in the same place",
+        what: "There is no separate small-change channel. The type marks it as an enhancement, which is what makes the short path possible.",
+        uses: [
+          ["demand-request", "same front door, same record"],
+          ["demand-investment-type", "default handling is backlog, not investment"],
+        ],
+      },
+      {
+        actor: "Product owner",
+        title: "Recognize it as existing work",
+        what: "The backlog already contains the same ask, or it fits inside funded work in flight. That is visible in one screen instead of a conversation.",
+        uses: [
+          ["product-platform", "routed to the owning product"],
+          ["work-management", "the matching backlog item"],
+        ],
+      },
+      {
+        actor: "Product owner",
+        title: "Dispose to backlog and tell the requester",
+        what: "Recorded disposition with a reason and a link to the work item. The request is closed here; it never becomes a portfolio item.",
+        uses: [
+          ["demand-request", "routed to backlog, requester notified"],
+          ["work-management", "the work item it was merged into"],
+        ],
+      },
+    ],
+  },
+  {
+    tag: "C",
+    id: "mandatory",
+    name: "Mandatory security remediation",
+    lede: "Shows how the same machinery behaves differently when the type is different — mandatory work still competes for capacity, but it is not optional.",
+    starts: "A security finding requires remediation",
+    ends: "Remediation is funded and gated like any other investment",
+    steps: [
+      {
+        actor: "Security reviewer",
+        title: "Raise it as mandatory work",
+        what: "The demand type is security remediation and the work type is mandatory, so it appears in the ranked list rather than bypassing it.",
+        uses: [
+          ["demand-request", "raised with work type Mandatory"],
+          ["demand-investment-type", "type defaults it to investment handling"],
+        ],
+      },
+      {
+        actor: "Architect",
+        title: "Assess against standards",
+        what: "The remediation is assessed against the principles it restores, and any deviation left in place is stated rather than implied.",
+        uses: [
+          ["architecture-principle", "the standard being restored"],
+          ["portfolio-item", "exception recorded when a deviation remains"],
+        ],
+      },
+      {
+        actor: "Governance",
+        title: "Apply the gate model for this type",
+        what: "Security remediation carries its own gate model, so the control points differ from an enhancement even though the process is the same.",
+        uses: [
+          ["stage-gate-model", "model version selected by investment type"],
+          ["gate-criterion", "security assessment and production readiness"],
+        ],
+      },
+      {
+        actor: "Security reviewer",
+        title: "Pass or waive the gate honestly",
+        what: "Evidence passes the gate. A waiver is allowed, but it costs a named residual risk and a second approver — which is the point.",
+        uses: [
+          ["control-gate-record", "evidence, or waiver with residual risk"],
+        ],
+      },
+    ],
+  },
+  {
+    tag: "D",
+    id: "governance",
+    name: "Governance changes its own rules",
+    lede: "Gates, weights, and approval authority change over time. The change itself is reviewable, and in-flight investments are not re-judged retroactively.",
+    starts: "The board wants to reweight scoring for next year",
+    ends: "A new published version applies to new work only",
+    steps: [
+      {
+        actor: "Governance admin",
+        title: "Propose the change",
+        what: "The proposed change, its rationale, and its approver are a record — not a quiet edit to a configuration screen.",
+        uses: [["governance-change-request", "proposal, rationale, approver"]],
+      },
+      {
+        actor: "Governance authority",
+        title: "Approve and publish a new version",
+        what: "Publishing creates a new version of the model rather than editing the one investments were judged under.",
+        uses: [
+          ["scoring-model-version", "new version published"],
+          ["stage-gate-model", "or a new gate model version"],
+          ["doa-threshold", "or changed approval authority bands"],
+        ],
+      },
+      {
+        actor: "Everyone",
+        title: "In-flight work keeps its version",
+        what: "Each investment records the versions it entered under, so history stays explainable and nobody re-argues an approved case.",
+        uses: [["portfolio-item", "recorded scoring and gate model versions"]],
+      },
+    ],
+  },
+  {
+    tag: "E",
+    id: "estate",
+    name: "Keeping the estate honest",
+    lede: "Running quietly underneath everything: ownership and structure change, and stale configuration is what silently breaks routing.",
+    starts: "A product owner leaves, or the organization reorganizes",
+    ends: "Routing and roll-up still point at real people and real nodes",
+    steps: [
+      {
+        actor: "Directory feed",
+        title: "Detect the stale owner",
+        what: "Leavers and role changes arrive from identity and HR, so an unowned product surfaces instead of quietly misrouting new demand.",
+        uses: [
+          ["workforce", "employment status and team from the source system"],
+          ["product-platform", "owner reassigned before demand misroutes"],
+        ],
+      },
+      {
+        actor: "Portfolio lead",
+        title: "Reorganize without rewriting history",
+        what: "Hierarchy nodes are effective-dated and teams change, so last year's reporting still reflects how the organization looked last year.",
+        uses: [
+          ["portfolio-hierarchy", "effective-dated nodes"],
+          ["team-squad", "new accountable team"],
+        ],
+      },
+    ],
+  },
+];
+
+/* What the client has to supply. Rows referencing an entity render a link. */
+const CLIENT_CONFIG = [
+  {
+    id: "cfg-records",
+    name: "Configuration records you seed",
+    lede: "We build the schemas; these records are yours. A governance admin maintains them after deployment — changing them is editing data, not a redeploy.",
+    columns: ["Element", "What you decide", "Typical owner", "Needed before"],
+    rows: [
+      ["portfolio-hierarchy", "Your value stream, product, platform, and service tree, and when each node became valid", "Portfolio lead", "Anything is used"],
+      ["product-platform", "The funding targets, and the named product, platform, and engineering owner of each", "Portfolio lead", "Demand routing works"],
+      ["strategic-objective", "The objectives investments are aligned to, their owners and measures", "Strategy / CIO office", "Intake goes live"],
+      ["demand-investment-type", "Which request types you accept, and whether each defaults to backlog or investment", "Governance lead", "Intake goes live"],
+      ["architecture-domain", "The domains you report investment concentration across", "Chief architect", "Case capture"],
+      ["architecture-principle", "The principles and standards a case is assessed against", "Chief architect", "Case capture"],
+      ["stage-gate-model", "Which gates apply to which investment type, and the version in force", "Governance lead", "First baseline lock"],
+      ["gate-criterion", "The individual control points and the artefacts each demands to pass", "Architecture &amp; security", "First baseline lock"],
+      ["scoring-model-version", "The six criterion weights, and what a published version means", "Investment board", "First scoring round"],
+      ["doa-threshold", "The value bands and the authority label that approves each one", "CFO / finance partner", "First board decision"],
+      ["team-squad", "Delivery, platform, and shared-function teams and their owners", "Delivery lead", "Roll-up reporting"],
+      ["value-band", "Shared thresholds: value bands, risk tiers, variance tolerance", "Finance partner", "Change control"],
+    ],
+  },
+  {
+    id: "cfg-people",
+    name: "People, groups, and approvers",
+    lede: "Group names are the product's role model; membership is entirely yours. Approver identity is a record, so changing who approves is a data edit.",
+    columns: ["Group", "Who you put in it", "What it unlocks"],
+    rows: [
+      [null, "Requesters", "Anyone who may raise demand", "Raise and track their own requests; no portfolio financials"],
+      [null, "Product &amp; Platform Owners", "The named owners on your product register", "Receive routed demand, own triage and disposition"],
+      [null, "Engineering Leads", "Delivery leads per team", "Delivery status, milestones, and progress"],
+      [null, "Architects", "Domain and chief architects", "Architecture gates, exceptions, conformance"],
+      [null, "Security Reviewers", "Security assessment owners", "Security gates and waiver approvals"],
+      [null, "Finance Partners", "Finance business partners", "Cost lines, approved funding, actuals and variance"],
+      [null, "Benefit Owners", "The accountable business owners", "Outcome ownership after delivery"],
+      [null, "Investment Board", "Whoever actually decides", "Record decisions, conditions, and rationale"],
+      [null, "Governance Admins", "The small group that owns the model", "Edit configuration elements and publish versions"],
+    ],
+    note: "How approver identity resolves: a <strong>DoA Threshold</strong> record matches the value and type, names an authority level, and that level maps to a group or person you nominate. Nothing about who approves is hard-coded.",
+  },
+  {
+    id: "cfg-datasets",
+    name: "Datasets we need from you",
+    lede: "Each is a read-only feed behind a CloudLink. The join key is the part that usually needs a decision on your side — without it the data cannot be attributed.",
+    columns: ["Dataset", "Likely source", "Minimum fields", "Join key you must provide", "Refresh"],
+    rows: [
+      ["work-management", "Jira, Azure DevOps, or one agreed system", "Work item ID, title, status, team", "Portfolio ID present on the work item", "Daily"],
+      ["finance-actuals", "ERP / procurement", "Period, actual, commitment, forecast, cost centre", "Portfolio ID on the cost record", "Monthly close"],
+      ["cloud-consumption", "Cloud billing export", "Period, service, consumption cost", "Tag carrying product or Portfolio ID", "Monthly"],
+      ["workforce", "Identity provider / HR", "Person key, employment status, team, role, dates", "Person key that matches platform users", "Daily"],
+      ["telemetry", "Product analytics", "Period, actual value, source timestamp", "Outcome key agreed per measure", "Per measurement period"],
+      ["vendor-sor", "Sourcing &amp; third-party risk", "Vendor, contract, risk position, SLA breach, savings", "Vendor and contract reference", "Monthly"],
+    ],
+  },
+  {
+    id: "cfg-rules",
+    name: "Rules and thresholds you set",
+    lede: "Numbers and policy choices we cannot pick for you. Each one changes behavior the day it is set.",
+    columns: ["Setting", "What you decide", "Where it bites"],
+    rows: [
+      [null, "Reporting cadence", "How many days between required status updates", "Overdue flag and the exceptions view"],
+      [null, "Variance tolerance", "The movement in cost, schedule, or scope that forces change control", "When a Portfolio Change Request becomes mandatory"],
+      [null, "Authority labels", "What your levels are called and which group holds each", "Who the board step routes to"],
+      [null, "Scoring weights", "Relative weight of value, fit, reuse, run cost, risk, and debt", "The ranked candidate list"],
+      [null, "Waiver policy", "Whether every gate waiver needs a second approver", "Gate evidence enforcement"],
+      [null, "Clarification target", "Days a requester has to answer before triage escalates", "Clarification Request service level"],
+      [null, "Fiscal year and currency", "Planning year start and reporting currency", "Cost lines and finance comparison"],
+      [null, "Duplicate screening scope", "Which backlogs and systems are searched at triage", "Triage duplicate detection quality"],
+    ],
+  },
+];
+
 const byId = new Map(ENTITIES.map((e) => [e.id, e]));
 const NODE_W = 150;
 const NODE_H = 40;
@@ -598,6 +974,82 @@ function tile(entity) {
     </details>`;
 }
 
+function chipRef(id, note) {
+  const entity = byId.get(id);
+  if (!entity) return "";
+  return `<a class="chip-ref ${TYPES[entity.type].cls}" href="#entity-${id}" data-jump="${id}"><span class="chip-name">${entity.name}</span><span class="chip-note">${note}</span></a>`;
+}
+
+function flowBlock(flow) {
+  const steps = flow.steps
+    .map(
+      (step) => `
+      <li>
+        <div class="step-head"><span class="step-actor">${step.actor}</span><h4>${step.title}</h4></div>
+        <p>${step.what}</p>
+        <div class="chips">${step.uses.map(([id, note]) => chipRef(id, note)).join("")}</div>
+      </li>`,
+    )
+    .join("");
+  return `
+    <article class="journey" id="flow-${flow.id}">
+      <header>
+        <div>
+          <span class="tile-type">Scenario ${flow.tag}</span>
+          <h3>${flow.name}</h3>
+          <p>${flow.lede}</p>
+        </div>
+        <dl class="journey-meta">
+          <div><dt>Starts</dt><dd>${flow.starts}</dd></div>
+          <div><dt>Ends</dt><dd>${flow.ends}</dd></div>
+        </dl>
+      </header>
+      <ol class="journey-steps">${steps}</ol>
+    </article>`;
+}
+
+function coverageTable() {
+  const seen = new Map();
+  for (const flow of FLOWS) {
+    for (const step of flow.steps) {
+      for (const [id] of step.uses) {
+        if (!seen.has(id)) seen.set(id, []);
+        const where = `${flow.tag}${flow.steps.indexOf(step) + 1} ${step.title}`;
+        if (!seen.get(id).includes(where)) seen.get(id).push(where);
+      }
+    }
+  }
+  const order = ["spine", "app", "child", "element", "table"];
+  const rows = ENTITIES.filter((e) => e.scope !== "optional")
+    .sort((a, b) => order.indexOf(a.type) - order.indexOf(b.type) || a.name.localeCompare(b.name))
+    .map((e) => {
+      const where = seen.get(e.id) || [];
+      const cells = where.length
+        ? where.map((w) => `<span class="where">${w}</span>`).join("")
+        : '<span class="where missing">not shown in any flow</span>';
+      return `<tr><td><a href="#entity-${e.id}" data-jump="${e.id}"><strong>${e.name}</strong></a></td><td>${TYPES[e.type].label}</td><td>${cells}</td></tr>`;
+    })
+    .join("");
+  return `<div class="table-wrap"><table><thead><tr><th>Component</th><th>Kind</th><th>Where it shows up</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+}
+
+function configBlock(group) {
+  const head = group.columns.map((c) => `<th>${c}</th>`).join("");
+  const body = group.rows
+    .map(([entityId, ...cells]) => {
+      const first = entityId ? `<td>${chipRef(entityId, "")}</td>` : "";
+      return `<tr>${first}${cells.map((c) => `<td>${c}</td>`).join("")}</tr>`;
+    })
+    .join("");
+  return `
+    <article class="config-group" id="${group.id}">
+      <h3>${group.name}</h3>
+      <p class="lede">${group.lede}</p>
+      <div class="table-wrap"><table><thead><tr>${head}</tr></thead><tbody>${body}</tbody></table></div>
+      ${group.note ? `<div class="callout" style="margin-top:14px">${group.note}</div>` : ""}
+    </article>`;
+}
+
 function moduleBlock(mod) {
   const members = ENTITIES.filter((e) => e.module === mod.id);
   const adds = members
@@ -613,6 +1065,8 @@ function moduleBlock(mod) {
         </div>
         <p class="module-prereq">${mod.prereq}</p>
       </header>
+      <h5>Where it plugs into the flow</h5>
+      <p class="module-plug">${mod.plugsIn}</p>
       <h5>What it adds</h5>
       <ul class="module-adds">${adds}</ul>
       <div class="tiles">${members.map(tile).join("")}</div>
@@ -667,6 +1121,24 @@ function init() {
   if (modules) {
     modules.innerHTML = MODULES.map(moduleBlock).join("");
     jumpOnClick(modules);
+  }
+
+  const flows = document.getElementById("flows");
+  if (flows) {
+    flows.innerHTML = FLOWS.map(flowBlock).join("");
+    jumpOnClick(flows);
+  }
+
+  const coverage = document.getElementById("coverage");
+  if (coverage) {
+    coverage.innerHTML = coverageTable();
+    jumpOnClick(coverage);
+  }
+
+  const config = document.getElementById("client-config");
+  if (config) {
+    config.innerHTML = CLIENT_CONFIG.map(configBlock).join("");
+    jumpOnClick(config);
   }
 
   document.querySelectorAll(".filter").forEach((button) => {

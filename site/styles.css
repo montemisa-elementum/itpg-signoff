@@ -481,6 +481,104 @@ tr:last-child td { border-bottom: 0; }
   .rel-list li { grid-template-columns: 1fr; gap: 2px; }
 }
 
+/* ---- component chips ---- */
+.chips { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; }
+.chip-ref {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 1px;
+  max-width: 290px;
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-left: 3px solid #b9c9c5;
+  border-radius: 8px;
+  background: #fff;
+  font-size: 12.5px;
+}
+.chip-ref:hover { border-color: var(--teal); text-decoration: none; box-shadow: 0 4px 12px rgba(21,50,74,.09); }
+.chip-ref.t-spine { border-left-color: var(--teal); }
+.chip-ref.t-app { border-left-color: #6bb3ab; }
+.chip-ref.t-element { border-left-color: var(--blue); }
+.chip-ref.t-table { border-left-color: #9aa5a1; border-style: dashed; border-left-style: solid; }
+.chip-name { color: var(--navy); font-weight: 800; }
+.chip-note { color: var(--muted); }
+.chip-note:empty { display: none; }
+
+/* ---- flow walkthroughs ---- */
+.journey {
+  margin: 0 0 20px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+.journey > header { display: grid; grid-template-columns: minmax(0, 1fr) minmax(260px, .55fr); gap: 26px; align-items: start; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+.journey > header h3 { margin: 5px 0 6px; font-size: 22px; }
+.journey > header p { margin: 0; color: var(--muted); }
+.journey-meta { display: grid; gap: 8px; margin: 0; }
+.journey-meta div { display: grid; grid-template-columns: 52px 1fr; gap: 10px; align-items: baseline; }
+.journey-meta dt { color: var(--teal); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+.journey-meta dd { margin: 0; color: var(--navy); font-size: 13px; font-weight: 600; }
+
+.journey-steps { margin: 0; padding: 4px 0 0; list-style: none; counter-reset: jstep; }
+.journey-steps > li { position: relative; padding: 20px 0 20px 52px; }
+.journey-steps > li::before {
+  position: absolute;
+  top: 22px;
+  left: 0;
+  z-index: 1;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 2px solid var(--teal);
+  border-radius: 50%;
+  background: #fff;
+  color: var(--teal);
+  content: counter(jstep);
+  counter-increment: jstep;
+  font-size: 13px;
+  font-weight: 800;
+}
+.journey-steps > li::after {
+  position: absolute;
+  top: 46px;
+  bottom: -8px;
+  left: 14px;
+  width: 2px;
+  background: var(--line);
+  content: "";
+}
+.journey-steps > li:last-child::after { display: none; }
+.journey-steps > li p { margin: 0; color: var(--muted); max-width: 78ch; }
+.step-head { display: flex; flex-wrap: wrap; gap: 10px; align-items: baseline; margin-bottom: 6px; }
+.step-head h4 { margin: 0; color: var(--navy); font-size: 17px; }
+.step-actor {
+  padding: 3px 9px;
+  border-radius: 99px;
+  background: var(--teal-soft);
+  color: #0d665f;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .05em;
+  text-transform: uppercase;
+}
+#coverage-head { margin: 34px 0 4px; }
+.where { display: inline-block; margin: 2px 5px 2px 0; padding: 2px 8px; border-radius: 6px; background: #eef3f1; color: var(--navy); font-size: 12px; font-weight: 700; }
+.where.missing { background: var(--red-soft); color: #8c3535; }
+
+/* ---- client configuration ---- */
+.config-group { margin: 0 0 26px; }
+.config-group h3 { margin: 0 0 5px; font-size: 20px; }
+.config-group .lede { margin-bottom: 12px; }
+.config-group td:first-child { white-space: nowrap; }
+.config-group .chip-ref { max-width: none; }
+
+@media (max-width: 900px) {
+  .journey > header { grid-template-columns: 1fr; gap: 14px; }
+}
+
 /* ---- optional modules ---- */
 .module {
   margin: 0 0 18px;
@@ -504,6 +602,7 @@ tr:last-child td { border-bottom: 0; }
   font-weight: 600;
 }
 .module h5 { margin: 20px 0 8px; color: var(--navy); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
+.module-plug { margin: 0 0 4px; color: var(--muted); }
 .module-adds { display: grid; gap: 5px; margin: 0 0 18px; padding-left: 20px; }
 .module-adds strong { color: var(--navy); }
 .module .tiles { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }

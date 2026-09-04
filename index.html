@@ -37,12 +37,10 @@
         <a href="#buckets">1 · The two buckets</a>
         <a href="#hangs-off">2 · What hangs off them</a>
         <a href="#map">3 · Relationship map</a>
-        <a href="#explorer">4 · Component explorer</a>
-        <a href="#optional">5 · Optional modules</a>
-        <a href="#waves">6 · Deployment waves</a>
-        <a href="#boundary">7 · Core vs tenant</a>
-        <a href="#exclusions">8 · Exclusions</a>
-        <a href="#signoff">9 · Sign-off</a>
+        <a href="#flow">4 · How it flows</a>
+        <a href="#explorer">5 · Component explorer</a>
+        <a href="#configure">6 · What you configure</a>
+        <a href="#optional">7 · Optional modules</a>
       </nav>
 
       <section class="section" id="buckets">
@@ -107,7 +105,7 @@
           </article>
           <article class="card">
             <h3>What is deferred</h3>
-            <p>Capacity, outcomes, dependencies, vendors, and scenario planning are grouped into <a href="#optional">optional modules</a>. Each is a decision on its own, and several wait on an integration.</p>
+            <p>Capacity, outcomes, dependencies, vendors, and scenario planning are grouped into <a href="#optional">optional modules</a> at the end of this document. Each is a decision on its own, and several wait on an integration.</p>
           </article>
         </div>
 
@@ -137,10 +135,21 @@
         <p class="small" style="margin-top:10px">The map shows the load-bearing connections only. Each component's full relationship list is in its tile below.</p>
       </section>
 
+      <section class="section" id="flow">
+        <div class="section-head">
+          <div><p class="eyebrow">4 · How it flows</p><h2>Where every component actually shows up</h2></div>
+          <p class="lede">Five walkthroughs, from the long funded path to the quiet background one. Each step names the components it touches and what they do there — click any of them to open its detail. The table at the end proves every component in the build appears somewhere.</p>
+        </div>
+        <div id="flows"></div>
+        <h3 id="coverage-head">Component coverage</h3>
+        <p class="lede" style="margin-bottom:14px">Read this the other way round: pick a component and see where in the process it earns its place. Anything that could not be placed in a flow would not be worth building.</p>
+        <div id="coverage"></div>
+      </section>
+
       <section class="section" id="explorer">
         <div class="section-head">
-          <div><p class="eyebrow">4 · Component explorer</p><h2>Every component in the core build</h2></div>
-          <p class="lede">Open a tile to see stages, status options, the field list, views, layouts, and how it relates to other components. Field types are Elementum field types; the exact EDK builder names live in the agent specification.</p>
+          <div><p class="eyebrow">5 · Component explorer</p><h2>Every component in the core build</h2></div>
+          <p class="lede">The reference view: open a tile for stages, status options, the field list, views, layouts, and relationships. Field types are Elementum field types, and the wave number is deployment order — both are specified in full in <a href="docs/for-agent.md">docs/for-agent.md</a>.</p>
         </div>
         <div class="explorer-bar">
           <button class="filter is-on" data-filter="all" aria-pressed="true" type="button">All</button>
@@ -153,96 +162,24 @@
         <div class="tiles" id="tiles"></div>
       </section>
 
+      <section class="section" id="configure">
+        <div class="section-head">
+          <div><p class="eyebrow">6 · What you configure</p><h2>What we need from you, and when</h2></div>
+          <p class="lede">The apps, fields, rules, and automations are the product. Your structure, your approvers, your thresholds, and your data are configuration — which is what makes the same build reusable, and what we need from you to stand it up.</p>
+        </div>
+        <div id="client-config"></div>
+        <div class="callout warning" style="margin-top:18px"><strong>The long pole is usually the join key, not the connection.</strong> A feed is only useful once your work items carry the Portfolio ID, your cost records carry it too, and your cloud spend is tagged. That is work on your side, and it is worth starting before the integration wave.</div>
+      </section>
+
       <section class="section" id="optional">
         <div class="section-head">
-          <div><p class="eyebrow">5 · Optional modules</p><h2>Grouped separately, decided separately</h2></div>
-          <p class="lede">These are ordinary apps, elements, and table ports — nothing special about how they are built. They are set apart because the core build in section 4 works without them, each is its own go or no-go, and several wait on an integration that does not exist yet.</p>
+          <div><p class="eyebrow">7 · Optional modules</p><h2>Grouped separately, decided separately</h2></div>
+          <p class="lede">These are ordinary apps, elements, and table ports — nothing special about how they are built. They are set apart because the core build works without them, each is its own go or no-go, and several wait on an integration that does not exist yet. Each block says where it would plug into the flows in section 4.</p>
         </div>
         <div id="modules"></div>
         <p class="small">Skipping a module costs you that capability and nothing else: no field on Demand Request or Portfolio Item depends on one, and a module can be added in a later wave without rework. Do not write acceptance criteria against a module until it has been selected.</p>
       </section>
 
-      <section class="section" id="waves">
-        <div class="section-head">
-          <div><p class="eyebrow">6 · Deployment waves</p><h2>What is applied, in what order</h2></div>
-          <p class="lede">Each wave is its own plan and apply. A wave is complete when its records, views, and automations run end to end on realistic data.</p>
-        </div>
-        <div class="timeline">
-          <div class="wave"><div class="wave-number">0</div><div><h3>Elements and groups</h3><p>15 configuration elements, 10 groups, access policies. Your records are loaded after apply.</p></div><aside><span class="badge badge-element">Element</span></aside></div>
-          <div class="wave"><div class="wave-number">1</div><div><h3>Demand Request</h3><p>The app with 22 fields, 3 stage layouts, 4 views, clarification child, and 3 automations.</p></div><aside><span class="badge badge-app">App</span> <span class="badge badge-auto">Automation</span></aside></div>
-          <div class="wave"><div class="wave-number">2</div><div><h3>Portfolio Item and decision</h3><p>Case, cost lines, conditions, scoring, mint-ID and authority routing, baseline lock.</p></div><aside><span class="badge badge-app">App</span> <span class="badge badge-auto">Automation</span></aside></div>
-          <div class="wave"><div class="wave-number">3</div><div><h3>Execution</h3><p>Milestones, control gates, risk, issue, change request, exception views, cadence and slippage rules.</p></div><aside><span class="badge badge-app">App</span> <span class="badge badge-view">Views</span></aside></div>
-          <div class="wave"><div class="wave-number">4–7</div><div><h3>Optional modules</h3><p>Scenario planning, capacity, outcomes, dependencies, then vendors — each selected independently.</p></div><aside><span class="decide">Decision pending</span></aside></div>
-          <div class="wave"><div class="wave-number">8</div><div><h3>Agents</h3><p>Assistive only: search, summarize, draft, and challenge. Writes go through published automations.</p></div><aside><span class="badge badge-agent">Agent</span></aside></div>
-        </div>
-      </section>
-
-      <section class="section" id="boundary">
-        <div class="section-head">
-          <div><p class="eyebrow">7 · Core vs tenant</p><h2>What is reusable, what is yours</h2></div>
-          <p class="lede">The apps, fields, and rules are the product. Your estate, labels, thresholds, and integrations are configuration records loaded after deployment, so the next organization reuses the same build.</p>
-        </div>
-        <div class="grid two">
-          <article class="card">
-            <span class="chip core">Product core — same for every customer</span>
-            <ul class="checklist">
-              <li>Demand and Portfolio Item lifecycles and field sets</li>
-              <li>A persistent identifier carried across related records</li>
-              <li>Structured business case and mandatory baseline lock</li>
-              <li>Gate, scoring, and authority mechanisms driven by element records</li>
-              <li>Cadence rules, health commentary, exception views</li>
-            </ul>
-          </article>
-          <article class="card">
-            <span class="chip tenant">Tenant pack — records, not code</span>
-            <ul class="checklist">
-              <li>Portfolio hierarchy, products, platforms, services</li>
-              <li>Authority labels (for example L0–L3) and value bands</li>
-              <li>Gate criteria and scoring weights per investment type</li>
-              <li>Group membership and who can see financials</li>
-              <li>CloudLinks and table mapping for Jira/ADO, ERP, identity, sourcing</li>
-            </ul>
-          </article>
-        </div>
-      </section>
-
-      <section class="section" id="exclusions">
-        <div class="section-head">
-          <div><p class="eyebrow">8 · Exclusions</p><h2>Not built in this specification</h2></div>
-          <p class="lede">Stated plainly so acceptance criteria are not written against something we are not delivering.</p>
-        </div>
-        <div class="grid three">
-          <article class="card"><h3>Portfolio dependency graph</h3><p>Delivered as registers, filters, and most-constrained-function views. A drawn network of every dependency is not in scope.</p></article>
-          <article class="card"><h3>Scenario optimizer</h3><p>Scenarios are include and exclude with roll-ups. No solver proposes a portfolio, and no model is simulated against the whole book.</p></article>
-          <article class="card"><h3>BI replacement</h3><p>List, kanban, and exception views replace the manual pack. Heat maps and executive dashboards stay in the BI tool.</p></article>
-          <article class="card"><h3>Second master data</h3><p>No vendor master, employee master, or general ledger. Those stay external table ports.</p></article>
-          <article class="card"><h3>Spreadsheet round-trip</h3><p>The business case is structured fields. We do not parse an uploaded workbook as the system of record.</p></article>
-          <article class="card"><h3>Autonomous decisions</h3><p>No agent sets a disposition, board outcome, gate pass, or realized value.</p></article>
-        </div>
-      </section>
-
-      <section class="section" id="signoff">
-        <div class="section-head">
-          <div><p class="eyebrow">9 · Sign-off</p><h2>Decisions needed before authoring</h2></div>
-          <p class="lede">Identity and scope choices are cheapest now. Handles, namespaces, and app boundaries cannot be changed in place once deployed.</p>
-        </div>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>#</th><th>Decision</th><th>Recommendation</th><th>Blocks</th><th>Owner</th><th>Approved</th></tr></thead>
-            <tbody>
-              <tr><td>1</td><td>Two apps (demand and portfolio item) or three (demand, investment, initiative)</td><td>Two apps, one identifier</td><td>Wave 2 identity</td><td>Process owner</td><td></td></tr>
-              <tr><td>2</td><td>Handles and namespaces shown in the explorer</td><td>Generic product names, no customer prefix</td><td>All waves</td><td>Governance admin</td><td></td></tr>
-              <tr><td>3</td><td>Work-management source of record</td><td>One system for v1</td><td>Duplicate screening, wave 3 progress</td><td>Engineering lead</td><td></td></tr>
-              <tr><td>4</td><td>Which optional modules are in v1</td><td>Capacity and outcomes next; vendor last</td><td>Waves 4–7</td><td>Portfolio lead</td><td></td></tr>
-              <tr><td>5</td><td>Vendor system-of-record availability</td><td>Defer vendor engagement until it is live</td><td>Wave 7</td><td>Sourcing lead</td><td></td></tr>
-              <tr><td>6</td><td>Dependency visualization expectation</td><td>Register and constrained-function views only</td><td>Wave 6 acceptance</td><td>Process owner</td><td></td></tr>
-              <tr><td>7</td><td>v1 organizational scope</td><td>One value stream, a few products</td><td>Seed data volume</td><td>PM</td><td></td></tr>
-              <tr><td>8</td><td>Authority levels and value bands</td><td>Seed as threshold records</td><td>Wave 2 approvals</td><td>Finance partner</td><td></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="callout warning" style="margin-top:16px"><strong>Open input:</strong> the solution architect's recommended build order has not been supplied. If it differs from the waves above, that order takes precedence and this plan is re-sequenced.</div>
-      </section>
     </div>
   </main>
 
