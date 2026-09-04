@@ -3,225 +3,196 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ITPG — Elementum Build Specification</title>
+  <title>ITPG — Workbook-Aligned Elementum Proposal</title>
   <link rel="stylesheet" href="site/styles.css">
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><span class="brand-mark">ITPG</span> Elementum Build Specification</div>
+    <div class="brand"><span class="brand-mark">ITPG</span> Workbook-Aligned Proposal</div>
     <nav class="nav" aria-label="Primary">
-      <a href="index.html" aria-current="page">Specification</a>
-      <a href="site/config.html">Rules &amp; access</a>
-      <a href="site/pm.html">Process</a>
+      <a href="index.html" aria-current="page">Eight-app proposal</a>
+      <a href="site/config.html">Rules &amp; agents</a>
+      <a href="site/pm.html">Requirements context</a>
     </nav>
   </header>
 
   <main>
     <section class="hero">
       <div class="hero-inner">
-        <p class="eyebrow">Build specification · for sign-off</p>
-        <h1>IT Portfolio &amp; Governance on Elementum</h1>
-        <p class="hero-sub">We see IT portfolio and governance as two lifecycles: the <strong>demand</strong> arriving from the business, and the <strong>investments</strong> the organization decides to fund. The whole solution is moving records through those two lifecycles honestly — and everything else exists to make that possible.</p>
-        <p>This document sets out the Elementum components that implement it — the two apps that hold the process, the records that configure it, the work that hangs off it, the automations that move it, and the systems it reads — so each piece can be approved before any authoring starts.</p>
+        <p class="eyebrow">Elementum solution proposal · for refinement</p>
+        <h1>Eight applications, following the requirements workbook</h1>
+        <p class="hero-sub">This version takes the workbook literally: its eight application headings become <strong>eight Elementum Apps</strong>. Shared definitions become Elements, source-system data becomes Tables, and the 75 rows classified as “Task” become candidate <strong>AspectTask</strong> entities pending confirmation.</p>
+        <p>This is a testable interpretation—not a claim that every implementation choice is settled. It is deliberately close to the source so process owners can point to what is right, what is wrong, and what the missing process document changes.</p>
         <dl class="meta">
-          <div><dt>Platform</dt><dd>Elementum (EDK / TypeScript)</dd></div>
-          <div><dt>Status</dt><dd>Draft for sign-off</dd></div>
-          <div><dt>Scope</dt><dd>Waves 0–3 in v1</dd></div>
-          <div><dt>Reusability</dt><dd>Product core + tenant pack</dd></div>
+          <div><dt>Source</dt><dd>Functional requirements + acceptance + EDB + pain points</dd></div>
+          <div><dt>Application model</dt><dd>8 workbook areas → 8 Elementum Apps</dd></div>
+          <div><dt>Requirement coverage</dt><dd>193 requirements · 110 Must Haves</dd></div>
+          <div><dt>Key assumption</dt><dd>EDB “Task” → candidate AspectTask</dd></div>
         </dl>
       </div>
     </section>
 
     <div class="page">
+      <div class="callout warning source-note">
+        <strong>What changed from the first proposal</strong>
+        The first version compressed the suite into two lifecycle apps and treated several workbook areas as optional. This version does not. Capacity, execution, value, dependencies and vendor management are first-class apps because the workbook gives each its own requirements and acceptance criteria. The EDB also contains 13 rows typed Application; repeated Demand Request and Initiative rows are treated here as cross-app relations, while Savings Record remains an explicit question.
+      </div>
+
       <nav class="tabs" aria-label="On this page">
-        <a href="#buckets">1 · The two buckets</a>
-        <a href="#hangs-off">2 · The supporting cast</a>
-        <a href="#map">3 · Relationship map</a>
-        <a href="#flow">4 · How it flows</a>
-        <a href="#explorer">5 · Component explorer</a>
-        <a href="#configure">6 · What we need from the client</a>
-        <a href="#optional">7 · Optional modules</a>
+        <a href="#model">1 · Proposed model</a>
+        <a href="#landscape">2 · Eight-app landscape</a>
+        <a href="#flows">3 · How work moves</a>
+        <a href="#tasks">4 · What “Task” means</a>
+        <a href="#apps">5 · Application detail</a>
+        <a href="#client">6 · Client inputs</a>
+        <a href="#questions">7 · Questions to resolve</a>
       </nav>
 
-      <section class="section" id="buckets">
+      <section class="section" id="model">
         <div class="section-head">
-          <p class="eyebrow">1 · The two buckets</p>
-          <h2>Two apps hold the process</h2>
-          <p class="lede">Demand Request and Portfolio Item each have stages, and ITPG is the business of moving a record from one stage to the next with a recorded reason. A request enters as demand; if it needs funding or governance it becomes a portfolio item, and the same identifier follows it to the end.</p>
+          <p class="eyebrow">1 · Proposed model</p>
+          <h2>The workbook defines the process areas; Elementum entities implement them</h2>
+          <p class="lede">The eight apps are the user-facing process boundaries. Supporting entities are chosen by behavior rather than by convenience: lifecycle work is an App, lightweight owned work is provisionally an AspectTask, reusable configuration is an Element, outside facts are Tables, and deterministic movement is Automation.</p>
         </div>
 
-        <div class="grid two">
-          <article class="card bucket">
-            <span class="badge badge-app">App</span>
-            <h3>Demand Request</h3>
-            <p class="ids">handle <span class="mono">DMD</span> · namespace <span class="mono">demand-request</span> · wave 1</p>
-            <p>Every technology ask lands here — business requests, technical debt, and security remediation alike. Its job is to end with a recorded decision, not to become a project.</p>
-            <ol class="steps">
-              <li><b>Capture</b> — one form that changes by demand type; drafts can be saved and resumed.</li>
-              <li><b>Validate</b> — submit enforces the mandatory set, so triage does not start on half a request.</li>
-              <li><b>Route</b> — the affected product determines the accountable owner automatically.</li>
-              <li><b>Screen</b> — check open demand, in-flight items, and the engineering backlog for overlap.</li>
-              <li><b>Dispose</b> — route to backlog, accept as investment, merge, defer, reject, or redirect, with a reason.</li>
-            </ol>
-            <p class="small" style="margin-top:12px"><strong>Most demand ends here</strong>, on an existing product team's backlog. That is the intended outcome, not a failure.</p>
+        <div class="grid four entity-model">
+          <article class="card">
+            <span class="badge badge-app">8 Apps</span>
+            <h3>Process areas</h3>
+            <p>Each workbook application owns a primary record and a lifecycle: Demand Request, Investment Decision, Capacity Plan, Initiative, Outcome Record, Dependency and Vendor Engagement, plus governance-model change.</p>
           </article>
-
-          <article class="card bucket two">
-            <span class="badge badge-app">App</span>
-            <h3>Portfolio Item</h3>
-            <p class="ids">handle <span class="mono">PFI</span> · namespace <span class="mono">portfolio-item</span> · waves 2–3</p>
-            <p>The funded bet. One record holds the business case, the decision, the baseline, and delivery health — so nothing is retyped into a second system after approval.</p>
-            <ol class="steps">
-              <li><b>Qualify</b> — structured case: options, cost by year, benefit owner, measurable outcomes.</li>
-              <li><b>Score</b> — the published scoring model ranks it against everything else, including mandatory work.</li>
-              <li><b>Decide</b> — value and type select the approval authority; conditions are recorded, not remembered.</li>
-              <li><b>Baseline</b> — approved funding is locked, which is what makes later variance meaningful.</li>
-              <li><b>Execute</b> — cadence, health with mandatory commentary, milestones, and control gates with evidence.</li>
-              <li><b>Realize</b> — outcomes stay open after delivery closes until the value is measured.</li>
-            </ol>
+          <article class="card">
+            <span class="badge badge-task">75 candidates</span>
+            <h3>AspectTasks</h3>
+            <p>Lightweight supporting records listed as Task in the EDB: Cost Line, Milestone, Decision Condition, Assessment, Status Report and similar work.</p>
           </article>
-        </div>
-
-        <div class="flow" style="margin-top:20px" aria-label="Demand to portfolio item to value">
-          <div class="flow-node active"><strong>Demand Request</strong><span>Capture → dispose</span></div>
-          <div class="flow-node"><strong>Portfolio Item</strong><span>Case → decision → delivery</span></div>
-          <div class="flow-node"><strong>Outcome</strong><span>Value after go-live</span></div>
-        </div>
-        <p class="small" style="margin-top:12px">Read the rest of this document against that sentence: every remaining component either tells a stage what to do, holds work the stage needs, performs the move itself, or supplies a fact from outside.</p>
-      </section>
-
-      <section class="section" id="hangs-off">
-        <div class="section-head">
-          <p class="eyebrow">2 · The supporting cast</p>
-          <h2>Everything else does one of four jobs</h2>
-          <p class="lede">The useful split is not “app or not an app” — it is what a component does for the two lifecycles. Every piece in this build falls into one of these four jobs, which is also how the map and the explorer filters are organized.</p>
-        </div>
-
-        <div class="grid two">
-          <article class="card job">
-            <span class="job-n">1</span>
+          <article class="card">
             <span class="badge badge-element">Elements</span>
-            <h3>Prerequisite data — what the stages need to know</h3>
-            <p>Who is allowed to approve at what value, which categories exist, which scoring weights and gate model apply, which products and owners are real. These answer <em>who, what kind, which model, which authority</em>.</p>
-            <p class="small">They are elements rather than apps because they have no lifecycle of their own: a governance admin edits records, and the behavior of both lifecycles changes without a redeploy.</p>
-          </article>
-
-          <article class="card job">
-            <span class="job-n">2</span>
-            <span class="badge badge-app">Child apps</span>
-            <h3>Structured work that hangs off a record</h3>
-            <p>Cost lines, clarification requests, conditions of approval, milestones, gate records, risks and issues. Each exists because one field cannot hold “many rows, each with its own owner and dates”.</p>
-            <p class="small">Some <strong>gate</strong> the lifecycle — open conditions block Execute, a gate needs evidence or a waiver. Others simply <strong>feed</strong> it, the way cost lines roll up into total cost of ownership.</p>
-          </article>
-
-          <article class="card job">
-            <span class="job-n">3</span>
-            <span class="badge badge-auto">Automations</span>
-            <h3>The moves themselves</h3>
-            <p>Submit, route to the accountable owner, mint the Portfolio ID, match the approval authority, lock the baseline, flag an overdue status. These are the transitions — the part that must be exact and identical every time.</p>
-            <p class="small">Not apps, and not agents: an agent can summarize or challenge, but nothing an agent does changes a stage. The register is in <a href="site/config.html#automations">Rules &amp; access</a>.</p>
-          </article>
-
-          <article class="card job">
-            <span class="job-n">4</span>
-            <span class="badge badge-table">Table ports</span>
-            <h3>Facts from outside</h3>
-            <p>The engineering backlog, finance actuals, cloud spend, the staff directory. Read-only feeds with no stages of their own, whose entire purpose is that nobody retypes what another system already knows.</p>
-            <p class="small">These are the components that depend on the client: each needs a join key before the data can be attributed. See <a href="#configure">what we need from the client</a>.</p>
-          </article>
-        </div>
-
-        <div class="grid two" style="margin-top:16px">
-          <article class="card">
-            <h3>What deliberately stays a field</h3>
-            <p>A disposition is a status plus a reason. Health rating, narrative, and recovery action are fields. Status history is native to the platform. The source data inventory listed several of these as separate tables; most should not become apps.</p>
+            <h3>Configuration</h3>
+            <p>Products, objectives, demand types, gates, scores, authority thresholds, teams and other reference data that changes behavior without a redeploy.</p>
           </article>
           <article class="card">
-            <h3>What is deferred</h3>
-            <p>Capacity, outcomes, dependencies, vendors, and scenario planning are grouped into <a href="#optional">optional modules</a> at the end of this document. They add more of the same four jobs — each is a decision on its own, and several wait on an integration.</p>
+            <span class="badge badge-table">Tables</span>
+            <h3>Systems of record</h3>
+            <p>Work items, actual cost, workforce, telemetry, contracts, invoices and vendor risk—read from the systems that already own them.</p>
           </article>
         </div>
 
-        <div class="counts" style="margin-top:18px">
-          <div class="count"><b data-count="spine">2</b><span>Spine apps</span></div>
-          <div class="count"><b data-count="child">10</b><span>Child apps</span></div>
-          <div class="count"><b data-count="element">12</b><span>Elements</span></div>
-          <div class="count"><b data-count="table">4</b><span>Table ports</span></div>
-          <div class="count"><b>10</b><span>Automations</span></div>
-          <div class="count"><b data-count="modules">5</b><span>Optional modules</span></div>
+        <div class="callout" style="margin-top:16px">
+          <strong>Automations are the arrows.</strong>
+          They validate, route, create handoff records, start approvals, enforce gates, lock baselines, detect breaches and send notifications. They are not another record type.
         </div>
       </section>
 
-      <section class="section" id="map">
+      <section class="section" id="landscape">
         <div class="section-head">
-          <p class="eyebrow">3 · Relationship map</p>
-          <h2>How the four jobs connect</h2>
-          <p class="lede">Prerequisite data flows down into the two lifecycles, the work that hangs off them sits below, and outside facts feed in from the bottom. Hover to trace a connection, or click any box to open its detail.</p>
+          <p class="eyebrow">2 · Eight-app landscape</p>
+          <h2>One suite, eight accountable process areas</h2>
+          <p class="lede">The center line is the investment journey. Governance Foundation configures every step. Capacity is a decision loop before baseline. Dependency and Vendor Management operate alongside delivery. Value continues after the Initiative closes.</p>
         </div>
-        <div class="map-wrap" id="relationship-map"></div>
-        <div class="legend">
-          <span><i class="swatch t-spine"></i> Spine app · the lifecycle</span>
-          <span><i class="swatch"></i> Child app · structured work</span>
-          <span><i class="swatch t-element"></i> Element · prerequisite data</span>
-          <span><i class="swatch t-table"></i> Table port · outside facts</span>
-          <span><i class="swatch t-optional"></i> Optional module</span>
+
+        <div class="suite-map" aria-label="Relationship between the eight proposed Elementum applications">
+          <button class="suite-node foundation" data-app="governance-foundation">
+            <span>1</span><strong>Governance Foundation</strong><small>configures every app</small>
+          </button>
+
+          <div class="suite-main">
+            <button class="suite-node" data-app="enterprise-demand-intake"><span>2</span><strong>Demand Intake</strong><small>Demand Request</small></button>
+            <i>→</i>
+            <button class="suite-node" data-app="prioritization"><span>3</span><strong>Prioritization</strong><small>Investment Decision</small></button>
+            <i>⇄</i>
+            <button class="suite-node" data-app="capacity"><span>4</span><strong>Capacity</strong><small>Capacity Plan</small></button>
+            <i>→</i>
+            <button class="suite-node" data-app="execution"><span>5</span><strong>Execution</strong><small>Initiative</small></button>
+            <i>→</i>
+            <button class="suite-node" data-app="value"><span>6</span><strong>Value</strong><small>Outcome Record</small></button>
+          </div>
+
+          <div class="suite-sidecars">
+            <button class="suite-node" data-app="dependencies"><span>7</span><strong>Dependency Management</strong><small>commitments across planning and delivery</small></button>
+            <button class="suite-node" data-app="vendors"><span>8</span><strong>Vendor Management</strong><small>vendor delivery, spend, risk and value</small></button>
+          </div>
         </div>
-        <p class="small" style="margin-top:10px">The map shows the load-bearing connections only, and automations are not drawn — they are the arrows between stages rather than boxes. Each component's full relationship list is in its tile below.</p>
+
+        <div class="eight-grid" id="eight-apps"></div>
       </section>
 
-      <section class="section" id="flow">
+      <section class="section" id="flows">
         <div class="section-head">
-          <p class="eyebrow">4 · How it flows</p>
-          <h2>Watch the two lifecycles advance</h2>
-          <p class="lede">Five walkthroughs, from the long funded path to the quiet background one. Follow the boxes left to right and back again; open any box to see exactly which components it touches and what each one does there. The table at the end proves every component in the build appears somewhere.</p>
+          <p class="eyebrow">3 · How work moves</p>
+          <h2>Three examples expose the handoffs</h2>
+          <p class="lede">Follow each path left to right and back. Click a step for the detailed handoff. The full path touches all eight apps; the shorter paths show that not every demand should become an investment.</p>
         </div>
-        <div id="flows"></div>
-        <h3 id="coverage-head">Component coverage</h3>
-        <p class="lede" style="margin-bottom:14px">Read this the other way round: pick a component and see where in the process it earns its place. Anything that could not be placed in a flow would not be worth building.</p>
-        <div id="coverage"></div>
+        <div id="flow-boards"></div>
       </section>
 
-      <section class="section" id="explorer">
+      <section class="section" id="tasks">
         <div class="section-head">
-          <p class="eyebrow">5 · Component explorer</p>
-          <h2>Every component in the core build</h2>
-          <p class="lede">The reference view: open a tile for stages, status options, the field list, views, layouts, and relationships. Field types are Elementum field types, and the wave number is deployment order — both are specified in full in <a href="docs/for-agent.md">docs/for-agent.md</a>.</p>
+          <p class="eyebrow">4 · What “Task” means</p>
+          <h2>A plausible platform mapping, with one real implementation gap</h2>
+          <p class="lede">The EDB intentionally distinguishes Application from Task. `AspectTask` is an actual platform entity—not the same thing as a task inside an automation—and it matches many of these lightweight supporting records.</p>
         </div>
-        <div class="explorer-bar">
-          <button class="filter is-on" data-filter="all" aria-pressed="true" type="button">All</button>
-          <button class="filter" data-filter="spine" aria-pressed="false" type="button">Spine apps <span class="n" data-count="spine"></span></button>
-          <button class="filter" data-filter="child" aria-pressed="false" type="button">Child apps <span class="n" data-count="child"></span></button>
-          <button class="filter" data-filter="element" aria-pressed="false" type="button">Elements <span class="n" data-count="element"></span></button>
-          <button class="filter" data-filter="table" aria-pressed="false" type="button">Table ports <span class="n" data-count="table"></span></button>
-          <button class="ghost-button" id="toggle-all" type="button">Expand all</button>
+
+        <div class="grid three">
+          <article class="card">
+            <h3>What AspectTask supports</h3>
+            <p>Fields, records, status options, automations, layouts and relationships. It is intended for action items, subtasks, review items and workflow-oriented supporting work.</p>
+          </article>
+          <article class="card">
+            <h3>What it does not support</h3>
+            <p>AspectTask has no stages and does not host AI agents. Complex multi-stage processes remain Apps; AI belongs on an App.</p>
+          </article>
+          <article class="card">
+            <h3>Current authoring reality</h3>
+            <p>The Terraform provider supports <span class="mono">elementum_task</span>, but the public TypeScript EDK does not currently build or pull Task entities. I found no current source evidence that AspectTask is scheduled for removal, so that assumption should not drive the design.</p>
+          </article>
         </div>
-        <div class="tiles" id="tiles"></div>
+
+        <div class="callout warning" style="margin-top:16px">
+          <strong>Do not automatically create all 75.</strong>
+          “Task” is the workbook’s data classification, not proof that every row needs an AspectTask. Cost Line, Milestone and Decision Condition look like strong candidates. Composite Score may be a calculated field; Status History may be native; Governance Reporting Pack may be generated output. The process owner and product owner need to review the list by behavior.
+        </div>
       </section>
 
-      <section class="section" id="configure">
+      <section class="section" id="apps">
         <div class="section-head">
-          <p class="eyebrow">6 · Client configuration</p>
-          <h2>What we need from the client, and when</h2>
-          <p class="lede">The apps, fields, rules, and automations are the product. The client's structure, approvers, thresholds, and data are configuration — which is what makes the same build reusable, and what we need from them to stand it up.</p>
+          <p class="eyebrow">5 · Application detail</p>
+          <h2>What each app owns, consumes and hands off</h2>
+          <p class="lede">Open an application to inspect its proposed lifecycle, requirement count, Task candidates copied from the EDB, shared data, external sources, handoffs and client configuration. Warnings are questions—not hidden decisions.</p>
+        </div>
+        <div id="app-specs"></div>
+      </section>
+
+      <section class="section" id="client">
+        <div class="section-head">
+          <p class="eyebrow">6 · Client inputs</p>
+          <h2>What we need from the client, by application</h2>
+          <p class="lede">The solution structure is reusable; the operating model is not ours to invent. Each process area needs named owners, policy decisions and source data before it can meet the workbook’s acceptance criteria.</p>
         </div>
         <div id="client-config"></div>
-        <div class="callout warning" style="margin-top:18px"><strong>The long pole is usually the join key, not the connection.</strong> A feed is only useful once the client's work items carry the Portfolio ID, their cost records carry it too, and their cloud spend is tagged. That is work on their side, and it is worth starting before the integration wave.</div>
-      </section>
-
-      <section class="section" id="optional">
-        <div class="section-head">
-          <p class="eyebrow">7 · Optional modules</p>
-          <h2>Grouped separately, decided separately</h2>
-          <p class="lede">These are ordinary apps, elements, and table ports — nothing special about how they are built. They are set apart because the core build works without them, each is its own go or no-go, and several wait on an integration that does not exist yet. Each block says where it would plug into the flows in section 4.</p>
+        <div class="callout warning" style="margin-top:16px">
+          <strong>Start data readiness early.</strong>
+          The hard part is usually attribution: Portfolio ID on work items and finance records, product or initiative tags on cloud spend, outcome keys in telemetry, and stable vendor/contract references.
         </div>
-        <div id="modules"></div>
-        <p class="small">Skipping a module costs you that capability and nothing else: no field on Demand Request or Portfolio Item depends on one, and a module can be added in a later wave without rework. Do not write acceptance criteria against a module until it has been selected.</p>
       </section>
 
+      <section class="section" id="questions">
+        <div class="section-head">
+          <p class="eyebrow">7 · Questions to resolve</p>
+          <h2>What this example is designed to get answered</h2>
+          <p class="lede">These are not reasons to delay showing the proposal. They are the specific decisions the requirements and EDB do not settle on their own.</p>
+        </div>
+        <div id="open-questions"></div>
+      </section>
     </div>
   </main>
 
-  <footer class="footer"><div class="footer-inner">Rules, integrations, and access: <a href="site/config.html">Rules &amp; access</a> · Process context: <a href="site/pm.html">stories and pain points</a> · Agent specification: <a href="docs/for-agent.md">docs/for-agent.md</a></div></footer>
+  <footer class="footer">
+    <div class="footer-inner">
+      Source-aligned proposal from the Functional Requirements, Acceptance Criteria, EDB and Pain Points workbooks. A separate process document has not yet been received.
+    </div>
+  </footer>
+
   <dialog class="modal" id="step-modal" aria-labelledby="step-modal-title">
     <div class="modal-inner">
       <header>
@@ -241,6 +212,6 @@
     </div>
   </dialog>
 
-  <script src="site/explorer.js"></script>
+  <script src="site/eight-apps.js"></script>
 </body>
 </html>

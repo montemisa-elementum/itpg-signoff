@@ -3,115 +3,92 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ITPG — Rules &amp; Access</title>
+  <title>ITPG — Rules, Access &amp; Agents</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><span class="brand-mark">ITPG</span> Rules &amp; Access</div>
+    <div class="brand"><span class="brand-mark">ITPG</span> Rules, Access &amp; Agents</div>
     <nav class="nav" aria-label="Primary">
-      <a href="../index.html">Specification</a>
-      <a href="config.html" aria-current="page">Rules &amp; access</a>
-      <a href="pm.html">Process</a>
+      <a href="../index.html">Eight-app proposal</a>
+      <a href="config.html" aria-current="page">Rules &amp; agents</a>
+      <a href="pm.html">Requirements context</a>
     </nav>
   </header>
 
   <main>
     <section class="hero">
       <div class="hero-inner">
-        <p class="eyebrow">Component detail · behavior</p>
-        <h1>The rules that run, and who is allowed to see what.</h1>
-        <p>Automations enforce the parts that must be exact, groups and access policies decide who sees financial and commercial data, and agents stay assistive. Component fields and relationships are in the <a href="../index.html#explorer">component explorer</a>.</p>
+        <p class="eyebrow">Cross-cutting implementation</p>
+        <h1>Rules move the records; people remain accountable.</h1>
+        <p class="hero-sub">The eight apps own the process areas. Automations enforce deterministic transitions, access policies protect sensitive data, and agents assist without making governance decisions.</p>
       </div>
     </section>
 
     <div class="page">
-      <nav class="tabs" aria-label="On this page">
-        <a href="#automations">Automations</a>
-        <a href="#access">Access policy</a>
-        <a href="#agents">Agents</a>
-      </nav>
-
-      <section class="section" id="automations">
+      <section class="section">
         <div class="section-head">
-          <p class="eyebrow">Waves 1–3</p>
-          <h2>Automations — the rules that must be exact</h2>
-          <p class="lede">Each automation is published with a revision. These are deterministic: same input, same result, with an audit trail. No AI is involved in any of them.</p>
+          <p class="eyebrow">Automation</p>
+          <h2>Representative rules across the eight apps</h2>
+          <p class="lede">This is not yet a final automation inventory. It shows the kind of exact behavior implied by the Must Have requirements.</p>
         </div>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Automation</th><th>App</th><th>Trigger</th><th>What it does</th><th>Enforces</th><th>Wave</th></tr></thead>
+            <thead><tr><th>Application</th><th>Trigger</th><th>Deterministic action</th><th>Requirement examples</th></tr></thead>
             <tbody>
-              <tr><td>Submit demand</td><td>Demand</td><td>On-demand button</td><td>Validate the required set, set status Submitted, stamp submit time</td><td>Minimum intake quality</td><td>1</td></tr>
-              <tr><td>Route on submit</td><td>Demand</td><td>Record updated to Submitted</td><td>Read the product record, assign the accountable owner, notify</td><td>Routing by configuration, not by memory</td><td>1</td></tr>
-              <tr><td>Notify on disposition</td><td>Demand</td><td>Status becomes terminal</td><td>Message the requester with outcome, reason, and next step</td><td>Requester feedback loop</td><td>1</td></tr>
-              <tr><td>Accept as investment</td><td>Demand → Portfolio Item</td><td>On-demand button</td><td>Mint the Portfolio ID, create the Portfolio Item, copy case context, relate both records</td><td>One persistent identifier; no re-keying</td><td>2</td></tr>
-              <tr><td>Submit to board</td><td>Portfolio Item</td><td>On-demand button</td><td>Require benefit owner, outcome statements, cost lines; match the DoA threshold; start the approval</td><td>Delegation of authority</td><td>2</td></tr>
-              <tr><td>Lock baseline</td><td>Portfolio Item</td><td>On-demand button</td><td>Require an approval decision, copy approved funding, stamp the lock</td><td>Baseline is mandatory</td><td>2</td></tr>
-              <tr><td>Block execute on open conditions</td><td>Portfolio Item</td><td>Stage change to Execute</td><td>Search Decision Conditions; stop and message when any remain open</td><td>Conditions tracked to closure</td><td>2–3</td></tr>
-              <tr><td>Status cadence flag</td><td>Portfolio Item</td><td>Scheduled</td><td>Compare now against last submitted plus cadence days; flag overdue</td><td>Reporting discipline</td><td>3</td></tr>
-              <tr><td>Milestone slippage</td><td>Milestone</td><td>Record updated</td><td>Compare forecast against baseline; write slippage and raise an exception</td><td>Automatic slippage detection</td><td>3</td></tr>
-              <tr><td>Gate evidence check</td><td>Control Gate Record</td><td>Record updated / stage change</td><td>Require evidence to pass, or a waiver with residual risk and a second approver</td><td>Real gates, not closed tasks</td><td>3</td></tr>
+              <tr><td>Governance Foundation</td><td>Publish model change</td><td>Create a new gate/scoring version; leave in-flight records on their existing version</td><td>GOV-017, GOV-019, GOV-022</td></tr>
+              <tr><td>Enterprise Demand Intake</td><td>Submit demand</td><td>Validate required data, classify, route and start duplicate screening</td><td>DMD-005–010</td></tr>
+              <tr><td>Prioritization</td><td>Submit to board</td><td>Validate case/outcomes, calculate authority, route approval and record conditions</td><td>PRI-004, PRI-015–018</td></tr>
+              <tr><td>Capacity</td><td>Recalculate plan</td><td>Compare supply, demand, funding and scarce skills; raise the binding constraint</td><td>CAP-008, CAP-014–015</td></tr>
+              <tr><td>Execution</td><td>Status/gate update</td><td>Require adverse commentary, detect slippage and prevent unsupported gate progression</td><td>EXE-003–004, EXE-011</td></tr>
+              <tr><td>Value</td><td>Claim realized value</td><td>Route independent validation and preserve adjustment rationale</td><td>VAL-011–012</td></tr>
+              <tr><td>Dependencies</td><td>Schedule signal changes</td><td>Detect at-risk/breached commitments and notify both sides</td><td>DEP-010–012</td></tr>
+              <tr><td>Vendors</td><td>Performance/spend refresh</td><td>Flag deterioration, forecast overspend and combined concentration/risk</td><td>SVM-010, SVM-014, SVM-018</td></tr>
             </tbody>
           </table>
         </div>
-        <div class="grid two" style="margin-top:18px">
-          <article class="card"><h3>Deterministic vs assistive</h3><p>Everything in the table above commits business state. Anything involving judgment — summarizing a request, proposing duplicates, drafting a narrative — is an agent suggestion a person confirms.</p></article>
-          <article class="card"><h3>Later automation candidates</h3><p>Capacity constraint evaluation (wave 4), outcome measurement reminders and post-implementation review trigger (wave 5), dependency lead-time and breach escalation (wave 6), vendor spend threshold alerts (wave 7).</p></article>
-        </div>
       </section>
 
-      <section class="section" id="access">
+      <section class="section">
         <div class="section-head">
-          <p class="eyebrow">Wave 0</p>
-          <h2>Groups and access policies</h2>
-          <p class="lede">Financial, board, and commercial data is restricted by policy, not by convention. The policy is the product; who sits in each group is the client's.</p>
+          <p class="eyebrow">Access</p>
+          <h2>Client membership, product policy</h2>
+          <p class="lede">The product defines what each role can do; the client nominates who holds the role and the organizational scope in which it applies.</p>
         </div>
         <div class="grid two">
           <article class="card">
-            <h3>Access policy intent</h3>
-            <ul class="checklist">
-              <li>Requesters see their own demand, not portfolio financials</li>
-              <li>Financial and funding fields limited to finance, board, and PMO</li>
-              <li>Vendor commercial data limited to vendor and sourcing owners</li>
-              <li>Gate waivers visible to architecture and security reviewers</li>
-              <li>Only governance admins edit configuration elements</li>
-            </ul>
+            <h3>Role groups</h3>
+            <p><span class="chip">Requesters</span><span class="chip">Product Owners</span><span class="chip">Platform Owners</span><span class="chip">Engineering Leads</span><span class="chip">Architects</span><span class="chip">Security Reviewers</span><span class="chip">Finance Partners</span><span class="chip">Benefit Owners</span><span class="chip">Investment Board</span><span class="chip">Governance Admins</span></p>
           </article>
           <article class="card">
-            <h3>Who belongs to each group</h3>
-            <p>Group membership, approver authority, and the datasets behind these policies are configuration the client supplies. They are listed in <a href="../index.html#configure">section 6 of the specification</a> rather than repeated here.</p>
+            <h3>Policy intent</h3>
+            <ul class="checklist">
+              <li>Requesters see their own demand, not portfolio financials</li>
+              <li>Financials and board papers are restricted by role and organization</li>
+              <li>Vendor commercials are restricted to sourcing and accountable owners</li>
+              <li>Gate evidence and waivers are visible to control reviewers</li>
+              <li>Only governance administrators publish model changes</li>
+            </ul>
           </article>
         </div>
       </section>
 
-      <section class="section" id="agents">
+      <section class="section">
         <div class="section-head">
-          <p class="eyebrow">Wave 8 · after records are trustworthy</p>
-          <h2>Agents and their tools</h2>
-          <p class="lede">Three assistive agents. Each has explicitly scoped tools, and any state change goes through a published automation a person triggers or confirms.</p>
+          <p class="eyebrow">Agents</p>
+          <h2>Assistive capabilities, after trustworthy records exist</h2>
+          <p class="lede">Every application has AI requirements, but agents are not a prerequisite for the deterministic process.</p>
         </div>
         <div class="grid three">
-          <article class="spec"><header><h3>Triage assistant</h3><span class="badge badge-agent">Agent</span></header><div class="spec-body">
-            <p><strong>Tools:</strong> search Demand, search Portfolio Item, search work-management table.</p>
-            <p><strong>Produces:</strong> draft summary, suggested type and product, confidence-scored duplicate candidates, backlog-versus-investment recommendation.</p>
-            <p><strong>Cannot:</strong> set disposition or reject demand.</p>
-          </div></article>
-          <article class="spec"><header><h3>Board pack drafter</h3><span class="badge badge-agent">Agent</span></header><div class="spec-body">
-            <p><strong>Tools:</strong> search Portfolio Item, Cost Line, Milestone, Risk.</p>
-            <p><strong>Produces:</strong> narrative sections from live portfolio data; challenges an incomplete case or unsupported cost assumption.</p>
-            <p><strong>Cannot:</strong> record a board decision.</p>
-          </div></article>
-          <article class="spec"><header><h3>Outcome chaser</h3><span class="badge badge-agent">Agent</span></header><div class="spec-body">
-            <p><strong>Tools:</strong> search Outcome Record, telemetry table.</p>
-            <p><strong>Produces:</strong> overdue measurement chases, challenges to value claims with no movement in source data.</p>
-            <p><strong>Cannot:</strong> mark value realized.</p>
-          </div></article>
+          <article class="card"><h3>Demand &amp; case</h3><p>Draft summaries, suggest classification/alignment, present duplicate candidates, and challenge unsupported case assumptions.</p></article>
+          <article class="card"><h3>Execution &amp; value</h3><p>Draft status and governance packs, challenge RAG against evidence, chase overdue measurements and draft post-implementation reviews.</p></article>
+          <article class="card"><h3>Dependencies &amp; vendors</h3><p>Detect unstated dependencies, warn of emerging risk, summarize vendor performance and identify overlap candidates.</p></article>
         </div>
+        <div class="callout warning" style="margin-top:16px"><strong>Human decision boundary:</strong> agents do not approve investments, pass gates, accept dependencies, validate realized value or record vendor-deliverable acceptance.</div>
       </section>
     </div>
   </main>
 
-  <footer class="footer"><div class="footer-inner">Back to <a href="../index.html">specification</a> · <a href="../index.html#explorer">component explorer</a> · <a href="pm.html">Process context</a></div></footer>
+  <footer class="footer"><div class="footer-inner">Back to the <a href="../index.html">eight-app proposal</a>.</div></footer>
 </body>
 </html>

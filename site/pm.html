@@ -3,212 +3,92 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ITPG — Process Context</title>
+  <title>ITPG — Requirements Context</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><span class="brand-mark">ITPG</span> Process Context</div>
+    <div class="brand"><span class="brand-mark">ITPG</span> Requirements Context</div>
     <nav class="nav" aria-label="Primary">
-      <a href="../index.html">Specification</a>
-      <a href="config.html">Rules &amp; access</a>
-      <a href="pm.html" aria-current="page">Process</a>
+      <a href="../index.html">Eight-app proposal</a>
+      <a href="config.html">Rules &amp; agents</a>
+      <a href="pm.html" aria-current="page">Requirements context</a>
     </nav>
   </header>
 
   <main>
     <section class="hero">
       <div class="hero-inner">
-        <p class="eyebrow">Business &amp; delivery briefing</p>
-        <h1>From scattered requests to governed technology value.</h1>
-        <p>What we are trying to build, which apps participate, and how a request moves from intake through delivery and value realization.</p>
-        <div class="hero-actions">
-          <a class="button" href="#journey">See the full journey ↓</a>
-          <a class="button secondary" href="#stories">Walk through examples</a>
-        </div>
+        <p class="eyebrow">Source evidence</p>
+        <h1>What the workbook actually asks for</h1>
+        <p class="hero-sub">Eight separately named governance applications, 193 functional requirements, eight acceptance frameworks and a data-object inventory that distinguishes applications, tasks, references and transactions.</p>
       </div>
     </section>
 
     <div class="page">
-      <nav class="tabs" aria-label="On this page">
-        <a href="#brief">Brief</a><a href="#pain">Pain</a><a href="#journey">Journey</a>
-        <a href="#stories">Stories</a><a href="#waves">Build waves</a><a href="#scope">Scope</a>
-      </nav>
-
-      <section class="section" id="brief">
+      <section class="section">
         <div class="section-head">
-          <p class="eyebrow">Executive brief</p>
-          <h2>The change in one view</h2>
-          <p class="lede">This engagement is tenant-0 for a generic Elementum ITPG product. The process is reusable; each organization supplies its own products, approval bands, roles, and integrations.</p>
+          <p class="eyebrow">Requirement inventory</p>
+          <h2>The eight application headings</h2>
+          <p class="lede">The revised proposal follows these boundaries instead of collapsing investment, delivery and value into one record.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Application</th><th>Requirement range</th><th>Total</th><th>Must</th><th>Should</th><th>Could</th></tr></thead>
+            <tbody>
+              <tr><td>Governance Foundation</td><td>GOV-001–026</td><td>26</td><td>15</td><td>8</td><td>3</td></tr>
+              <tr><td>Enterprise Demand Intake</td><td>DMD-001–024</td><td>24</td><td>11</td><td>12</td><td>1</td></tr>
+              <tr><td>Portfolio Prioritization &amp; Investment Decisioning</td><td>PRI-001–025</td><td>25</td><td>16</td><td>8</td><td>1</td></tr>
+              <tr><td>Capacity &amp; Trade-off Planning</td><td>CAP-001–023</td><td>23</td><td>13</td><td>8</td><td>2</td></tr>
+              <tr><td>Portfolio Execution Command Center</td><td>EXE-001–026</td><td>26</td><td>16</td><td>9</td><td>1</td></tr>
+              <tr><td>Value Realization &amp; Outcome Tracking</td><td>VAL-001–024</td><td>24</td><td>14</td><td>10</td><td>0</td></tr>
+              <tr><td>Enterprise Dependency Management</td><td>DEP-001–020</td><td>20</td><td>11</td><td>8</td><td>1</td></tr>
+              <tr><td>Strategic Vendor Management</td><td>SVM-001–025</td><td>25</td><td>14</td><td>10</td><td>1</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-head">
+          <p class="eyebrow">Pain evidence</p>
+          <h2>The operating problems behind the requirements</h2>
+          <p class="lede">These are not generic ITPG assumptions; they come from the supplied Pain Points sheet.</p>
         </div>
         <div class="grid three">
-          <article class="card">
-            <span class="card-label">Today</span>
-            <h3>Fragmented evidence</h3>
-            <p>Requests, business cases, milestones, status, and benefits are split across seven or more tools and manually reconciled.</p>
-          </article>
-          <article class="card">
-            <span class="card-label">Target</span>
-            <h3>One governed spine</h3>
-            <p>A request is routed to a backlog or receives a Portfolio ID that connects decision, execution, cost, dependencies, and value.</p>
-          </article>
-          <article class="card">
-            <span class="card-label">Principle</span>
-            <h3>Integrate, do not duplicate</h3>
-            <p>Elementum owns the process. Jira/ADO, ERP, directory, cloud billing, and vendor-risk systems remain systems of record.</p>
-          </article>
-        </div>
-        <div class="callout" style="margin-top:16px"><strong>Important:</strong> most demand should go to an existing product backlog. Only work requiring new funding or governance follows the full investment path.</div>
-      </section>
-
-      <section class="section" id="pain">
-        <div class="section-head">
-          <p class="eyebrow">Tenant-0 evidence</p>
-          <h2>Four pain clusters</h2>
-          <p class="lede">These are specific observations from the current company. They justify generic product capabilities without becoming hard-coded customer behavior.</p>
-        </div>
-        <div class="grid four">
-          <article class="card"><div class="metric">7+</div><h3>Disconnected tools</h3><p>Work is split across ticketing, engineering, document, BI, and spreadsheet systems. Exceptions can live entirely off-system.</p><span class="chip tenant">Pains 13–15</span></article>
-          <article class="card"><div class="metric">~70%</div><h3>Owner accuracy</h3><p>Lead and owner data goes stale without directory synchronization or reassignment alerts.</p><span class="chip tenant">Pain 6</span></article>
-          <article class="card"><div class="metric">~1 week</div><h3>Executive pack</h3><p>People manually rebuild the reporting story instead of generating it from live portfolio records.</p><span class="chip tenant">Pain 5</span></article>
-          <article class="card"><div class="metric">6 mo.</div><h3>Dependency gap</h3><p>A custom dependency tracker has been blocked, leaving no shared commitment lifecycle.</p><span class="chip tenant">Pain 16</span></article>
-        </div>
-        <div class="grid two" style="margin-top:16px">
-          <article class="card"><h3>Manual governance</h3><p>Closing a task counts as approval; budget baselines are optional; RAG is self-reported; status submissions do not alert stakeholders.</p><span class="chip">Gates</span><span class="chip">Baseline</span><span class="chip">Cadence</span></article>
-          <article class="card"><h3>Broken traceability</h3><p>Business cases are Excel uploads, milestones/KPIs are retyped, LOE does not reconcile to cost, and demand-to-program navigation is unclear.</p><span class="chip">Portfolio ID</span><span class="chip">Structured case</span><span class="chip">Outcomes</span></article>
+          <article class="card"><h3>Manual governance</h3><p>Gate approval is closing a task, milestones round-trip through Excel, KPI/benefit data is typed manually, and the executive pack takes almost a week.</p></article>
+          <article class="card"><h3>Weak traceability</h3><p>Owners are stale, role names vary, estimates do not reconcile to cost, RAG is self-reported and business-case data is retyped after approval.</p></article>
+          <article class="card"><h3>Fragmented systems</h3><p>Work spans seven-plus tools, teams choose their own method, exception programs sit outside the system, and there is no dependency tracker.</p></article>
         </div>
       </section>
 
-      <section class="section" id="journey">
+      <section class="section">
         <div class="section-head">
-          <p class="eyebrow">Operating model</p>
-          <h2>How work moves through the suite</h2>
-          <p class="lede">Apps own lifecycle. Elements supply shared configuration. Tables supply external evidence. Automations enforce exact transitions.</p>
-        </div>
-        <div class="flow" aria-label="End-to-end ITPG flow">
-          <div class="flow-node active"><strong>Demand Request</strong><span>Capture · classify · triage</span></div>
-          <div class="flow-node"><strong>Portfolio Item</strong><span>Case · score · decide</span></div>
-          <div class="flow-node"><strong>Capacity Plan</strong><span>Funding · people · trade-offs</span></div>
-          <div class="flow-node"><strong>Execution</strong><span>Milestones · RAG · gates</span></div>
-          <div class="flow-node"><strong>Outcome</strong><span>Adoption · value · PIR</span></div>
+          <p class="eyebrow">Acceptance</p>
+          <h2>“Done” is defined per application</h2>
+          <p class="lede">The Acceptance Criteria repeats the same six evidence dimensions for all eight applications. This is further evidence that the workbook authors treat them as separate delivery units.</p>
         </div>
         <div class="grid three">
-          <article class="card">
-            <span class="chip core">Apps</span><h3>Work that changes state</h3>
-            <p>Demand, Portfolio Item, Capacity Plan, Outcome, Dependency, Vendor Engagement, Risk, Issue, and Change Request.</p>
-          </article>
-          <article class="card">
-            <span class="chip core">Elements</span><h3>Shared configuration</h3>
-            <p>Products, hierarchy, objectives, demand types, scoring versions, gate criteria, DoA thresholds, teams, and shared functions.</p>
-          </article>
-          <article class="card">
-            <span class="chip tenant">Tables</span><h3>External systems of record</h3>
-            <p>Work items, cost actuals, workforce, telemetry, cloud consumption, contracts, vendor risk, SLA, and savings.</p>
-          </article>
+          <article class="card"><h3>Configure</h3><p>Forms, models, thresholds, workflows, views and client data are configured and reconciled.</p></article>
+          <article class="card"><h3>Test &amp; UAT</h3><p>Must Haves pass and an end-to-end scenario runs on representative enterprise data.</p></article>
+          <article class="card"><h3>Train</h3><p>Named role holders can operate the application and admins can configure it unaided.</p></article>
+          <article class="card"><h3>Document</h3><p>Process, configuration, data model, field and reporting definitions are agreed.</p></article>
+          <article class="card"><h3>Integration</h3><p>Each application’s source-system and cross-application handoffs reconcile.</p></article>
+          <article class="card"><h3>Sign-off</h3><p>The accountable process owner accepts the application and its support model.</p></article>
         </div>
       </section>
 
-      <section class="section" id="stories">
+      <section class="section">
         <div class="section-head">
-          <p class="eyebrow">End-to-end examples</p>
-          <h2>Three paths through the same product</h2>
-          <p class="lede">Names and scenarios are teaching examples. They are not customer seed data or hard-coded product rules.</p>
+          <p class="eyebrow">Missing input</p>
+          <h2>The process document still matters</h2>
+          <p class="lede">Requirements describe capabilities and acceptance. They do not completely define actors, stage transitions, exception paths, record ownership or the exact handoff between the eight areas.</p>
         </div>
-
-        <article class="card" style="margin-bottom:18px">
-          <span class="card-label">Story A · The common path</span>
-          <h3>Enhancement request → existing product backlog</h3>
-          <p>Maya asks for a document viewer in the Claims workspace. The Product element routes the request to Priya. A work-item Table suggests an overlapping backlog item. Priya confirms the match.</p>
-          <div class="flow">
-            <div class="flow-node active"><strong>Demand</strong><span>Draft and submit</span></div>
-            <div class="flow-node"><strong>Triage</strong><span>Route to product owner</span></div>
-            <div class="flow-node"><strong>Overlap</strong><span>Read external backlog</span></div>
-            <div class="flow-node"><strong>Backlog</strong><span>Disposition + notify</span></div>
-          </div>
-          <div class="callout"><strong>Apps involved:</strong> Demand only. No Portfolio Item, board pack, or capacity scenario is created.</div>
-        </article>
-
-        <article class="card" style="margin-bottom:18px">
-          <span class="card-label">Story B · The full investment path</span>
-          <h3>Single sign-on capability → funded investment → measured value</h3>
-          <p>Omar proposes a shared identity capability across web and mobile. Triage determines it is a new investment and mints <code>P-1042</code>. That ID follows the work.</p>
-          <div class="swimlane" role="img" aria-label="Swimlane showing apps involved in the investment story">
-            <div class="lane"><div>Actor / app</div><div>Intake</div><div>Decide</div><div>Plan</div><div>Deliver</div><div>Assure</div><div>Measure</div></div>
-            <div class="lane"><div>Demand</div><div><div class="event">Capture new capability</div></div><div><div class="event">Accept as investment<br>Mint P-1042</div></div><div></div><div></div><div></div><div></div></div>
-            <div class="lane"><div>Portfolio Item</div><div></div><div><div class="event">Case · score · DoA<br>Conditional approval</div></div><div><div class="event">Lock baseline</div></div><div><div class="event">RAG · milestones<br>cost and risk</div></div><div><div class="event">Gate evidence</div></div><div><div class="event">Close delivery</div></div></div>
-            <div class="lane"><div>Capacity</div><div></div><div></div><div><div class="event">Identity engineer<br>constraint found</div></div><div></div><div></div><div></div></div>
-            <div class="lane"><div>Dependency</div><div></div><div></div><div></div><div><div class="event">Security accepts<br>need-by date</div></div><div><div class="event">At-risk alert</div></div><div></div></div>
-            <div class="lane"><div>Vendor</div><div></div><div></div><div></div><div><div class="event">SI deliverables</div></div><div><div class="event external">Risk from vendor SoR</div></div><div></div></div>
-            <div class="lane"><div>Outcome</div><div></div><div><div class="event">Define adoption<br>and ticket target</div></div><div></div><div></div><div></div><div><div class="event external">Telemetry + finance<br>validate value</div></div></div>
-          </div>
-          <p class="small">Green = Elementum lifecycle event. Purple = evidence read from an external source.</p>
-        </article>
-
-        <article class="card">
-          <span class="card-label">Story C · Mandatory work</span>
-          <h3>Security remediation competes transparently</h3>
-          <p>Lena raises a TLS remediation through the same Demand app. If funding or capacity is needed, it becomes a Portfolio Item and appears alongside discretionary change—not in a hidden side queue.</p>
-          <div class="flow">
-            <div class="flow-node active"><strong>Demand</strong><span>Security remediation</span></div>
-            <div class="flow-node"><strong>Portfolio Item</strong><span>Visible ranking</span></div>
-            <div class="flow-node"><strong>Capacity</strong><span>Class = Mandatory</span></div>
-            <div class="flow-node"><strong>Portfolio view</strong><span>Run / change / mandatory</span></div>
-          </div>
-        </article>
-      </section>
-
-      <section class="section" id="waves">
-        <div class="section-head">
-          <p class="eyebrow">Delivery roadmap</p>
-          <h2>Build the spine before the intelligence</h2>
-          <p class="lede">This provisional order will be reconciled with the solution architect’s Slack recommendation when supplied.</p>
-        </div>
-        <div class="timeline">
-          <div class="wave"><div class="wave-number">0</div><div><h3>Foundation</h3><p>Hierarchy, products, types, groups, DoA, gate model, scoring model.</p></div><aside>Enables every later rule.</aside></div>
-          <div class="wave"><div class="wave-number">1</div><div><h3>Demand</h3><p>Typed intake, submit, routing, register, backlog disposition.</p></div><aside>Attacks fragmented entry and navigation.</aside></div>
-          <div class="wave"><div class="wave-number">2</div><div><h3>Investment decision</h3><p>Portfolio Item, structured case, cost lines, score, board decision, baseline.</p></div><aside>Removes Excel as the case system.</aside></div>
-          <div class="wave"><div class="wave-number">3</div><div><h3>Execution</h3><p>Cadence, RAG, milestones, gates, RAID, exception views.</p></div><aside>Reduces manual reporting.</aside></div>
-          <div class="wave"><div class="wave-number">4</div><div><h3>Capacity</h3><p>Funding envelopes, supply/demand, constraints, trade-offs.</p></div><aside>Optional maturity module.</aside></div>
-          <div class="wave"><div class="wave-number">5</div><div><h3>Outcomes</h3><p>Baseline, target, actual, validation, post-implementation review.</p></div><aside>Value remains open after delivery.</aside></div>
-          <div class="wave"><div class="wave-number">6–7</div><div><h3>Dependencies and vendors</h3><p>Two-sided commitments, breach lifecycle, vendor overlay on external SoR.</p></div><aside>Optional modules.</aside></div>
-          <div class="wave"><div class="wave-number">8</div><div><h3>Agentic assistance</h3><p>Triage suggestions, pack drafting, evidence challenges, outcome chasing.</p></div><aside>Only after records are trustworthy.</aside></div>
-        </div>
-      </section>
-
-      <section class="section" id="scope">
-        <div class="section-head">
-          <p class="eyebrow">Product boundary</p>
-          <h2>Reusable core vs tenant configuration</h2>
-          <p class="lede">The distinction prevents a tenant-specific requirement from distorting the product for every future customer.</p>
-        </div>
-        <div class="grid two">
-          <article class="card">
-            <span class="chip core">Product core</span>
-            <ul class="checklist">
-              <li>Demand and Portfolio Item lifecycles</li>
-              <li>Persistent Portfolio ID</li>
-              <li>Structured case and baseline</li>
-              <li>Config-driven gates, scoring, and DoA</li>
-              <li>Execution cadence and exception views</li>
-              <li>Automations commit; agents suggest</li>
-            </ul>
-          </article>
-          <article class="card">
-            <span class="chip tenant">Tenant pack</span>
-            <ul class="checklist">
-              <li>Product hierarchy and named objectives</li>
-              <li>L0–L3 or local authority labels</li>
-              <li>Jira, ADO, ERP, IdP, and TPRM mappings</li>
-              <li>Groups, membership, and access scope</li>
-              <li>Gate criteria and scoring weights</li>
-              <li>Customer-specific UAT and seed records</li>
-            </ul>
-          </article>
-        </div>
-        <div class="callout warning" style="margin-top:16px"><strong>Not promised in v1:</strong> a portfolio-wide dependency graph, AI selecting the portfolio, replacing engineering/vendor/finance systems of record, or custom BI heat maps.</div>
+        <div class="callout warning"><strong>Request from the stakeholder:</strong> please share the referenced process document and confirm whether its eight process areas are intended to map one-to-one to deployed Elementum Apps.</div>
       </section>
     </div>
   </main>
-  <footer class="footer"><div class="footer-inner">Component detail: <a href="../index.html">Specification</a> · <a href="../index.html#explorer">component explorer</a> · <a href="config.html">Rules &amp; access</a></div></footer>
+
+  <footer class="footer"><div class="footer-inner">Back to the <a href="../index.html">eight-app proposal</a>.</div></footer>
 </body>
 </html>
