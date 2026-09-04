@@ -309,7 +309,7 @@ const ENTITIES = [
     rels: [["portfolio-item", "Produces the composite score"],["assessor-score", "Criteria for independent assessors"],["governance-change-request", "New versions published under change control"]] },
 
   { id: "doa-threshold", name: "DoA Threshold", short: "DoA", type: "element", handle: "DOA", ns: "doa-threshold", wave: "0",
-    blurb: "Delegation of authority: value and type decide who must approve. Authority labels are your records, not product code.",
+    blurb: "Delegation of authority: value and type decide who must approve. Authority labels are the client's records, not product code.",
     fields: [["Name","Text","—","Yes"],["Investment type","Relation","Demand & Investment Type","No"],["Min value / Max value","Decimal","Value band","Yes"],["Authority level","Text or relation","Approving authority","Yes"],["Active","Boolean","—","Yes"]],
     rels: [["portfolio-item", "Selects the board or approver at submission"],["portfolio-change-request", "Authority for baseline changes"],["value-band", "Shared value banding"]] },
 
@@ -726,15 +726,15 @@ const FLOWS = [
 const CLIENT_CONFIG = [
   {
     id: "cfg-records",
-    name: "Configuration records you seed",
-    lede: "We build the schemas; these records are yours. A governance admin maintains them after deployment — changing them is editing data, not a redeploy.",
-    columns: ["Element", "What you decide", "Typical owner", "Needed before"],
+    name: "Configuration records the client seeds",
+    lede: "We build the schemas; these records belong to the client. Their governance admin maintains them after deployment — changing them is editing data, not a redeploy.",
+    columns: ["Element", "What the client decides", "Typical owner", "Needed before"],
     rows: [
-      ["portfolio-hierarchy", "Your value stream, product, platform, and service tree, and when each node became valid", "Portfolio lead", "Anything is used"],
+      ["portfolio-hierarchy", "Their value stream, product, platform, and service tree, and when each node became valid", "Portfolio lead", "Anything is used"],
       ["product-platform", "The funding targets, and the named product, platform, and engineering owner of each", "Portfolio lead", "Demand routing works"],
       ["strategic-objective", "The objectives investments are aligned to, their owners and measures", "Strategy / CIO office", "Intake goes live"],
-      ["demand-investment-type", "Which request types you accept, and whether each defaults to backlog or investment", "Governance lead", "Intake goes live"],
-      ["architecture-domain", "The domains you report investment concentration across", "Chief architect", "Case capture"],
+      ["demand-investment-type", "Which request types they accept, and whether each defaults to backlog or investment", "Governance lead", "Intake goes live"],
+      ["architecture-domain", "The domains they report investment concentration across", "Chief architect", "Case capture"],
       ["architecture-principle", "The principles and standards a case is assessed against", "Chief architect", "Case capture"],
       ["stage-gate-model", "Which gates apply to which investment type, and the version in force", "Governance lead", "First baseline lock"],
       ["gate-criterion", "The individual control points and the artefacts each demands to pass", "Architecture &amp; security", "First baseline lock"],
@@ -747,11 +747,11 @@ const CLIENT_CONFIG = [
   {
     id: "cfg-people",
     name: "People, groups, and approvers",
-    lede: "Group names are the product's role model; membership is entirely yours. Approver identity is a record, so changing who approves is a data edit.",
-    columns: ["Group", "Who you put in it", "What it unlocks"],
+    lede: "Group names are the product's role model; membership is entirely the client's. Approver identity is a record, so changing who approves is a data edit.",
+    columns: ["Group", "Who they put in it", "What it unlocks"],
     rows: [
       [null, "Requesters", "Anyone who may raise demand", "Raise and track their own requests; no portfolio financials"],
-      [null, "Product &amp; Platform Owners", "The named owners on your product register", "Receive routed demand, own triage and disposition"],
+      [null, "Product &amp; Platform Owners", "The named owners on their product register", "Receive routed demand, own triage and disposition"],
       [null, "Engineering Leads", "Delivery leads per team", "Delivery status, milestones, and progress"],
       [null, "Architects", "Domain and chief architects", "Architecture gates, exceptions, conformance"],
       [null, "Security Reviewers", "Security assessment owners", "Security gates and waiver approvals"],
@@ -760,13 +760,13 @@ const CLIENT_CONFIG = [
       [null, "Investment Board", "Whoever actually decides", "Record decisions, conditions, and rationale"],
       [null, "Governance Admins", "The small group that owns the model", "Edit configuration elements and publish versions"],
     ],
-    note: "How approver identity resolves: a <strong>DoA Threshold</strong> record matches the value and type, names an authority level, and that level maps to a group or person you nominate. Nothing about who approves is hard-coded.",
+    note: "How approver identity resolves: a <strong>DoA Threshold</strong> record matches the value and type, names an authority level, and that level maps to a group or person the client nominates. Nothing about who approves is hard-coded.",
   },
   {
     id: "cfg-datasets",
-    name: "Datasets we need from you",
-    lede: "Each is a read-only feed behind a CloudLink. The join key is the part that usually needs a decision on your side — without it the data cannot be attributed.",
-    columns: ["Dataset", "Likely source", "Minimum fields", "Join key you must provide", "Refresh"],
+    name: "Datasets we need from the client",
+    lede: "Each is a read-only feed behind a CloudLink. The join key is the part that usually needs a decision on their side — without it the data cannot be attributed.",
+    columns: ["Dataset", "Likely source", "Minimum fields", "Join key they must provide", "Refresh"],
     rows: [
       ["work-management", "Jira, Azure DevOps, or one agreed system", "Work item ID, title, status, team", "Portfolio ID present on the work item", "Daily"],
       ["finance-actuals", "ERP / procurement", "Period, actual, commitment, forecast, cost centre", "Portfolio ID on the cost record", "Monthly close"],
@@ -778,13 +778,13 @@ const CLIENT_CONFIG = [
   },
   {
     id: "cfg-rules",
-    name: "Rules and thresholds you set",
-    lede: "Numbers and policy choices we cannot pick for you. Each one changes behavior the day it is set.",
-    columns: ["Setting", "What you decide", "Where it bites"],
+    name: "Rules and thresholds they set",
+    lede: "Numbers and policy choices we cannot pick for them. Each one changes behavior the day it is set.",
+    columns: ["Setting", "What the client decides", "Where it bites"],
     rows: [
       [null, "Reporting cadence", "How many days between required status updates", "Overdue flag and the exceptions view"],
       [null, "Variance tolerance", "The movement in cost, schedule, or scope that forces change control", "When a Portfolio Change Request becomes mandatory"],
-      [null, "Authority labels", "What your levels are called and which group holds each", "Who the board step routes to"],
+      [null, "Authority labels", "What their levels are called and which group holds each", "Who the board step routes to"],
       [null, "Scoring weights", "Relative weight of value, fit, reuse, run cost, risk, and debt", "The ranked candidate list"],
       [null, "Waiver policy", "Whether every gate waiver needs a second approver", "Gate evidence enforcement"],
       [null, "Clarification target", "Days a requester has to answer before triage escalates", "Clarification Request service level"],
