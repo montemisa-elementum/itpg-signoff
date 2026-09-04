@@ -628,6 +628,8 @@ tr:last-child td { border-bottom: 0; }
   cursor: pointer;
 }
 .modal-close:hover { border-color: var(--teal); color: var(--teal); }
+.modal-wide { width: min(1040px, calc(100vw - 32px)); }
+.modal-wide .modal-body { max-height: min(70vh, 720px); overflow-y: auto; padding-bottom: 22px; }
 .modal-body { padding: 20px 24px 4px; }
 .modal-what { margin: 0; color: var(--ink); font-size: 15.5px; }
 .modal-body h5 { margin: 20px 0 0; color: var(--navy); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; }
@@ -883,3 +885,64 @@ tr:last-child td { border-bottom: 0; }
   .app-spec > summary { grid-template-columns: 34px 1fr; }
   .app-summary-meta { grid-column: 2; text-align: left; }
 }
+
+/* ---- section anchors, permalinks and record schema ---- */
+.anchor {
+  color: var(--teal);
+  font-weight: 700;
+  text-decoration: none;
+}
+.heading-anchor {
+  margin-left: 10px;
+  opacity: 0;
+  font-size: .75em;
+  transition: opacity .12s ease;
+}
+.section-head:hover .heading-anchor,
+.heading-anchor:focus-visible { opacity: 1; }
+.anchor.is-copied { position: relative; opacity: 1; }
+.anchor.is-copied::after {
+  position: absolute;
+  top: -6px;
+  left: calc(100% + 8px);
+  padding: 3px 8px;
+  border-radius: 6px;
+  background: var(--navy);
+  color: #fff;
+  content: "Link copied";
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .04em;
+  white-space: nowrap;
+}
+.permalink { margin: -4px 0 0; font-size: 12.5px; }
+.permalink .anchor { opacity: .85; }
+.permalink .anchor:hover { text-decoration: underline; }
+.link-button {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--teal);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  text-align: left;
+}
+.link-button:hover { text-decoration: underline; }
+.app-identity .link-button { color: var(--teal); }
+.schema-table td:first-child { white-space: nowrap; }
+.schema-table td:nth-child(2) { color: var(--muted); font-size: 13px; }
+.req {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #eef3f1;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+.req-yes { background: #e3f2ec; color: #0f6b52; }
+.req-derived { background: #eef1f7; color: #3f5a7a; }
+.req-conditional { background: #fdf0e0; color: #8a5a12; }
+.req-no { background: #f2f4f3; color: #7b8a86; }

@@ -1,10 +1,3 @@
-const KINDS = {
-  app: { label: "Elementum App", cls: "t-spine" },
-  task: { label: "Candidate AspectTask", cls: "t-task" },
-  element: { label: "Element / reference data", cls: "t-element" },
-  table: { label: "External table", cls: "t-table" },
-};
-
 const APPS = [
   {
     id: "governance-foundation",
@@ -56,6 +49,20 @@ const APPS = [
       "Fiscal Calendar",
       "Employee / Contractor",
       "User & Role",
+    ],
+    fields: [
+      ["Title","Text (record title)","Short name for the proposed change","Yes"],
+      ["Change target","Dropdown","Hierarchy · Product register · Scoring model · Gate model · Authority threshold · Routing rule","Yes"],
+      ["Affected applications","Multi-select","Which process areas the change touches","Yes"],
+      ["Proposed change","Long text","—","Yes"],
+      ["Rationale","Long text","Why the current rule is wrong","Yes"],
+      ["Requested by","User","Defaults to the creator","Yes"],
+      ["Governance approver","User","Authority for this change target","At review"],
+      ["Impact assessment","Long text","In-flight records affected by the change","At review"],
+      ["Effective from","Date","When the new version starts applying","At approval"],
+      ["Published version","Text","Resulting model version identifier","At publication"],
+      ["Supersedes version","Text","Previous published version","At publication"],
+      ["Supporting files","Attachment","—","No"],
     ],
     incoming: [],
     outgoing: [
@@ -111,6 +118,30 @@ const APPS = [
     ],
     elements: ["Intake Form Template", "Routing Rule", "Triage Reason Code"],
     tables: ["Product Backlog Item", "Service Request"],
+    fields: [
+      ["Title","Text (record title)","Short problem name","Yes"],
+      ["Demand type","Dropdown (dynamic)","Demand & Investment Type","On submit"],
+      ["Requester","User","Defaults to the creator","Yes"],
+      ["Sponsor","User","Business accountable person","On submit"],
+      ["Business unit","Text or table lookup","From the organization dataset when available","On submit"],
+      ["Cost centre","Text","Finance reference","No"],
+      ["Affected product","Dropdown (dynamic)","Product & Platform Register","On submit"],
+      ["Objectives","Multi-select (dynamic)","Strategic Objective","No"],
+      ["Problem statement","Long text","—","Yes"],
+      ["Desired outcome","Long text","—","On submit"],
+      ["Required timing","Date","—","No"],
+      ["Work type","Dropdown","Run · Change · Mandatory","On submit"],
+      ["Supporting files","Attachment","—","No"],
+      ["Triage owner","User (assignee)","Set by the routing automation","No"],
+      ["Initial cost estimate","Decimal","Order of magnitude only","No"],
+      ["Initial effort / duration","Number","Person-days and weeks","No"],
+      ["Disposition","Dropdown","Backlog · Accepted as investment · Merged · Deferred · Rejected · Redirected","On disposal"],
+      ["Disposition reason","Dropdown (dynamic)","Triage Reason Code","On disposal"],
+      ["Disposition notes","Long text","—","No"],
+      ["Portfolio ID","Text","Minted when accepted as an investment","No"],
+      ["Related demand","Relation (self)","Merge and duplicate linkage","No"],
+      ["Investment decision","Relation","Prioritization record created on acceptance","No"],
+    ],
     incoming: [["governance-foundation", "Products, request types, objectives, users and routing rules"]],
     outgoing: [
       ["prioritization", "Accepted demand and persistent Portfolio ID"],
@@ -165,6 +196,30 @@ const APPS = [
     ],
     elements: [],
     tables: [],
+    fields: [
+      ["Portfolio ID","Text (record title)","Minted on acceptance; persists through to Value","Yes"],
+      ["Source demand","Relation","Demand Request","Yes"],
+      ["Investment type","Dropdown (dynamic)","Demand & Investment Type","Yes"],
+      ["Funding construct","Dropdown","Persistent product funding · Discrete initiative","Yes"],
+      ["Product / platform","Dropdown (dynamic)","Product & Platform Register","Yes"],
+      ["Objectives","Multi-select (dynamic)","Strategic Objective","No"],
+      ["Options considered","Long text","Must include do-nothing and reuse-platform","Before scoring"],
+      ["Architecture & security implications","Long text","—","Before scoring"],
+      ["Exception required","Boolean + long text","Deviation from the target state","No"],
+      ["TCO total","Calculated","Rolled up from Cost Line records","Derived"],
+      ["Benefit owner","User","Accountable for the promised outcome","Before scoring"],
+      ["Outcome statements","Long text","Become Outcome Records in Value","Before scoring"],
+      ["Scoring model version","Dropdown (dynamic)","Scoring Model & Weighting","At scoring"],
+      ["Criterion scores (6)","Number","Value · fit · reuse · run cost · risk · debt","At scoring"],
+      ["Composite score","Calculated","Weighted from the published model version","Derived"],
+      ["Authority level","Text","Matched from the delegation threshold","Derived"],
+      ["Capacity verdict","Text","Returned from the Capacity plan","Derived"],
+      ["Decision","Dropdown","Approve · Conditionally approve · Reject · Defer","At board"],
+      ["Decision rationale / date / attendees","Long text · Date · Long text","Audit trail","At board"],
+      ["Approved funding","Decimal","Locked with the baseline","At baseline"],
+      ["Baseline locked / locked at","Boolean · Date-time","Baseline is mandatory before delivery","At baseline"],
+      ["Initiative","Relation","Execution record created at baseline lock","No"],
+    ],
     incoming: [
       ["enterprise-demand-intake", "Demand Request is an upstream app relation, not a duplicate app"],
       ["governance-foundation", "Scoring model, DoA thresholds, gates, objectives and architecture standards"],
@@ -221,6 +276,22 @@ const APPS = [
     ],
     elements: ["Capacity Unit of Measure", "Work Type Reference"],
     tables: ["Employee / Contractor"],
+    fields: [
+      ["Name","Text (record title)","Plan label","Yes"],
+      ["Planning period","Text","Quarter or fiscal year","Yes"],
+      ["Scope","Relation","Hierarchy node, product or team the plan covers","Yes"],
+      ["Funding envelope","Decimal","Committed versus planned","Yes"],
+      ["Supply position","Calculated","Rolled up from Capacity Supply Line records","Derived"],
+      ["Demand position","Calculated","From candidate and approved investments","Derived"],
+      ["Net position","Calculated","Supply minus demand","Derived"],
+      ["Over-committed","Calculated","Beyond available capacity","Derived"],
+      ["Binding constraint","Text","Which limit makes the plan undeliverable","Derived"],
+      ["Run / change / mandatory split","Calculated","Actual allocation against target","Derived"],
+      ["Scarce specialist conflicts","Calculated","Contested constrained roles","Derived"],
+      ["Recommended trade-off","Long text","What to defer, split or re-sequence","At review"],
+      ["Plan status","Dropdown","Draft · Under review · Endorsed · Locked","Yes"],
+      ["Endorsed by / locked at","User · Date-time","Who accepted the trade-off","On endorsement"],
+    ],
     incoming: [
       ["prioritization", "Candidate investments and required capacity"],
       ["execution", "Delivery variance and actual consumption for reforecast"],
@@ -283,6 +354,26 @@ const APPS = [
       "Engineering Work Item",
       "Release Record",
     ],
+    fields: [
+      ["Portfolio ID","Text (record title)","Carried from the investment decision","Yes"],
+      ["Investment decision","Relation","Prioritization record","Yes"],
+      ["Delivery owner","User","Accountable delivery lead","Yes"],
+      ["Delivery team","Relation (dynamic)","Team & Squad","Yes"],
+      ["Gate model version","Dropdown (dynamic)","Stage Gate Model","Yes"],
+      ["Approved funding / baseline dates","Decimal · Date","Copied at baseline lock, read-only afterwards","Derived"],
+      ["Health (RAG)","Dropdown","Green · Amber · Red","Each cadence period"],
+      ["Status narrative","Long text","—","Each cadence period"],
+      ["Recovery action","Long text","Required when Amber or Red","Conditional"],
+      ["Cadence days / last status / overdue","Number · Date-time · Calculated","Drives the exception view","Derived"],
+      ["Actual cost to date","Calculated","From the finance table, matched on Portfolio ID","Derived"],
+      ["Forecast at completion","Decimal","Current expectation","Each cadence period"],
+      ["Cost / schedule variance","Calculated","Against the locked baseline","Derived"],
+      ["Gate position","Calculated","Next control point and evidence status","Derived"],
+      ["Open risks / issues","Calculated","Counted from supporting records","Derived"],
+      ["Change requests raised","Calculated","Counted from supporting records","Derived"],
+      ["Delivered capability","Long text","What went live","At close"],
+      ["Closure summary","Long text","Required to close","At close"],
+    ],
     incoming: [
       ["prioritization", "Approved investment becomes an Initiative without re-entry"],
       ["capacity", "Agreed funding and capacity position"],
@@ -343,6 +434,24 @@ const APPS = [
       "Outcome Actual",
       "Product Telemetry Measure",
     ],
+    fields: [
+      ["Portfolio ID","Text","Carried from the funded investment","Yes"],
+      ["Initiative","Relation","Execution record that delivered it","No"],
+      ["Outcome type","Dropdown (dynamic)","Outcome Type","Yes"],
+      ["Benefit owner","User","Accountable for realization","Yes"],
+      ["Measure","Text","What is counted","Yes"],
+      ["Measurement method","Text","How it is counted","Yes"],
+      ["Data source","Text","Named system of record","Yes"],
+      ["Baseline value / date","Decimal · Date","Captured before approval","Yes"],
+      ["Target profile","Child records","Value per measurement period","Yes"],
+      ["Actuals","Child records or table","Per measurement period","Derived"],
+      ["Adoption measure","Decimal","Take-up of the delivered capability","Yes"],
+      ["Realization to date","Calculated","Actual against target","Derived"],
+      ["Claim status","Dropdown","Projected · Claimed · Validated · Not realized","Yes"],
+      ["Validated by / at","User · Date-time","Finance or assurance","Before Realized"],
+      ["Forecast accuracy","Calculated","Business-case estimate versus actual","Derived"],
+      ["Post-implementation review","Long text","Lessons fed back into the model","At review"],
+    ],
     incoming: [
       ["prioritization", "Outcome statements, targets and benefit owners"],
       ["execution", "Initiative closure, actual cost and delivery evidence"],
@@ -399,6 +508,20 @@ const APPS = [
       "Standard Lead Time",
     ],
     tables: [],
+    fields: [
+      ["Receiving initiative","Relation","Who needs the commitment","Yes"],
+      ["Providing party","Relation","Shared function, team or vendor engagement","Yes"],
+      ["Description","Long text","What is needed","Yes"],
+      ["Need-by date","Date","Validated against the published lead time","Yes"],
+      ["Criticality","Dropdown (dynamic)","Criticality reference","Yes"],
+      ["Lead time met","Calculated","Against the published standard","Derived"],
+      ["Status","Dropdown","Requested · Accepted · At risk · Breached · Met","Yes"],
+      ["Accepted by / at","User · Date-time","Provider acceptance","On acceptance"],
+      ["Commitment date","Date","What the provider committed to","On acceptance"],
+      ["Downstream impact","Long text","Affected milestones and gates","No"],
+      ["Escalation path","Relation","From the shared function record","Derived"],
+      ["Breach reason / recovery plan","Long text","Required once breached","Conditional"],
+    ],
     incoming: [
       ["execution", "Initiative relation, schedules, milestones and delivery signals"],
       ["capacity", "Shared-function capacity"],
@@ -463,6 +586,21 @@ const APPS = [
       "Spend Commitment",
       "Vendor Deliverable",
       "Vendor Risk Status",
+    ],
+    fields: [
+      ["Vendor reference","Table lookup","Vendor system of record","Yes"],
+      ["Contract reference","Table lookup","Contract system of record","Yes"],
+      ["Engagement type","Dropdown","Systems integration · Managed service · Staff augmentation · Subscription","Yes"],
+      ["Commercial construct","Dropdown","Fixed price · Time and materials · Outcome-based","Yes"],
+      ["Internal owner","User","Accountable vendor manager","Yes"],
+      ["Supported initiatives / products","Relation","What this engagement delivers into","Yes"],
+      ["Contract value / term","Decimal · Date","Read from the contract record","Derived"],
+      ["Committed / invoiced / forecast spend","Decimal","Against plan","Derived"],
+      ["Performance score","Calculated","From scorecard records per review period","Derived"],
+      ["Risk rating","Table lookup","Third-party risk system","Derived"],
+      ["Concentration flag","Calculated","Against the concentration definition","Derived"],
+      ["Renewal / notice date","Date","Drives the optimization review","Yes"],
+      ["Optimization opportunity","Long text","Overlap, consolidation or exit","No"],
     ],
     incoming: [
       ["execution", "Initiative relation and delivered scope"],
@@ -652,7 +790,9 @@ function appDetail(app) {
         <div><span>Primary record</span><strong>${escapeHtml(app.record)}</strong></div>
         <div><span>Handle</span><strong class="mono">${app.handle}</strong></div>
         <div><span>Namespace</span><strong class="mono">${app.namespace}</strong></div>
+        <div><span>Record schema</span><button class="link-button" type="button" data-schema="${app.id}">View ${app.fields.length} fields →</button></div>
       </div>
+      <p class="permalink"><a class="anchor" href="#app-${app.id}" data-permalink>Link to this application</a></p>
 
       <h4>Proposed lifecycle</h4>
       <div class="stage-strip">${app.stages.map((stage) => `<span>${escapeHtml(stage)}</span>`).join("")}</div>
@@ -706,6 +846,50 @@ function clientTable() {
       return `<tr><td>${appLink(app.id)}</td><td>${escapeHtml(row.needs)}</td><td>${escapeHtml(row.owners)}</td></tr>`;
     }).join("")}</tbody>
   </table></div>`;
+}
+
+function schemaTable(app) {
+  return `<div class="table-wrap"><table class="schema-table">
+    <thead><tr><th>Field</th><th>Type</th><th>Notes</th><th>Required</th></tr></thead>
+    <tbody>${app.fields.map(([name, type, note, required]) => `<tr>
+      <td><strong>${escapeHtml(name)}</strong></td>
+      <td>${escapeHtml(type)}</td>
+      <td>${escapeHtml(note)}</td>
+      <td><span class="req req-${required.toLowerCase().replace(/[^a-z]+/g, "-")}">${escapeHtml(required)}</span></td>
+    </tr>`).join("")}</tbody>
+  </table></div>`;
+}
+
+function openSchema(id) {
+  const app = byId.get(id);
+  const modal = document.getElementById("schema-modal");
+  if (!app || !modal) return;
+  modal.querySelector(".modal-eyebrow").textContent = `Application ${app.n} · ${app.name}`;
+  modal.querySelector(".modal-title").textContent = `${app.record} — proposed record schema`;
+  modal.querySelector(".modal-body").innerHTML = `
+    <p class="modal-what">${app.fields.length} fields. Lifecycle: ${app.stages.map(escapeHtml).join(" → ")}. Required column shows when a value must exist — either always, at a particular point in the lifecycle, or derived by the platform.</p>
+    ${schemaTable(app)}
+    <p class="small">Repeating detail (${app.tasks.length} supporting records) is not listed here — those are separate entities, not fields on this record.</p>
+    <p class="permalink"><a class="anchor" href="#schema-${app.id}" data-permalink>Link straight to this schema</a></p>`;
+  if (!modal.open) {
+    if (typeof modal.showModal === "function") modal.showModal();
+    else modal.setAttribute("open", "");
+  }
+}
+
+function closeSchema() {
+  const modal = document.getElementById("schema-modal");
+  if (!modal) return;
+  if (typeof modal.close === "function") modal.close();
+  else modal.removeAttribute("open");
+}
+
+function wireSchemaModal() {
+  const modal = document.getElementById("schema-modal");
+  if (!modal) return;
+  modal.addEventListener("click", (event) => {
+    if (event.target === modal || event.target.closest(".modal-close")) closeSchema();
+  });
 }
 
 function openApp(id) {
@@ -828,6 +1012,12 @@ function init() {
   }
 
   document.body.addEventListener("click", (event) => {
+    const schema = event.target.closest("[data-schema]");
+    if (schema) {
+      event.preventDefault();
+      openSchema(schema.dataset.schema);
+      return;
+    }
     const app = event.target.closest("[data-app]");
     if (app && !app.closest(".modal")) {
       event.preventDefault();
@@ -841,8 +1031,15 @@ function init() {
   layoutSnakes();
   window.addEventListener("resize", layoutSnakes);
   wireModal();
+  wireSchemaModal();
 
-  if (location.hash.startsWith("#app-")) openApp(location.hash.replace("#app-", ""));
+  if (location.hash.startsWith("#schema-")) {
+    const id = location.hash.replace("#schema-", "");
+    openApp(id);
+    openSchema(id);
+  } else if (location.hash.startsWith("#app-")) {
+    openApp(location.hash.replace("#app-", ""));
+  }
 }
 
 document.addEventListener("DOMContentLoaded", init);
