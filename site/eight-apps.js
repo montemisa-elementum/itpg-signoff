@@ -184,7 +184,7 @@ const APPS = [
     ],
     questions: [
       "Is Investment Decision the one primary record, with Business Case and Board Meeting as Tasks?",
-      "The EDB calls Demand Request an Application here; this proposal treats it as a relation to the Demand app.",
+      "Demand Request appears again as a data object in this area; here it stays a relation back to Demand Intake rather than a second copy of the record.",
     ],
   },
   {
@@ -358,7 +358,7 @@ const APPS = [
       "Sourcing savings ledger for reconciliation",
     ],
     questions: [
-      "The EDB calls Savings Record a separate Application. Under an eight-app limit, is it a Task under this app or an external sourcing relation?",
+      "Savings Record is called out as its own data object. Is it a supporting record under Value, or does it live in sourcing and get read from there?",
       "What proportion of outcome actuals must be automated for acceptance?",
     ],
   },
@@ -415,7 +415,7 @@ const APPS = [
       "Known dependency set for validating the map",
     ],
     questions: [
-      "The EDB calls Initiative an Application here; this proposal treats it as a relation to Execution.",
+      "Initiative appears again as a data object in this area; here it stays a relation back to Execution rather than a second copy of the record.",
       "Is network visualization a hard acceptance criterion for the first release? DEP-014 says Must Have.",
     ],
   },
@@ -482,7 +482,7 @@ const APPS = [
       "Definitions of concentration, overlap and optimization",
     ],
     questions: [
-      "The EDB calls Initiative an Application here; this proposal treats it as a relation to Execution.",
+      "Initiative appears again as a data object in this area; here it stays a relation back to Execution rather than a second copy of the record.",
       "Does the sourcing/TPRM solution exist and expose every required dataset?",
     ],
   },
@@ -493,7 +493,7 @@ const FLOWS = [
     id: "investment",
     tag: "A",
     name: "New capability becomes measured value",
-    lede: "The full workbook path. All eight applications participate, but Dependency and Vendor Management join only when the investment needs them.",
+    lede: "The full path, end to end. All eight applications participate, though Dependency and Vendor Management join only when the investment needs them.",
     steps: [
       ["governance-foundation", "Configure the rules", "Publish the hierarchy, ownership, demand types, scoring model, gates and approval thresholds used downstream."],
       ["enterprise-demand-intake", "Capture and triage demand", "Validate the request, screen overlap and accept it as an investment with a persistent Portfolio ID."],
@@ -577,29 +577,24 @@ const CLIENT_CONFIG = [
 
 const OPEN_QUESTIONS = [
   {
-    title: "Are the eight workbook headings literally eight Elementum Apps?",
-    why: "This proposal assumes yes. The EDB also labels several upstream objects as Application inside downstream areas, so “Application” may instead mean a business data object.",
-    decision: "Confirm one deployed app per workbook heading and one primary record per app.",
+    title: "Is each process area its own application?",
+    why: "This design gives each of the eight areas one deployed app and one primary record, so accountability and reporting follow the area. Some upstream records are named again inside downstream areas, which could instead mean a single shared app spanning several areas.",
+    decision: "Confirm one app per process area, each with one primary record.",
   },
   {
-    title: "Are EDB rows typed Task intended to be AspectTask?",
-    why: "The platform supports AspectTask. It has fields, records, statuses, automations, layouts and relationships, but no stages. Whether it is the intended mapping for these workbook rows needs confirmation.",
-    decision: "Confirm the product intent and approved authoring path for these entities.",
+    title: "Which supporting items need their own records?",
+    why: "A Composite Score is probably a calculated field, and Status History is probably native record behavior, but a Cost Line or Milestone clearly repeats and needs its own row. The classification alone does not settle which is which.",
+    decision: "Walk the 75 supporting items app by app: own entity, field or native behavior, generated artifact, or record read from another system.",
   },
   {
-    title: "Which Task rows need independent records?",
-    why: "A Composite Score may be a calculated field; a Status History may be native; a Cost Line or Milestone clearly repeats and needs its own data. The EDB classification alone does not settle that distinction.",
-    decision: "Review the 75 candidates app by app: AspectTask, field/native behavior, generated artifact, or external record.",
+    title: "Which end-to-end process document governs the stages?",
+    why: "Stage names, transitions, actors and exception paths here are proposed from the requirements and acceptance criteria. A documented process may name them differently or add paths not visible in the requirements.",
+    decision: "Reconcile every proposed stage and handoff against the authoritative process document before implementation.",
   },
   {
-    title: "Where is the separate process document?",
-    why: "The packet currently available contains functional requirements, acceptance criteria, the EDB inventory and pain points. It does not include a process document with actors, transitions and exception paths.",
-    decision: "Obtain it and reconcile every proposed stage and handoff before implementation.",
-  },
-  {
-    title: "How are the extra Application rows represented?",
-    why: "Value lists Outcome Record and Savings Record; Prioritization lists Demand Request; Dependency and Vendor list Initiative. Exact eight-app architecture requires some to be relations rather than locally owned app schemas.",
-    decision: "Confirm ownership, especially Savings Record.",
+    title: "Where do shared records live when two areas both use them?",
+    why: "Value references Outcome Record and Savings Record; Prioritization references Demand Request; Dependency and Vendor Management both reference Initiative. Each is owned in one place and read elsewhere, so ownership has to be explicit.",
+    decision: "Confirm the owning application for each shared record, especially Savings Record.",
   },
 ];
 
@@ -667,7 +662,7 @@ function appDetail(app) {
         <div><h4>What the client must configure</h4>${list(app.client, "checklist")}</div>
       </div>
 
-      <h4>Candidate AspectTask entities from the EDB (${app.tasks.length})</h4>
+      <h4>Supporting task records (${app.tasks.length})</h4>
       ${pills(app.tasks, "task")}
 
       ${app.elements.length ? `<h4>Elements / reference data owned or consumed</h4>${pills(app.elements, "element")}` : ""}

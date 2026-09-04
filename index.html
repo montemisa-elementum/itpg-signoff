@@ -3,14 +3,14 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ITPG — Workbook-Aligned Elementum Proposal</title>
+  <title>ITPG — Elementum Solution Design</title>
   <link rel="stylesheet" href="site/styles.css">
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><span class="brand-mark">ITPG</span> Workbook-Aligned Proposal</div>
+    <div class="brand"><span class="brand-mark">ITPG</span> Elementum Solution Design</div>
     <nav class="nav" aria-label="Primary">
-      <a href="index.html" aria-current="page">Eight-app proposal</a>
+      <a href="index.html" aria-current="page">Solution design</a>
       <a href="site/config.html">Rules &amp; agents</a>
       <a href="site/pm.html">Requirements context</a>
     </nav>
@@ -19,52 +19,47 @@
   <main>
     <section class="hero">
       <div class="hero-inner">
-        <p class="eyebrow">Elementum solution proposal · for refinement</p>
-        <h1>Eight applications, following the requirements workbook</h1>
-        <p class="hero-sub">This version takes the workbook literally: its eight application headings become <strong>eight Elementum Apps</strong>. Shared definitions become Elements, source-system data becomes Tables, and the 75 rows classified as “Task” become candidate <strong>AspectTask</strong> entities pending confirmation.</p>
-        <p>This is a testable interpretation—not a claim that every implementation choice is settled. It is deliberately close to the source so process owners can point to what is right, what is wrong, and what the missing process document changes.</p>
+        <p class="eyebrow">Elementum solution design · for review</p>
+        <h1>IT Portfolio &amp; Governance on Elementum</h1>
+        <p class="hero-sub">We see IT portfolio and governance as <strong>eight accountable process areas</strong> that one technology ask travels through: it arrives as demand, earns a funding decision, is tested against capacity, gets delivered, and is finally measured for the value it promised — with dependencies and vendors managed alongside, and a governance foundation setting the rules for all of it.</p>
+        <p>Each of those areas becomes an Elementum <strong>App</strong> with its own record and lifecycle. This document sets out those eight apps, the supporting records that hang off them, the shared configuration they read, the outside systems they consume, and the automations that move work between them — so each piece can be reviewed before authoring starts.</p>
         <dl class="meta">
-          <div><dt>Source</dt><dd>Functional requirements + acceptance + EDB + pain points</dd></div>
-          <div><dt>Application model</dt><dd>8 workbook areas → 8 Elementum Apps</dd></div>
+          <div><dt>Platform</dt><dd>Elementum</dd></div>
+          <div><dt>Structure</dt><dd>8 Apps + supporting entities</dd></div>
           <div><dt>Requirement coverage</dt><dd>193 requirements · 110 Must Haves</dd></div>
-          <div><dt>Key assumption</dt><dd>EDB “Task” → candidate AspectTask</dd></div>
+          <div><dt>Status</dt><dd>Draft for review</dd></div>
         </dl>
       </div>
     </section>
 
     <div class="page">
-      <div class="callout warning source-note">
-        <strong>What changed from the first proposal</strong>
-        The first version compressed the suite into two lifecycle apps and treated several workbook areas as optional. This version does not. Capacity, execution, value, dependencies and vendor management are first-class apps because the workbook gives each its own requirements and acceptance criteria. The EDB also contains 13 rows typed Application; repeated Demand Request and Initiative rows are treated here as cross-app relations, while Savings Record remains an explicit question.
-      </div>
-
       <nav class="tabs" aria-label="On this page">
-        <a href="#model">1 · Proposed model</a>
-        <a href="#landscape">2 · Eight-app landscape</a>
+        <a href="#model">1 · How the pieces fit</a>
+        <a href="#landscape">2 · The eight process areas</a>
         <a href="#flows">3 · How work moves</a>
-        <a href="#tasks">4 · What “Task” means</a>
+        <a href="#tasks">4 · Supporting records</a>
         <a href="#apps">5 · Application detail</a>
-        <a href="#client">6 · Client inputs</a>
+        <a href="#client">6 · What we need from the client</a>
         <a href="#questions">7 · Questions to resolve</a>
       </nav>
 
       <section class="section" id="model">
         <div class="section-head">
-          <p class="eyebrow">1 · Proposed model</p>
-          <h2>The workbook defines the process areas; Elementum entities implement them</h2>
-          <p class="lede">The eight apps are the user-facing process boundaries. Supporting entities are chosen by behavior rather than by convenience: lifecycle work is an App, lightweight owned work is provisionally an AspectTask, reusable configuration is an Element, outside facts are Tables, and deterministic movement is Automation.</p>
+          <p class="eyebrow">1 · How the pieces fit</p>
+          <h2>Four kinds of building block, chosen by behavior</h2>
+          <p class="lede">The eight apps are the process boundaries people work inside. Everything else is chosen by how it behaves, not by convenience: work with a lifecycle is an App, lightweight repeating work owned by a record is a supporting task entity, reusable configuration is an Element, facts owned elsewhere are Tables, and movement between them is Automation.</p>
         </div>
 
         <div class="grid four entity-model">
           <article class="card">
             <span class="badge badge-app">8 Apps</span>
             <h3>Process areas</h3>
-            <p>Each workbook application owns a primary record and a lifecycle: Demand Request, Investment Decision, Capacity Plan, Initiative, Outcome Record, Dependency and Vendor Engagement, plus governance-model change.</p>
+            <p>Each area owns one primary record and its lifecycle: Demand Request, Investment Decision, Capacity Plan, Initiative, Outcome Record, Dependency and Vendor Engagement, plus the governance model itself.</p>
           </article>
           <article class="card">
-            <span class="badge badge-task">75 candidates</span>
-            <h3>AspectTasks</h3>
-            <p>Lightweight supporting records listed as Task in the EDB: Cost Line, Milestone, Decision Condition, Assessment, Status Report and similar work.</p>
+            <span class="badge badge-task">75 records</span>
+            <h3>Supporting tasks</h3>
+            <p>The repeating detail that hangs off a primary record: Cost Line, Milestone, Decision Condition, Assessment, Status Report and similar items — many rows, no lifecycle of their own.</p>
           </article>
           <article class="card">
             <span class="badge badge-element">Elements</span>
@@ -128,29 +123,29 @@
 
       <section class="section" id="tasks">
         <div class="section-head">
-          <p class="eyebrow">4 · What “Task” means</p>
-          <h2>A plausible platform mapping, with one real implementation gap</h2>
-          <p class="lede">The EDB intentionally distinguishes Application from Task. `AspectTask` is an actual platform entity—not the same thing as a task inside an automation—and it matches many of these lightweight supporting records.</p>
+          <p class="eyebrow">4 · Supporting records</p>
+          <h2>The repeating detail that hangs off a record</h2>
+          <p class="lede">A business case has many cost lines; an initiative has many milestones, risks and status reports; an approval carries decision conditions. These repeat, are owned by a parent record, and need their own rows — but they do not run a lifecycle of their own. Elementum has a dedicated <strong>task entity</strong> for exactly this shape.</p>
         </div>
 
         <div class="grid three">
           <article class="card">
-            <h3>What AspectTask supports</h3>
-            <p>Fields, records, status options, automations, layouts and relationships. It is intended for action items, subtasks, review items and workflow-oriented supporting work.</p>
+            <h3>What a task entity gives us</h3>
+            <p>Fields, records, status options, automations, layouts and relationships — the right fit for action items, cost lines, milestones, review items and other owned supporting work.</p>
           </article>
           <article class="card">
-            <h3>What it does not support</h3>
-            <p>AspectTask has no stages and does not host AI agents. Complex multi-stage processes remain Apps; AI belongs on an App.</p>
+            <h3>Where the line sits</h3>
+            <p>Task entities have no stages and do not host AI agents. Anything that genuinely moves through governed stages stays an App, and AI capability lives on an App.</p>
           </article>
           <article class="card">
-            <h3>Current authoring reality</h3>
-            <p>AspectTask is an available Elementum entity, but whether it is the intended destination for the EDB Task rows still needs confirmation. I found no current source evidence that AspectTask is scheduled for removal, so that assumption should not drive the design.</p>
+            <h3>Why the distinction matters</h3>
+            <p>Getting this right is what keeps the eight apps clean. Modelling cost lines as app stages would bloat the lifecycle; modelling a real governed process as a task would strip the gates it needs.</p>
           </article>
         </div>
 
         <div class="callout warning" style="margin-top:16px">
-          <strong>Do not automatically create all 75.</strong>
-          “Task” is the workbook’s data classification, not proof that every row needs an AspectTask. Cost Line, Milestone and Decision Condition look like strong candidates. Composite Score may be a calculated field; Status History may be native; Governance Reporting Pack may be generated output. The process owner and product owner need to review the list by behavior.
+          <strong>Not every supporting item needs its own entity.</strong>
+          Cost Line, Milestone and Decision Condition clearly repeat and need their own rows. Others do not: a Composite Score is likely a calculated field, Status History is likely native record behavior, and a Governance Reporting Pack is generated output rather than stored work. Process and product owners should walk the list app by app.
         </div>
       </section>
 
@@ -158,7 +153,7 @@
         <div class="section-head">
           <p class="eyebrow">5 · Application detail</p>
           <h2>What each app owns, consumes and hands off</h2>
-          <p class="lede">Open an application to inspect its proposed lifecycle, requirement count, Task candidates copied from the EDB, shared data, external sources, handoffs and client configuration. Warnings are questions—not hidden decisions.</p>
+          <p class="lede">Open an application to inspect its proposed lifecycle, requirement count, supporting task records, shared data, external sources, handoffs and the configuration the client owns. Warnings are open questions, not hidden decisions.</p>
         </div>
         <div id="app-specs"></div>
       </section>
@@ -167,7 +162,7 @@
         <div class="section-head">
           <p class="eyebrow">6 · Client inputs</p>
           <h2>What we need from the client, by application</h2>
-          <p class="lede">The solution structure is reusable; the operating model is not ours to invent. Each process area needs named owners, policy decisions and source data before it can meet the workbook’s acceptance criteria.</p>
+          <p class="lede">The solution structure is reusable; the operating model is not ours to invent. Each process area needs named owners, policy decisions and source data before it can meet the acceptance criteria.</p>
         </div>
         <div id="client-config"></div>
         <div class="callout warning" style="margin-top:16px">
@@ -179,8 +174,8 @@
       <section class="section" id="questions">
         <div class="section-head">
           <p class="eyebrow">7 · Questions to resolve</p>
-          <h2>What this example is designed to get answered</h2>
-          <p class="lede">These are not reasons to delay showing the proposal. They are the specific decisions the requirements and EDB do not settle on their own.</p>
+          <h2>Decisions this design needs from the business</h2>
+          <p class="lede">None of these block a review of the structure. They are the specific choices the requirements do not settle on their own, and each one changes something concrete in the build.</p>
         </div>
         <div id="open-questions"></div>
       </section>
@@ -189,7 +184,7 @@
 
   <footer class="footer">
     <div class="footer-inner">
-      Source-aligned proposal from the Functional Requirements, Acceptance Criteria, EDB and Pain Points workbooks. A separate process document has not yet been received.
+      IT Portfolio &amp; Governance solution design on Elementum · draft for review. Requirement coverage traces to the functional requirements, acceptance criteria, data inventory and pain points provided.
     </div>
   </footer>
 
