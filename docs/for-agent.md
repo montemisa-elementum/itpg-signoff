@@ -7,14 +7,94 @@ Read this file, then load the public `/elementum` playbook (`skills/user/element
 
 ## Mission
 
-Build an IT Portfolio & Governance suite on Elementum:
+Build a **generic ITPG product** on Elementum that the current engagement can adopt, and that later organizations can clone and configure. This packet started from one company’s requirements workbook; treat that workbook as **tenant-0**, not as the only shape of the product.
 
-- Shared **elements** for the estate (products, types, gates, scores, DoA).
-- **Apps** for demand → portfolio item (investment + execution) → capacity, outcomes, dependencies, vendors.
-- **Tables** for systems of record we do not own (Jira, ERP, IdP, TPRM, cloud billing).
-- Automations for exact rules. Agents only suggest; humans confirm disposition, board decision, gate pass, and realized value.
+- Shared **elements** for the estate (products, types, gates, scores, DoA) — **records are tenant data**, schemas are product.
+- **Apps** for demand → portfolio item (investment + execution) → optional modules (capacity, outcomes, dependencies, vendors).
+- **Tables** for systems of record we do not own (work management, ERP, IdP, sourcing/TPRM, cloud billing) — **connectors are tenant**, the fact of a Table slot is product.
+- Automations for exact rules that **read element/config records**. Agents only suggest; humans confirm disposition, board decision, gate pass, and realized value.
 
-Pain the first waves must attack (IDs from the Pain Points sheet): 13–15 (one front door), 17 (demand→program via Portfolio ID), 12 (structured business case), 18 (mandatory baseline), 1 (real gates not “close the task”), 7 (standard roles).
+Pain the first waves must attack for **tenant-0** (Pain Points sheet): 13–15 (one front door), 17 (demand→program via Portfolio ID), 12 (structured business case), 18 (mandatory baseline), 1 (real gates not “close the task”), 7 (standard roles). Implement those as product capabilities; do not encode tenant-0 tool names or org structure in TypeScript.
+
+## Product vs tenant (keep this generic)
+
+We want one ITPG solution other companies can **build upon**, not a one-off for the current spreadsheet. Split every decision into three layers:
+
+| Layer | Lives in | Examples | Clone to a new org? |
+|---|---|---|---|
+| **Product core** | EDK apps/elements/automations/views | Demand stages, Portfolio ID, structured case, gate *mechanism*, DoA *lookup*, RAG cadence | Yes — scaffold/clone as-is |
+| **Optional modules** | Same, but only scaffold if the tenant wants the wave | Capacity, Outcomes, Dependencies, Vendor, Agents | Clone only the modules they buy |
+| **Tenant pack** | Element **records**, groups membership, CloudLinks, Tables, access policy members, labels, seed data | Product list, L0–L3 bands, Jira vs ADO, TPRM URL, “Claims Platform” | Never copy; reconfigure |
+
+### Product core (do this the same for every customer)
+
+These are industry ITPG, not this workbook’s quirks:
+
+- Single demand front door; typed intake; save draft; mandatory quality gate on submit.
+- Disposition: backlog vs investment vs reject/defer/merge/redirect — **status on Demand**, not a child “disposition app”.
+- Persistent **Portfolio ID** carried on related records.
+- Structured business case on **Portfolio Item** (not an uploaded spreadsheet as the system of record).
+- Options including do-nothing and reuse-existing-platform as **fields/child rows**, not hardcoded option titles beyond those two generic labels.
+- Scoring **engine** that reads a published Scoring Model Version element; criteria names/weights are data.
+- Stage **gate mechanism**: model version on the item, Control Gate Record children, block progress / waiver with residual risk. Which gates exist (architecture, security, …) is data on Gate Criterion.
+- Delegation of authority: match amount × type → Threshold element → approval chain. Authority names (L0–L3 vs “Investment Board”) are data.
+- Baseline lock as a first-class action.
+- Distinct terminal statuses (Approved, Rejected, Completed, Cancelled, Retired, …).
+- Execution: cadence, RAG with required commentary when adverse, milestones baseline vs forecast, RAID as related apps, exception list views.
+- Outcomes as separate records that can outlive delivery; “Realized” is a controlled status.
+- Dependencies as two-sided accept + lifecycle (proposed → accepted → at risk → breached).
+- Financials/commercials restricted by access policy **shape** (groups); who sits in the groups is tenant.
+- Agents suggest; automations commit.
+
+### Optional modules (product, but not every tenant needs them on day one)
+
+| Module | Wave | Skip when |
+|---|---|---|
+| Capacity & envelopes | 4 | Tenant has no shared capacity process yet |
+| Outcome / PIR | 5 | They only want intake + decision |
+| Dependencies | 6 | Small org / no shared-function bottlenecks in scope |
+| Vendor engagement | 7 | No sourcing/TPRM (or vendor MDM) to consume — **do not build a second vendor master** |
+| Agentic layer | 8 | Records are not trustworthy yet |
+
+Vendor is always **overlay on an external vendor SoR**, never ITPG-owned vendor MDM. That is product policy for all tenants.
+
+### Tenant-0 only (current company — do not bake into product source)
+
+Call these out in plans and keep them in **config, Tables, copy, and seed**, not in field bag keys or automation literals:
+
+| Tenant-0 fact | Product way |
+|---|---|
+| Stack: ServiceNow, Jira, Smartsheet, SharePoint, Confluence, Tableau, Excel | Integration **slots**: work management, documents, BI. Map Jira (or ADO, GitHub) at tenant pack time. Never `jiraIssueKey` as the only identifier — use `externalWorkItemId` + `externalSystem` |
+| Gates named L0–L3; approval = closing a ServiceNow task | DoA Threshold + Gate Criterion **records**. Labels are tenant |
+| Owner fields ~70% accurate; specific IdP | User fields + scheduled “stale owner” flag; directory Table when they have a feed |
+| Exec deck takes ~1 week; Tableau | Exception **list views** + optional pack automation. Do not build Tableau |
+| Dependency tracker blocked 6 months | Dependency **module** (generic). Their delay is a sales/delivery note, not a schema |
+| Exception programs off-system | Same Demand/Portfolio Item apps; no “exception” app |
+| Business case Excel retyped into ServiceNow | Product is structured fields; **do not** implement “parse Excel upload as SoR” |
+| Cross-suite **Strategic Sourcing & TPRM** workbook | Tenant integration. Core Vendor module expects *a* vendor/contract/risk Table, not that product’s table names |
+| Savings ledger reconciliation (VAL-014) | Tenant; only if sourcing savings Table exists |
+| Shared functions listed (EA, security, cloud, IAM, data, integration, network) | Seed **Shared Function** records, not enums in TS |
+| Demand types (new capability, enhancement, tech debt, …) | Seed **Demand & Investment Type** records. Other tenants will add/rename |
+| Role names in GOV-010 | Seed **groups**. Other tenants will differ (PMO vs product ops) |
+| “Fund teams not projects” / Ways of Working | Product already supports both funding constructs as a **dropdown on Portfolio Item**. Do not assume every tenant has left project-funding |
+| Illustrative stories (Maya, Omar, SSO, Claims, TLS) | UAT scripts / seed examples in docs — **never** as required picklist values |
+| Six-dimension acceptance (Configure, UAT, Train, Document, Integration, Sign-off) | This customer’s delivery method. Product Definition of Done is typecheck, plan, views, one E2E path |
+| Green-shaded TPRM overlapping requirements | Skip or stub in core; implement when that tenant’s sourcing suite exists |
+
+Pain point IDs 1–18 are **tenant-0 evidence**. The *capability* they imply (gates, cadence, one ID) is product.
+
+### Authoring rules for genericity
+
+1. **No tenant literals in TypeScript.** No company name, product names (Claims Platform), tool brands, email domains, or “L0” in `dropdownField` static values unless the value is a true industry default (e.g. RAG Green/Amber/Red, Run/Change/Mandatory, demand dispositions). Prefer Elements + dynamic dropdowns.
+2. **Bag keys stay product language** (`demandType`, `portfolioId`, `fundingConstruct`). Display `name` can be relabeled per tenant later; changing keys is a migration.
+3. **Namespaces/handles stay generic** (`demand-request` / `DMD`). Do not prefix with a customer acronym. Next org clones or `elementum clone app`.
+4. **Automations read config records** (routing from Product owner fields, DoA from Threshold element, gates from Criterion rows). If you hardcode “route to Security when type = TLS”, that is a tenant extension — put it in a clearly named tenant automation file or a Routing Rule **element**, not the core submit flow.
+5. **Seed data is not source.** After apply, import tenant products/objectives/thresholds. This repo may document example seeds in markdown; do not commit a customer estate as default field options.
+6. **Tables are ports.** Author the Table resource when the human names a CloudLink. Keep field names generic (`externalId`, `title`, `status`, `portfolioId`). Adapter comments: “tenant-0 = Jira”.
+7. **Tenant extensions** (extra fields, extra statuses, extra automations) go in the same app files only if they are harmless defaults; otherwise isolate (naming `// TENANT:` or a follow-up pack) and list them under “Tenant-0 extensions” at the bottom of your change notes.
+8. **New customer** = `pull org --data-only` on their org, clone/scaffold ITPG core, load their tenant pack (elements + groups + tables). Do not fork the core per customer unless a Pause item says the core model cannot express it.
+
+If a requirement cannot be done with config (elements, groups, tables, extra fields) and needs a new app or a new stage on the spine, ask: is this **product** (every ITPG org) or **this tenant**? Only add stages/apps to the spine for product.
 
 ## Non-negotiable authoring rules
 
@@ -30,6 +110,7 @@ Pain the first waves must attack (IDs from the Pain Points sheet): 13–15 (one 
 10. At least one `listView` per app. Stage-specific `dynamicLayouts` for materially different stages; do not duplicate native header chrome.
 11. Do not 1:1 the EDB “Task” tables into apps. Fold into fields, status, attachments, or a small child app (see inventory).
 12. Pause (ask the human, do not invent): dependency network graph visualization, scoring-model simulation against the whole portfolio, scenario optimizer, custom BI heat maps, a second vendor master, provider/schema changes.
+13. Keep the solution **multi-tenant ready**: no company/tool/product literals in authored source; tenant-0 workbook items go in elements, Tables, groups, and seed — see **Product vs tenant**.
 
 ## Workspace bootstrap
 
@@ -44,9 +125,9 @@ elementum --profile=<profile> init
 
 Then scaffold entities in **build order** below. After each new app/element, siblings can use `catalog.<refName>` immediately.
 
-Suggested category name: `IT Portfolio & Governance` (create in `organization.ts` if missing).
+Suggested category name: `IT Portfolio & Governance` (create in `organization.ts` if missing). Same category label for every tenant unless they insist on a local rename.
 
-Cloud link: use the org’s existing default or the handle the human names. Do not guess a production warehouse.
+Cloud link: use **that org’s** existing default or the handle the human names. CloudLinks are always tenant pack, never copied from tenant-0.
 
 ## Build order (stop at the wave the human asked for)
 
@@ -57,7 +138,7 @@ Architect Slack order was not in the source packet. Follow this unless the human
 | 0 | Foundation elements + groups | Lists exist; DoA and one gate + scoring version seeded |
 | 1 | Demand Request app + views + submit/route automations | Story A possible (draft → submit → route → backlog disposition) |
 | 2 | Portfolio Item + cost lines + conditions + create-from-demand | Story B through board + baseline (manual score OK) |
-| 3 | Execution fields, milestones, RAID apps, exception views | Cadence/RAG rules; no Jira required for empty-record UAT |
+| 3 | Execution fields, milestones, RAID apps, exception views | Cadence/RAG rules; work-management Table not required for empty-record UAT |
 | 4 | Capacity Plan + demand/supply children | Over-commit flag from Portfolio Item demand |
 | 5 | Outcome Record + create-from-case + PIR stub | Outcomes stay open after item close |
 | 6 | Dependency app | Two-sided accept; no graph viz |
@@ -67,6 +148,8 @@ Architect Slack order was not in the source packet. Follow this unless the human
 Do not start wave N+1 until wave N typechecks, builds, and plans cleanly.
 
 ## Identity (proposed — confirm before first apply)
+
+Stable **product** identities. Do not put a customer acronym in namespace/handle. Confirm only if the target org already consumed these names.
 
 | Display name | Ref / folder | Namespace | Handle |
 |---|---|---|---|
@@ -125,7 +208,7 @@ Do **not** author Employee/BU/Cost Centre as elements if they will be Tables fro
 
 **Strategic Objective:** Name, Owner, Horizon, Measure (text).
 
-**DoA Threshold:** Name, Investment type (→ DTY), Min value, Max value, Authority level (L0–L3 or named board), Active.
+**DoA Threshold:** Name, Investment type (→ DTY), Min value, Max value, Authority level (text or dropdown sourced from a small Authority Level element — tenant-0 may seed L0–L3), Active.
 
 **Stage Gate Model:** Name, Investment type, Version (text), Effective From, Status (Draft/Published/Retired).
 
@@ -193,7 +276,7 @@ Mint Portfolio ID and create Portfolio Item in **wave 2**, not wave 1.
 
 ### Agent (wave 8 only)
 
-Triage assistant: `agentSearchRecords` on Demand + Portfolio Item; optional table search when Jira table exists. Present matches; do not auto-reject (DMD-010–011). Skill + published on-demand for “set disposition” if the human wants confirmation gates.
+Triage assistant: `agentSearchRecords` on Demand + Portfolio Item; optional table search when a work-item Table exists. Present matches; do not auto-reject (DMD-010–011). Skill + published on-demand for “set disposition” if the human wants confirmation gates.
 
 ## Wave 2 — Portfolio Item (investment + later execution)
 
@@ -248,7 +331,7 @@ Terminal CLOSED: Rejected, Deferred, Completed, Cancelled, Retired.
 4. **Block execute if open conditions** (on stage change to execute): search Decision Conditions status Open → fail/message (PRI-018).
 5. **DoA route** (on submit to board): match DoA Threshold element; start `approvalChain` for that level (wave 2 can notify board group if approval chains not ready).
 
-Gate hard-block (GOV-016): Control Gate Record children in wave 3; until then, do not claim L0–L3 replacement is complete.
+Gate hard-block (GOV-016): Control Gate Record children in wave 3; until then, do not claim tenant-0 L0–L3 replacement is complete.
 
 ## Wave 3 — execution command center
 
@@ -258,7 +341,7 @@ Gate hard-block (GOV-016): Control Gate Record children in wave 3; until then, d
 - Views: Exception (RAG Red/Amber OR health overdue OR open severe risk); All in Execute; By product.
 - Automation: flag overdue if now > last status submitted + cadence; on RAG Amber/Red require recovery action before save (validation / disable_when on button).
 - Do **not** build Tableau. List views are the command center.
-- Jira Table: only when CloudLink + table exist; map work item → Portfolio ID field. Do not fake a Table.
+- Work-item Table: only when CloudLink + table exist; map `externalWorkItemId` → Portfolio ID. Do not fake a Table. Tenant-0 expected source: Jira.
 
 ## Waves 4–8 (contract only; implement when asked)
 
@@ -268,7 +351,7 @@ Gate hard-block (GOV-016): Control Gate Record children in wave 3; until then, d
 
 **Dependency:** Provider party (shared function or team or vendor text), Receiver → Portfolio Item, Need-by, Criticality, Status Proposed/Accepted/At risk/Breached/Delivered/Cancelled/Waived. Accept button sets Accepted + accepted by/at. Lead time check vs Shared Function.days.
 
-**Vendor Engagement:** related Item(s), Vendor key from TPRM table (not a local vendor element), Type (SI / Managed service / Staff aug / Subscription), Internal owner, Commitments as children. Skip entire wave if no TPRM table.
+**Vendor Engagement:** related Item(s), Vendor key from the tenant’s vendor SoR Table (not a local vendor element), Type (SI / Managed service / Staff aug / Subscription), Internal owner, Commitments as children. Skip entire wave if no vendor Table. Tenant-0 expected source: Strategic Sourcing & TPRM.
 
 **Agents:** Demand triage, board-pack draft from item fields, RAG vs evidence (needs tables), outcome chasing. Configuration-drift agent last.
 

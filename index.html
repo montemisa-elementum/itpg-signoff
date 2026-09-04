@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ITPG — Elementum Build Specification</title>
+  <link rel="stylesheet" href="site/styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">ITPG</span> Elementum Build Specification</div>
+    <nav class="nav" aria-label="Primary">
+      <a href="index.html" aria-current="page">Specification</a>
+      <a href="site/config.html">Rules &amp; access</a>
+      <a href="site/pm.html">Process</a>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="eyebrow">Sign-off document · IT Portfolio &amp; Governance</p>
+        <h1>It comes down to two things: demand, and what we fund.</h1>
+        <p>Everything in this solution is either a request coming in, an investment we decided to make, or something that hangs off one of those two records. This page lists the Elementum components that implement that, so each piece can be approved before authoring starts.</p>
+        <dl class="meta">
+          <div><dt>Platform</dt><dd>Elementum (EDK / TypeScript)</dd></div>
+          <div><dt>Status</dt><dd>Draft for sign-off</dd></div>
+          <div><dt>Scope</dt><dd>Waves 0–3 in v1</dd></div>
+          <div><dt>Reusability</dt><dd>Product core + tenant pack</dd></div>
+        </dl>
+      </div>
+    </section>
+
+    <div class="page">
+      <nav class="tabs" aria-label="On this page">
+        <a href="#buckets">1 · The two buckets</a>
+        <a href="#hangs-off">2 · What hangs off them</a>
+        <a href="#map">3 · Relationship map</a>
+        <a href="#explorer">4 · Component explorer</a>
+        <a href="#waves">5 · Deployment waves</a>
+        <a href="#boundary">6 · Core vs tenant</a>
+        <a href="#exclusions">7 · Exclusions</a>
+        <a href="#signoff">8 · Sign-off</a>
+      </nav>
+
+      <section class="section" id="buckets">
+        <div class="section-head">
+          <div><p class="eyebrow">1 · The two buckets</p><h2>Demand Request and Portfolio Item</h2></div>
+          <p class="lede">These two Elementum apps carry the whole process. A request enters as demand; if it needs funding or governance it becomes a portfolio item, and the same identifier follows it to the end.</p>
+        </div>
+
+        <div class="grid two">
+          <article class="card bucket">
+            <span class="badge badge-app">App</span>
+            <h3>Demand Request</h3>
+            <p class="ids">handle <span class="mono">DMD</span> · namespace <span class="mono">demand-request</span> · wave 1</p>
+            <p>Every technology ask lands here — business requests, technical debt, and security remediation alike. Its job is to end with a recorded decision, not to become a project.</p>
+            <ol class="steps">
+              <li><b>Capture</b> — one form that changes by demand type; drafts can be saved and resumed.</li>
+              <li><b>Validate</b> — submit enforces the mandatory set, so triage does not start on half a request.</li>
+              <li><b>Route</b> — the affected product determines the accountable owner automatically.</li>
+              <li><b>Screen</b> — check open demand, in-flight items, and the engineering backlog for overlap.</li>
+              <li><b>Dispose</b> — route to backlog, accept as investment, merge, defer, reject, or redirect, with a reason.</li>
+            </ol>
+            <p class="small" style="margin-top:12px"><strong>Most demand ends here</strong>, on an existing product team's backlog. That is the intended outcome, not a failure.</p>
+          </article>
+
+          <article class="card bucket two">
+            <span class="badge badge-app">App</span>
+            <h3>Portfolio Item</h3>
+            <p class="ids">handle <span class="mono">PFI</span> · namespace <span class="mono">portfolio-item</span> · waves 2–3</p>
+            <p>The funded bet. One record holds the business case, the decision, the baseline, and delivery health — so nothing is retyped into a second system after approval.</p>
+            <ol class="steps">
+              <li><b>Qualify</b> — structured case: options, cost by year, benefit owner, measurable outcomes.</li>
+              <li><b>Score</b> — the published scoring model ranks it against everything else, including mandatory work.</li>
+              <li><b>Decide</b> — value and type select the approval authority; conditions are recorded, not remembered.</li>
+              <li><b>Baseline</b> — approved funding is locked, which is what makes later variance meaningful.</li>
+              <li><b>Execute</b> — cadence, health with mandatory commentary, milestones, and control gates with evidence.</li>
+              <li><b>Realize</b> — outcomes stay open after delivery closes until the value is measured.</li>
+            </ol>
+          </article>
+        </div>
+
+        <div class="flow" style="margin-top:20px" aria-label="Demand to portfolio item to value">
+          <div class="flow-node active"><strong>Demand Request</strong><span>Capture → dispose</span></div>
+          <div class="flow-node"><strong>Portfolio Item</strong><span>Case → decision → delivery</span></div>
+          <div class="flow-node"><strong>Outcome</strong><span>Value after go-live</span></div>
+        </div>
+      </section>
+
+      <section class="section" id="hangs-off">
+        <div class="section-head">
+          <div><p class="eyebrow">2 · What hangs off them</p><h2>Everything else supports one of the two</h2></div>
+          <p class="lede">We think of the remaining apps as “child apps”. That is our shorthand for how they behave, not an Elementum feature — each one is an ordinary app with a relation back to its parent record.</p>
+        </div>
+
+        <div class="grid three">
+          <article class="card">
+            <h3>Why they are separate apps</h3>
+            <p>A supporting object gets its own app when it repeats or needs its own owner and dates. A portfolio item has many cost lines, several conditions, and a list of milestones — none of which fit in a single field.</p>
+          </article>
+          <article class="card">
+            <h3>What stays a field instead</h3>
+            <p>The demand disposition is a status plus a reason. Health rating and narrative are fields. Status history is native. The source data inventory listed these as separate tables; most should not become apps.</p>
+          </article>
+          <article class="card">
+            <h3>Optional modules</h3>
+            <p>Capacity, outcomes, dependencies, and vendor engagement are selectable modules rather than core. Each needs its own decision and, in some cases, an integration before it is worth deploying.</p>
+          </article>
+        </div>
+
+        <div class="counts" style="margin-top:18px">
+          <div class="count"><b data-count="spine">2</b><span>Spine apps</span></div>
+          <div class="count"><b data-count="child">10</b><span>Child apps</span></div>
+          <div class="count"><b data-count="optional">6</b><span>Optional modules</span></div>
+          <div class="count"><b data-count="element">15</b><span>Elements</span></div>
+          <div class="count"><b data-count="table">6</b><span>Table ports</span></div>
+          <div class="count"><b>10</b><span>Automations</span></div>
+        </div>
+      </section>
+
+      <section class="section" id="map">
+        <div class="section-head">
+          <div><p class="eyebrow">3 · Relationship map</p><h2>How the pieces connect</h2></div>
+          <p class="lede">Configuration flows down into the two spine apps; supporting records and modules hang below them; external systems feed in from the bottom. Hover to trace a connection, or click any box to open its detail.</p>
+        </div>
+        <div class="map-wrap" id="relationship-map"></div>
+        <div class="legend">
+          <span><i class="swatch t-spine"></i> Spine app</span>
+          <span><i class="swatch"></i> Child app</span>
+          <span><i class="swatch t-optional"></i> Optional module</span>
+          <span><i class="swatch t-element"></i> Element (configuration)</span>
+          <span><i class="swatch t-table"></i> Table port (external system)</span>
+        </div>
+        <p class="small" style="margin-top:10px">The map shows the load-bearing connections only. Each component's full relationship list is in its tile below.</p>
+      </section>
+
+      <section class="section" id="explorer">
+        <div class="section-head">
+          <div><p class="eyebrow">4 · Component explorer</p><h2>Every component, with its fields</h2></div>
+          <p class="lede">Open a tile to see stages, status options, the field list, views, layouts, and how it relates to other components. Field types are Elementum field types; the exact EDK builder names live in the agent specification.</p>
+        </div>
+        <div class="explorer-bar">
+          <button class="filter is-on" data-filter="all" aria-pressed="true" type="button">All</button>
+          <button class="filter" data-filter="spine" aria-pressed="false" type="button">Spine <span class="n" data-count="spine"></span></button>
+          <button class="filter" data-filter="child" aria-pressed="false" type="button">Child apps <span class="n" data-count="child"></span></button>
+          <button class="filter" data-filter="optional" aria-pressed="false" type="button">Optional <span class="n" data-count="optional"></span></button>
+          <button class="filter" data-filter="element" aria-pressed="false" type="button">Elements <span class="n" data-count="element"></span></button>
+          <button class="filter" data-filter="table" aria-pressed="false" type="button">Table ports <span class="n" data-count="table"></span></button>
+          <button class="ghost-button" id="toggle-all" type="button">Expand all</button>
+        </div>
+        <div class="tiles" id="tiles"></div>
+      </section>
+
+      <section class="section" id="waves">
+        <div class="section-head">
+          <div><p class="eyebrow">5 · Deployment waves</p><h2>What is applied, in what order</h2></div>
+          <p class="lede">Each wave is its own plan and apply. A wave is complete when its records, views, and automations run end to end on realistic data.</p>
+        </div>
+        <div class="timeline">
+          <div class="wave"><div class="wave-number">0</div><div><h3>Elements and groups</h3><p>15 configuration elements, 10 groups, access policies. Your records are loaded after apply.</p></div><aside><span class="badge badge-element">Element</span></aside></div>
+          <div class="wave"><div class="wave-number">1</div><div><h3>Demand Request</h3><p>The app with 22 fields, 3 stage layouts, 4 views, clarification child, and 3 automations.</p></div><aside><span class="badge badge-app">App</span> <span class="badge badge-auto">Automation</span></aside></div>
+          <div class="wave"><div class="wave-number">2</div><div><h3>Portfolio Item and decision</h3><p>Case, cost lines, conditions, scoring, mint-ID and authority routing, baseline lock.</p></div><aside><span class="badge badge-app">App</span> <span class="badge badge-auto">Automation</span></aside></div>
+          <div class="wave"><div class="wave-number">3</div><div><h3>Execution</h3><p>Milestones, control gates, risk, issue, change request, exception views, cadence and slippage rules.</p></div><aside><span class="badge badge-app">App</span> <span class="badge badge-view">Views</span></aside></div>
+          <div class="wave"><div class="wave-number">4–7</div><div><h3>Optional modules</h3><p>Capacity, then outcomes, then dependencies, then vendors — each selected independently.</p></div><aside><span class="decide">Decision pending</span></aside></div>
+          <div class="wave"><div class="wave-number">8</div><div><h3>Agents</h3><p>Assistive only: search, summarize, draft, and challenge. Writes go through published automations.</p></div><aside><span class="badge badge-agent">Agent</span></aside></div>
+        </div>
+      </section>
+
+      <section class="section" id="boundary">
+        <div class="section-head">
+          <div><p class="eyebrow">6 · Core vs tenant</p><h2>What is reusable, what is yours</h2></div>
+          <p class="lede">The apps, fields, and rules are the product. Your estate, labels, thresholds, and integrations are configuration records loaded after deployment, so the next organization reuses the same build.</p>
+        </div>
+        <div class="grid two">
+          <article class="card">
+            <span class="chip core">Product core — same for every customer</span>
+            <ul class="checklist">
+              <li>Demand and Portfolio Item lifecycles and field sets</li>
+              <li>A persistent identifier carried across related records</li>
+              <li>Structured business case and mandatory baseline lock</li>
+              <li>Gate, scoring, and authority mechanisms driven by element records</li>
+              <li>Cadence rules, health commentary, exception views</li>
+            </ul>
+          </article>
+          <article class="card">
+            <span class="chip tenant">Tenant pack — records, not code</span>
+            <ul class="checklist">
+              <li>Portfolio hierarchy, products, platforms, services</li>
+              <li>Authority labels (for example L0–L3) and value bands</li>
+              <li>Gate criteria and scoring weights per investment type</li>
+              <li>Group membership and who can see financials</li>
+              <li>CloudLinks and table mapping for Jira/ADO, ERP, identity, sourcing</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="section" id="exclusions">
+        <div class="section-head">
+          <div><p class="eyebrow">7 · Exclusions</p><h2>Not built in this specification</h2></div>
+          <p class="lede">Stated plainly so acceptance criteria are not written against something we are not delivering.</p>
+        </div>
+        <div class="grid three">
+          <article class="card"><h3>Portfolio dependency graph</h3><p>Delivered as registers, filters, and most-constrained-function views. A drawn network of every dependency is not in scope.</p></article>
+          <article class="card"><h3>Scenario optimizer</h3><p>Scenarios are include and exclude with roll-ups. No solver proposes a portfolio, and no model is simulated against the whole book.</p></article>
+          <article class="card"><h3>BI replacement</h3><p>List, kanban, and exception views replace the manual pack. Heat maps and executive dashboards stay in the BI tool.</p></article>
+          <article class="card"><h3>Second master data</h3><p>No vendor master, employee master, or general ledger. Those stay external table ports.</p></article>
+          <article class="card"><h3>Spreadsheet round-trip</h3><p>The business case is structured fields. We do not parse an uploaded workbook as the system of record.</p></article>
+          <article class="card"><h3>Autonomous decisions</h3><p>No agent sets a disposition, board outcome, gate pass, or realized value.</p></article>
+        </div>
+      </section>
+
+      <section class="section" id="signoff">
+        <div class="section-head">
+          <div><p class="eyebrow">8 · Sign-off</p><h2>Decisions needed before authoring</h2></div>
+          <p class="lede">Identity and scope choices are cheapest now. Handles, namespaces, and app boundaries cannot be changed in place once deployed.</p>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>#</th><th>Decision</th><th>Recommendation</th><th>Blocks</th><th>Owner</th><th>Approved</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>Two apps (demand and portfolio item) or three (demand, investment, initiative)</td><td>Two apps, one identifier</td><td>Wave 2 identity</td><td>Process owner</td><td></td></tr>
+              <tr><td>2</td><td>Handles and namespaces shown in the explorer</td><td>Generic product names, no customer prefix</td><td>All waves</td><td>Governance admin</td><td></td></tr>
+              <tr><td>3</td><td>Work-management source of record</td><td>One system for v1</td><td>Duplicate screening, wave 3 progress</td><td>Engineering lead</td><td></td></tr>
+              <tr><td>4</td><td>Which optional modules are in v1</td><td>Capacity and outcomes next; vendor last</td><td>Waves 4–7</td><td>Portfolio lead</td><td></td></tr>
+              <tr><td>5</td><td>Vendor system-of-record availability</td><td>Defer vendor engagement until it is live</td><td>Wave 7</td><td>Sourcing lead</td><td></td></tr>
+              <tr><td>6</td><td>Dependency visualization expectation</td><td>Register and constrained-function views only</td><td>Wave 6 acceptance</td><td>Process owner</td><td></td></tr>
+              <tr><td>7</td><td>v1 organizational scope</td><td>One value stream, a few products</td><td>Seed data volume</td><td>PM</td><td></td></tr>
+              <tr><td>8</td><td>Authority levels and value bands</td><td>Seed as threshold records</td><td>Wave 2 approvals</td><td>Finance partner</td><td></td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="callout warning" style="margin-top:16px"><strong>Open input:</strong> the solution architect's recommended build order has not been supplied. If it differs from the waves above, that order takes precedence and this plan is re-sequenced.</div>
+      </section>
+    </div>
+  </main>
+
+  <footer class="footer"><div class="footer-inner">Rules, integrations, and access: <a href="site/config.html">Rules &amp; access</a> · Process context: <a href="site/pm.html">stories and pain points</a> · Agent specification: <a href="docs/for-agent.md">docs/for-agent.md</a></div></footer>
+  <script src="site/explorer.js"></script>
+</body>
+</html>

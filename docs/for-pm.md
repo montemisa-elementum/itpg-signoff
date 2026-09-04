@@ -3,7 +3,13 @@
 **Audience:** project PM, process owners, stakeholders.  
 **Not for:** coding agents (see [for-agent.md](for-agent.md)).
 
-This is the plan for replacing a fragmented IT PMO stack (ServiceNow + Jira + Smartsheet + SharePoint + Confluence + Tableau + Excel) with an Elementum suite: **one front door for demand, one persistent ID, structured decisions, and live execution/value views.**
+This engagement is **tenant-0** for a generic Elementum **IT Portfolio & Governance** product. We will implement the suite so another company can clone the same apps and fill in *their* products, approval bands, and integrations — not a one-off that only matches this spreadsheet.
+
+For this company, that also means replacing a fragmented IT PMO stack (ServiceNow + Jira + Smartsheet + SharePoint + Confluence + Tableau + Excel) with **one front door for demand, one persistent ID, structured decisions, and live execution/value views.**
+
+**Core (every customer):** demand → backlog or investment, Portfolio ID, structured business case, configurable gates and scoring, baseline, execution cadence, optional capacity / outcomes / dependencies / vendors.
+
+**This customer only (configure, do not hard-wire):** Jira vs other backlogs, L0–L3 labels, TPRM/sourcing as the vendor SoR, their product hierarchy, the six-dimension acceptance process, and the pain-point evidence in the next section. Stories (Maya, Omar, SSO) are teaching examples, not their real estate.
 
 ---
 
