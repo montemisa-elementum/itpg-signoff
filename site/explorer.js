@@ -3,11 +3,31 @@
 
 const TYPES = {
   spine: { label: "Spine app", cls: "t-spine" },
+  app: { label: "App", cls: "t-app" },
   child: { label: "Child app", cls: "t-child" },
-  optional: { label: "Optional module", cls: "t-optional" },
   element: { label: "Element", cls: "t-element" },
   table: { label: "Table port", cls: "t-table" },
 };
+
+/* Optional modules are ordinary apps, elements, and table ports that are only
+   deployed when the module is selected. Membership lives on the entity. */
+const MODULES = [
+  { id: "scenarios", name: "Scenario planning", wave: "2–4",
+    blurb: "Compare candidate portfolios before committing: what is in, what is out, and what that costs.",
+    prereq: "No integration needed. Worth deploying once there are enough candidates to trade off." },
+  { id: "capacity", name: "Capacity", wave: "4",
+    blurb: "Test funding against the teams and scarce specialists who actually have to deliver the work.",
+    prereq: "Needs the workforce and directory port, and teams willing to declare available capacity." },
+  { id: "outcomes", name: "Outcomes", wave: "5",
+    blurb: "Keep benefits open after delivery closes, measured against a baseline captured before approval.",
+    prereq: "Needs the telemetry and adoption port, or benefit claims stay self-reported." },
+  { id: "dependencies", name: "Dependencies", wave: "6",
+    blurb: "Two-sided commitments between investments and shared functions, with lead times and escalation.",
+    prereq: "Needs shared functions to publish lead times and to accept commitments." },
+  { id: "vendors", name: "Vendors", wave: "7",
+    blurb: "Engagement performance on top of the vendor system of record. No local vendor master.",
+    prereq: "Blocked until the sourcing and third-party risk solution is live in the same environment." },
+];
 
 const ENTITIES = [
   {
@@ -200,40 +220,40 @@ const ENTITIES = [
     fields: [["Change target","Dropdown","Gate model · Scoring model · Threshold · Routing","Yes"],["Proposed change","Long text","—","Yes"],["Rationale","Long text","—","Yes"],["Approver","User","Governance authority","Yes"],["Published version","Text","Resulting element version","No"],["Status","Dropdown","Proposed · Approved · Rejected · Published","Yes"]],
     rels: [["stage-gate-model", "Publishes a new gate model version"],["scoring-model-version", "Publishes a new scoring version"],["doa-threshold", "Changes approval authority bands"]] },
 
-  { id: "capacity-plan", name: "Capacity Plan", short: "Capacity Plan", type: "optional", handle: "CAP", ns: "capacity-plan", wave: "4",
+  { id: "capacity-plan", scope: "optional", module: "capacity", name: "Capacity Plan", short: "Capacity Plan", type: "app", handle: "CAP", ns: "capacity-plan", wave: "4",
     blurb: "One record per team and planning period. Tests funding, general capacity, and scarce specialists together.",
     stages: ["Draft", "Constraint check", "Agreed", "Locked", "Archived"],
     statuses: { open: ["Draft", "Constraint check", "Agreed"], closed: ["Locked", "Superseded"] },
     fields: [["Team","Relation","Team & Squad element","Yes"],["Planning period","Text","Quarter or year","Yes"],["Supply rows","Child records","Role, skill, available FTE","Yes"],["Demand rows","Child records","From Portfolio Items, classified run/change/mandatory","Derived"],["Funding envelope rows","Child records","Year, amount, committed versus planned","Yes"],["Net position","Calculated","Supply minus demand","Derived"],["Over-committed","Calculated","Beyond available capacity","Derived"],["Binding constraint","Text","Which limit makes it undeliverable","Derived"]],
     rels: [["portfolio-item", "Demand generated from investment role and period needs"],["team-squad", "Capacity supply owner"],["role-skill", "Scarce specialist pools"],["workforce", "Employee and contractor roster"]] },
 
-  { id: "outcome-record", name: "Outcome Record", short: "Outcome", type: "optional", handle: "OUT", ns: "outcome-record", wave: "5",
+  { id: "outcome-record", scope: "optional", module: "outcomes", name: "Outcome Record", short: "Outcome", type: "child", handle: "OUT", ns: "outcome-record", wave: "5",
     blurb: "One named benefit with a baseline, target, and data source. Stays open after delivery closes.",
     stages: ["Defined", "Measuring", "Validating", "Closed"],
     statuses: { open: ["Defined", "Measuring", "Validating"], closed: ["Realized", "Partial", "Not realized", "Written off"] },
     fields: [["Portfolio Item","Relation","Parent item","Yes"],["Outcome type","Dropdown (dynamic)","Outcome Type element","Yes"],["Owner","User","Benefit owner","Yes"],["Measure","Text","What is counted","Yes"],["Measurement method","Text","How it is counted","Yes"],["Data source","Text","Named system","Yes"],["Baseline value / date","Decimal · Date","Captured before approval","Yes"],["Target profile","Child records","Value per period","Yes"],["Actuals","Child records or table","Per measurement period","Derived"],["Adoption measure","Decimal","Take-up of delivered capability","Yes"],["Validated by","User","Finance or assurance","Before Realized"]],
     rels: [["portfolio-item", "Created from the approved case outcome statements"],["outcome-type", "Business and technology outcome classes"],["telemetry", "Actuals and adoption from source systems"],["vendor-engagement", "Value attributed to vendor delivery"]] },
 
-  { id: "dependency", name: "Dependency", short: "Dependency", type: "optional", handle: "DEP", ns: "dependency", wave: "6",
+  { id: "dependency", scope: "optional", module: "dependencies", name: "Dependency", short: "Dependency", type: "app", handle: "DEP", ns: "dependency", wave: "6",
     blurb: "A two-sided commitment. Nothing is committed until the providing party accepts it.",
     stages: ["Proposed", "Accepted", "In progress", "At risk", "Closed"],
     statuses: { open: ["Proposed", "Accepted", "In progress", "At risk"], closed: ["Delivered", "Breached", "Cancelled", "Waived"] },
     fields: [["Receiving Portfolio Item","Relation","Who needs it","Yes"],["Providing party","Relation","Shared Function, team, or vendor engagement","Yes"],["Description","Long text","—","Yes"],["Need-by date","Date","Validated against lead time","Yes"],["Criticality","Dropdown","From criticality reference","Yes"],["Accepted by / at","User · Date-time","Provider acceptance","On accept"],["Lead time met","Calculated","Against published standard","Derived"],["Downstream impact","Long text","Affected milestones and gates","No"],["Escalation path","Relation","From Shared Function","Derived"]],
     rels: [["portfolio-item", "Inbound commitment; open ones block closure"],["shared-function", "Published owner, lead time, and escalation"],["milestone", "Breach moves dependent dates"],["vendor-engagement", "Vendor-provided dependencies resolve to an engagement"]] },
 
-  { id: "vendor-engagement", name: "Vendor Engagement", short: "Vendor", type: "optional", handle: "VEN", ns: "vendor-engagement", wave: "7",
+  { id: "vendor-engagement", scope: "optional", module: "vendors", name: "Vendor Engagement", short: "Vendor", type: "app", handle: "VEN", ns: "vendor-engagement", wave: "7",
     blurb: "Engagement performance on top of the vendor system of record. No local vendor master is created.",
     stages: ["Scoping", "Active", "Review", "Closing"],
     statuses: { open: ["Scoping", "Active", "Review"], closed: ["Completed", "Terminated"] },
     fields: [["Vendor reference","Table lookup","Vendor system of record","Yes"],["Contract reference","Table lookup","Vendor system of record","Yes"],["Engagement type","Dropdown","Systems integration · Managed service · Staff augmentation · Subscription","Yes"],["Internal owner","User","Accountable owner","Yes"],["Supported items","Relation","Portfolio Items and products","Yes"],["Commercial construct","Dropdown","Fixed price · Time and materials · Outcome-based","Yes"],["Committed / invoiced / forecast spend","Decimal","Against plan","Derived"],["Deliverables","Child records","Acceptance criteria and outcome","Yes"],["Performance score","Child records","Per review period","Yes"]],
     rels: [["portfolio-item", "Vendor work supporting funded items"],["vendor-sor", "Vendor, contract, risk, and SLA data consumed, not copied"],["finance-actuals", "Invoiced and committed spend"],["outcome-record", "Value realized through the vendor"]] },
 
-  { id: "funding-scenario", name: "Funding Scenario", short: "Scenario", type: "optional", handle: "SCN", ns: "funding-scenario", wave: "2–4",
+  { id: "funding-scenario", scope: "optional", module: "scenarios", name: "Funding Scenario", short: "Scenario", type: "app", handle: "SCN", ns: "funding-scenario", wave: "2–4",
     blurb: "A candidate portfolio: which investments are in, which are out, and what that costs. Include/exclude only, not an optimizer.",
     fields: [["Name","Text","Scenario label","Yes"],["Planning period","Text","—","Yes"],["Scenario lines","Child records","One per candidate item","Yes"],["Total value / cost","Calculated","Rolled up from lines","Derived"],["Run / change / mandatory split","Calculated","From included items","Derived"],["Locked as baseline","Boolean","Becomes the approved portfolio","No"]],
     rels: [["scenario-line", "One line per candidate investment"],["portfolio-item", "Locking a scenario sets approved funding"],["capacity-plan", "Tested against funding and capacity limits"]] },
 
-  { id: "scenario-line", name: "Scenario Line", short: "Scenario Line", type: "optional", handle: "SLN", ns: "scenario-line", wave: "2–4",
+  { id: "scenario-line", scope: "optional", module: "scenarios", name: "Scenario Line", short: "Scenario Line", type: "child", handle: "SLN", ns: "scenario-line", wave: "2–4",
     blurb: "One investment inside a scenario, marked included or excluded with the reason.",
     fields: [["Funding Scenario","Relation","Parent scenario","Yes"],["Portfolio Item","Relation","Candidate investment","Yes"],["Included","Boolean","In or out of this scenario","Yes"],["Rationale","Long text","Why in or out","No"]],
     rels: [["funding-scenario", "Belongs to one scenario"],["portfolio-item", "References a candidate investment"]] },
@@ -293,17 +313,17 @@ const ENTITIES = [
     fields: [["Name","Text","—","Yes"],["Type","Dropdown","Product · Platform · Shared function","Yes"],["Portfolio node","Relation","Portfolio Hierarchy","No"],["Owner","User","—","Yes"]],
     rels: [["capacity-plan", "One plan per team and period"],["product-platform", "Accountable team for a product"]] },
 
-  { id: "role-skill", name: "Role & Skill", short: "Roles & Skills", type: "element", handle: "RSKIL", ns: "role-skill", wave: "0",
+  { id: "role-skill", scope: "optional", module: "capacity", name: "Role & Skill", short: "Roles & Skills", type: "element", handle: "RSKIL", ns: "role-skill", wave: "0",
     blurb: "Roles and skills, flagging the scarce specialists that are usually the real constraint.",
     fields: [["Name","Text","—","Yes"],["Category","Text","Engineering, architecture, security, data","Yes"],["Scarce specialist","Boolean","Constraint pool","Yes"]],
     rels: [["capacity-plan", "Supply and demand are expressed by role and skill"]] },
 
-  { id: "shared-function", name: "Shared Function", short: "Shared Functions", type: "element", handle: "SHF", ns: "shared-function", wave: "0",
+  { id: "shared-function", scope: "optional", module: "dependencies", name: "Shared Function", short: "Shared Functions", type: "element", handle: "SHF", ns: "shared-function", wave: "0",
     blurb: "Architecture, security, cloud platform, identity, data, integration, network — with published lead times.",
     fields: [["Name","Text","—","Yes"],["Owner","User","Accountable owner","Yes"],["Standard lead time (days)","Number","Published expectation","Yes"],["Capacity units","Number","Declared capacity","No"],["Escalation path","Text","By criticality","Yes"]],
     rels: [["dependency", "Validates need-by dates and routes requests"]] },
 
-  { id: "outcome-type", name: "Outcome Type", short: "Outcome Types", type: "element", handle: "OTP", ns: "outcome-type", wave: "0",
+  { id: "outcome-type", scope: "optional", module: "outcomes", name: "Outcome Type", short: "Outcome Types", type: "element", handle: "OTP", ns: "outcome-type", wave: "0",
     blurb: "Business and technology outcome classes: run cost, unit cost, incident reduction, cycle time, adoption.",
     fields: [["Name","Text","—","Yes"],["Class","Dropdown","Business · Technology","Yes"],["Default measurement method","Text","—","No"]],
     rels: [["outcome-record", "Classifies each benefit"]] },
@@ -333,12 +353,12 @@ const ENTITIES = [
     fields: [["Person key","Text","Directory identifier","Yes"],["Status","Text","Active or leaver","Yes"],["Team","Text","—","No"],["Role","Text","—","No"],["Effective dates","Date","—","No"]],
     rels: [["capacity-plan", "Employee and contractor supply"],["product-platform", "Detects owners who have left or changed role"]] },
 
-  { id: "telemetry", name: "Telemetry & adoption", short: "Telemetry", type: "table", handle: "—", ns: "table port", wave: "5",
+  { id: "telemetry", scope: "optional", module: "outcomes", name: "Telemetry & adoption", short: "Telemetry", type: "table", handle: "—", ns: "table port", wave: "5",
     blurb: "Product telemetry and adoption measures, so benefit claims are evidenced rather than asserted.",
     fields: [["Outcome key","Text","Mapping key","Yes"],["Period","Text","—","Yes"],["Actual value","Decimal","—","Yes"],["Source timestamp","Date-time","Freshness","Yes"]],
     rels: [["outcome-record", "Actuals and adoption without manual entry"]] },
 
-  { id: "vendor-sor", name: "Vendor system of record", short: "Vendor SoR", type: "table", handle: "—", ns: "table port", wave: "7",
+  { id: "vendor-sor", scope: "optional", module: "vendors", name: "Vendor system of record", short: "Vendor SoR", type: "table", handle: "—", ns: "table port", wave: "7",
     blurb: "Vendor master, contract, risk position, SLA breaches, and the savings ledger from the sourcing and third-party risk solution.",
     fields: [["Vendor","Text","Vendor identity","Yes"],["Contract","Text","Governing contract","Yes"],["Risk position","Text","Current risk rating","Yes"],["SLA breach","Text","Service level record","No"],["Savings ledger entry","Decimal","Claimed sourcing savings","No"]],
     rels: [["vendor-engagement", "Consumed, never duplicated locally"],["outcome-record", "Savings reconciled to avoid double counting"]] },
@@ -357,6 +377,7 @@ const MAP_NODES = [
   { id: "clarification-request", x: 90, y: 248 },
   { id: "demand-request", x: 350, y: 248, hub: true },
   { id: "portfolio-item", x: 800, y: 248, hub: true },
+  { id: "optional-modules", x: 1105, y: 248, label: "Optional modules", cls: "t-optional", target: "optional" },
 
   { id: "cost-line", x: 120, y: 402 },
   { id: "decision-condition", x: 310, y: 402 },
@@ -365,16 +386,9 @@ const MAP_NODES = [
   { id: "portfolio-risk", x: 880, y: 402 },
   { id: "portfolio-change-request", x: 1080, y: 402 },
 
-  { id: "capacity-plan", x: 200, y: 520 },
-  { id: "outcome-record", x: 420, y: 520 },
-  { id: "dependency", x: 640, y: 520 },
-  { id: "vendor-engagement", x: 860, y: 520 },
-  { id: "funding-scenario", x: 1080, y: 520 },
-
-  { id: "work-management", x: 260, y: 632 },
-  { id: "finance-actuals", x: 520, y: 632 },
-  { id: "telemetry", x: 760, y: 632 },
-  { id: "vendor-sor", x: 1000, y: 632 },
+  { id: "work-management", x: 280, y: 522 },
+  { id: "finance-actuals", x: 600, y: 522 },
+  { id: "cloud-consumption", x: 900, y: 522 },
 ];
 
 const MAP_EDGES = [
@@ -396,17 +410,12 @@ const MAP_EDGES = [
   ["portfolio-item", "portfolio-risk", ""],
   ["portfolio-item", "portfolio-change-request", ""],
 
-  ["portfolio-item", "capacity-plan", ""],
-  ["portfolio-item", "outcome-record", ""],
-  ["portfolio-item", "dependency", ""],
-  ["portfolio-item", "vendor-engagement", ""],
-  ["portfolio-item", "funding-scenario", ""],
+  ["portfolio-item", "optional-modules", "if selected"],
 
   ["work-management", "demand-request", "duplicates"],
   ["work-management", "portfolio-item", "progress"],
   ["finance-actuals", "portfolio-item", "cost"],
-  ["telemetry", "outcome-record", "actuals"],
-  ["vendor-sor", "vendor-engagement", "vendor data"],
+  ["cloud-consumption", "portfolio-item", "run cost"],
 ];
 
 const byId = new Map(ENTITIES.map((e) => [e.id, e]));
@@ -421,7 +430,7 @@ function svgEl(name, attrs = {}) {
 
 function renderMap(container) {
   const svg = svgEl("svg", {
-    viewBox: "0 0 1260 690",
+    viewBox: "0 0 1260 580",
     class: "map-svg",
     role: "img",
     "aria-label": "Relationship map of ITPG apps, elements, and table ports",
@@ -460,11 +469,12 @@ function renderMap(container) {
 
   for (const node of MAP_NODES) {
     const entity = byId.get(node.id);
-    if (!entity) continue;
+    const cls = entity ? TYPES[entity.type].cls : node.cls;
     const group = svgEl("a", {
-      class: `map-node ${TYPES[entity.type].cls}${node.hub ? " is-hub" : ""}`,
-      href: `#entity-${entity.id}`,
-      "data-id": entity.id,
+      class: `map-node ${cls}${node.hub ? " is-hub" : ""}`,
+      href: entity ? `#entity-${node.id}` : `#${node.target}`,
+      "data-id": node.id,
+      "data-target": node.target || "",
       tabindex: "0",
     });
     group.appendChild(
@@ -477,10 +487,12 @@ function renderMap(container) {
       }),
     );
     const label = svgEl("text", { x: node.x, y: node.y + 4, "text-anchor": "middle" });
-    label.textContent = entity.short;
+    label.textContent = entity ? entity.short : node.label;
     group.appendChild(label);
     const title = svgEl("title");
-    title.textContent = `${entity.name} — ${TYPES[entity.type].label}`;
+    title.textContent = entity
+      ? `${entity.name} — ${TYPES[entity.type].label}`
+      : "Optional modules — selected per organization";
     group.appendChild(title);
     nodeLayer.appendChild(group);
   }
@@ -507,6 +519,11 @@ function renderMap(container) {
     node.addEventListener("blur", () => setActive(null));
     node.addEventListener("click", (event) => {
       event.preventDefault();
+      const target = node.dataset.target;
+      if (target) {
+        document.getElementById(target)?.scrollIntoView({ behavior: "smooth", block: "start" });
+        return;
+      }
       openEntity(node.dataset.id);
     });
   });
@@ -581,11 +598,32 @@ function tile(entity) {
     </details>`;
 }
 
+function moduleBlock(mod) {
+  const members = ENTITIES.filter((e) => e.module === mod.id);
+  const adds = members
+    .map((e) => `<li><strong>${e.name}</strong> — ${TYPES[e.type].label}${e.type === "table" ? " (integration required)" : ""}</li>`)
+    .join("");
+  return `
+    <article class="module" id="module-${mod.id}">
+      <header>
+        <div>
+          <span class="tile-type">Optional module · wave ${mod.wave}</span>
+          <h3>${mod.name}</h3>
+          <p>${mod.blurb}</p>
+        </div>
+        <p class="module-prereq">${mod.prereq}</p>
+      </header>
+      <h5>What it adds</h5>
+      <ul class="module-adds">${adds}</ul>
+      <div class="tiles">${members.map(tile).join("")}</div>
+    </article>`;
+}
+
 function openEntity(id) {
   const el = document.getElementById(`entity-${id}`);
   if (!el) return;
   const filter = document.querySelector(".filter.is-on");
-  if (filter && filter.dataset.filter !== "all" && el.dataset.type !== filter.dataset.filter) {
+  if (filter && filter.dataset.filter !== "all" && el.closest("#tiles") && el.dataset.type !== filter.dataset.filter) {
     applyFilter("all");
   }
   el.open = true;
@@ -600,8 +638,17 @@ function applyFilter(value) {
     button.classList.toggle("is-on", on);
     button.setAttribute("aria-pressed", String(on));
   });
-  document.querySelectorAll(".tile").forEach((el) => {
+  document.querySelectorAll("#tiles .tile").forEach((el) => {
     el.hidden = value !== "all" && el.dataset.type !== value;
+  });
+}
+
+function jumpOnClick(host) {
+  host.addEventListener("click", (event) => {
+    const jump = event.target.closest("[data-jump]");
+    if (!jump) return;
+    event.preventDefault();
+    openEntity(jump.dataset.jump);
   });
 }
 
@@ -609,15 +656,17 @@ function init() {
   const mapHost = document.getElementById("relationship-map");
   if (mapHost) renderMap(mapHost);
 
+  const core = ENTITIES.filter((e) => e.scope !== "optional");
   const tiles = document.getElementById("tiles");
   if (tiles) {
-    tiles.innerHTML = ENTITIES.map(tile).join("");
-    tiles.addEventListener("click", (event) => {
-      const jump = event.target.closest("[data-jump]");
-      if (!jump) return;
-      event.preventDefault();
-      openEntity(jump.dataset.jump);
-    });
+    tiles.innerHTML = core.map(tile).join("");
+    jumpOnClick(tiles);
+  }
+
+  const modules = document.getElementById("modules");
+  if (modules) {
+    modules.innerHTML = MODULES.map(moduleBlock).join("");
+    jumpOnClick(modules);
   }
 
   document.querySelectorAll(".filter").forEach((button) => {
@@ -634,11 +683,10 @@ function init() {
     });
   }
 
-  const counts = { spine: 0, child: 0, optional: 0, element: 0, table: 0 };
-  ENTITIES.forEach((e) => { counts[e.type] += 1; });
-  Object.entries(counts).forEach(([type, n]) => {
-    const host = document.querySelector(`[data-count="${type}"]`);
-    if (host) host.textContent = String(n);
+  const counts = { spine: 0, app: 0, child: 0, element: 0, table: 0, modules: MODULES.length };
+  core.forEach((e) => { counts[e.type] += 1; });
+  Object.entries(counts).forEach(([key, n]) => {
+    document.querySelectorAll(`[data-count="${key}"]`).forEach((host) => { host.textContent = String(n); });
   });
 
   if (location.hash.startsWith("#entity-")) {

@@ -19,9 +19,10 @@
   <main>
     <section class="hero">
       <div class="hero-inner">
-        <p class="eyebrow">Sign-off document · IT Portfolio &amp; Governance</p>
-        <h1>It comes down to two things: demand, and what we fund.</h1>
-        <p>Everything in this solution is either a request coming in, an investment we decided to make, or something that hangs off one of those two records. This page lists the Elementum components that implement that, so each piece can be approved before authoring starts.</p>
+        <p class="eyebrow">Build specification · for sign-off</p>
+        <h1>IT Portfolio &amp; Governance on Elementum</h1>
+        <p class="hero-sub">We see IT portfolio and governance as falling into two buckets: the <strong>demand</strong> arriving from the business, and the <strong>investments</strong> the organization decides to fund. Managing those well is the whole job — knowing what was asked for and what happened to it, deciding what gets funded on a consistent basis, and staying honest about delivery and value afterwards.</p>
+        <p>This document sets out the Elementum components that implement it — the apps, elements, automations, and integration points — so each piece can be approved before any authoring starts.</p>
         <dl class="meta">
           <div><dt>Platform</dt><dd>Elementum (EDK / TypeScript)</dd></div>
           <div><dt>Status</dt><dd>Draft for sign-off</dd></div>
@@ -37,10 +38,11 @@
         <a href="#hangs-off">2 · What hangs off them</a>
         <a href="#map">3 · Relationship map</a>
         <a href="#explorer">4 · Component explorer</a>
-        <a href="#waves">5 · Deployment waves</a>
-        <a href="#boundary">6 · Core vs tenant</a>
-        <a href="#exclusions">7 · Exclusions</a>
-        <a href="#signoff">8 · Sign-off</a>
+        <a href="#optional">5 · Optional modules</a>
+        <a href="#waves">6 · Deployment waves</a>
+        <a href="#boundary">7 · Core vs tenant</a>
+        <a href="#exclusions">8 · Exclusions</a>
+        <a href="#signoff">9 · Sign-off</a>
       </nav>
 
       <section class="section" id="buckets">
@@ -104,18 +106,18 @@
             <p>The demand disposition is a status plus a reason. Health rating and narrative are fields. Status history is native. The source data inventory listed these as separate tables; most should not become apps.</p>
           </article>
           <article class="card">
-            <h3>Optional modules</h3>
-            <p>Capacity, outcomes, dependencies, and vendor engagement are selectable modules rather than core. Each needs its own decision and, in some cases, an integration before it is worth deploying.</p>
+            <h3>What is deferred</h3>
+            <p>Capacity, outcomes, dependencies, vendors, and scenario planning are grouped into <a href="#optional">optional modules</a>. Each is a decision on its own, and several wait on an integration.</p>
           </article>
         </div>
 
         <div class="counts" style="margin-top:18px">
           <div class="count"><b data-count="spine">2</b><span>Spine apps</span></div>
           <div class="count"><b data-count="child">10</b><span>Child apps</span></div>
-          <div class="count"><b data-count="optional">6</b><span>Optional modules</span></div>
-          <div class="count"><b data-count="element">15</b><span>Elements</span></div>
-          <div class="count"><b data-count="table">6</b><span>Table ports</span></div>
+          <div class="count"><b data-count="element">12</b><span>Elements</span></div>
+          <div class="count"><b data-count="table">4</b><span>Table ports</span></div>
           <div class="count"><b>10</b><span>Automations</span></div>
+          <div class="count"><b data-count="modules">5</b><span>Optional modules</span></div>
         </div>
       </section>
 
@@ -137,14 +139,13 @@
 
       <section class="section" id="explorer">
         <div class="section-head">
-          <div><p class="eyebrow">4 · Component explorer</p><h2>Every component, with its fields</h2></div>
+          <div><p class="eyebrow">4 · Component explorer</p><h2>Every component in the core build</h2></div>
           <p class="lede">Open a tile to see stages, status options, the field list, views, layouts, and how it relates to other components. Field types are Elementum field types; the exact EDK builder names live in the agent specification.</p>
         </div>
         <div class="explorer-bar">
           <button class="filter is-on" data-filter="all" aria-pressed="true" type="button">All</button>
-          <button class="filter" data-filter="spine" aria-pressed="false" type="button">Spine <span class="n" data-count="spine"></span></button>
+          <button class="filter" data-filter="spine" aria-pressed="false" type="button">Spine apps <span class="n" data-count="spine"></span></button>
           <button class="filter" data-filter="child" aria-pressed="false" type="button">Child apps <span class="n" data-count="child"></span></button>
-          <button class="filter" data-filter="optional" aria-pressed="false" type="button">Optional <span class="n" data-count="optional"></span></button>
           <button class="filter" data-filter="element" aria-pressed="false" type="button">Elements <span class="n" data-count="element"></span></button>
           <button class="filter" data-filter="table" aria-pressed="false" type="button">Table ports <span class="n" data-count="table"></span></button>
           <button class="ghost-button" id="toggle-all" type="button">Expand all</button>
@@ -152,9 +153,18 @@
         <div class="tiles" id="tiles"></div>
       </section>
 
+      <section class="section" id="optional">
+        <div class="section-head">
+          <div><p class="eyebrow">5 · Optional modules</p><h2>Grouped separately, decided separately</h2></div>
+          <p class="lede">These are ordinary apps, elements, and table ports — nothing special about how they are built. They are set apart because the core build in section 4 works without them, each is its own go or no-go, and several wait on an integration that does not exist yet.</p>
+        </div>
+        <div id="modules"></div>
+        <p class="small">Skipping a module costs you that capability and nothing else: no field on Demand Request or Portfolio Item depends on one, and a module can be added in a later wave without rework. Do not write acceptance criteria against a module until it has been selected.</p>
+      </section>
+
       <section class="section" id="waves">
         <div class="section-head">
-          <div><p class="eyebrow">5 · Deployment waves</p><h2>What is applied, in what order</h2></div>
+          <div><p class="eyebrow">6 · Deployment waves</p><h2>What is applied, in what order</h2></div>
           <p class="lede">Each wave is its own plan and apply. A wave is complete when its records, views, and automations run end to end on realistic data.</p>
         </div>
         <div class="timeline">
@@ -162,14 +172,14 @@
           <div class="wave"><div class="wave-number">1</div><div><h3>Demand Request</h3><p>The app with 22 fields, 3 stage layouts, 4 views, clarification child, and 3 automations.</p></div><aside><span class="badge badge-app">App</span> <span class="badge badge-auto">Automation</span></aside></div>
           <div class="wave"><div class="wave-number">2</div><div><h3>Portfolio Item and decision</h3><p>Case, cost lines, conditions, scoring, mint-ID and authority routing, baseline lock.</p></div><aside><span class="badge badge-app">App</span> <span class="badge badge-auto">Automation</span></aside></div>
           <div class="wave"><div class="wave-number">3</div><div><h3>Execution</h3><p>Milestones, control gates, risk, issue, change request, exception views, cadence and slippage rules.</p></div><aside><span class="badge badge-app">App</span> <span class="badge badge-view">Views</span></aside></div>
-          <div class="wave"><div class="wave-number">4–7</div><div><h3>Optional modules</h3><p>Capacity, then outcomes, then dependencies, then vendors — each selected independently.</p></div><aside><span class="decide">Decision pending</span></aside></div>
+          <div class="wave"><div class="wave-number">4–7</div><div><h3>Optional modules</h3><p>Scenario planning, capacity, outcomes, dependencies, then vendors — each selected independently.</p></div><aside><span class="decide">Decision pending</span></aside></div>
           <div class="wave"><div class="wave-number">8</div><div><h3>Agents</h3><p>Assistive only: search, summarize, draft, and challenge. Writes go through published automations.</p></div><aside><span class="badge badge-agent">Agent</span></aside></div>
         </div>
       </section>
 
       <section class="section" id="boundary">
         <div class="section-head">
-          <div><p class="eyebrow">6 · Core vs tenant</p><h2>What is reusable, what is yours</h2></div>
+          <div><p class="eyebrow">7 · Core vs tenant</p><h2>What is reusable, what is yours</h2></div>
           <p class="lede">The apps, fields, and rules are the product. Your estate, labels, thresholds, and integrations are configuration records loaded after deployment, so the next organization reuses the same build.</p>
         </div>
         <div class="grid two">
@@ -198,7 +208,7 @@
 
       <section class="section" id="exclusions">
         <div class="section-head">
-          <div><p class="eyebrow">7 · Exclusions</p><h2>Not built in this specification</h2></div>
+          <div><p class="eyebrow">8 · Exclusions</p><h2>Not built in this specification</h2></div>
           <p class="lede">Stated plainly so acceptance criteria are not written against something we are not delivering.</p>
         </div>
         <div class="grid three">
@@ -213,7 +223,7 @@
 
       <section class="section" id="signoff">
         <div class="section-head">
-          <div><p class="eyebrow">8 · Sign-off</p><h2>Decisions needed before authoring</h2></div>
+          <div><p class="eyebrow">9 · Sign-off</p><h2>Decisions needed before authoring</h2></div>
           <p class="lede">Identity and scope choices are cheapest now. Handles, namespaces, and app boundaries cannot be changed in place once deployed.</p>
         </div>
         <div class="table-wrap">
