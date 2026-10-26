@@ -1,0 +1,843 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ITPG — The flow</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .hero h1 { font-size: clamp(32px, 4vw, 48px); }
+    .story { display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: 28px; align-items: start; }
+    .legend { display: flex; flex-wrap: wrap; gap: 10px; margin: 0 0 22px; }
+    .legend span {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 6px 10px 6px 6px; border: 1px solid var(--line); border-radius: 999px;
+      background: #fff; font-size: 13px; font-weight: 700;
+    }
+    .mark {
+      width: 22px; height: 22px; border-radius: 50%;
+      display: grid; place-items: center; flex: 0 0 auto;
+      font-size: 12px; font-weight: 800; line-height: 1;
+    }
+    .mark.full { color: var(--teal); background: var(--teal-soft); }
+    .mark.full::after { content: "✓"; }
+    .mark.partial { color: var(--amber); background: var(--amber-soft); }
+    .mark.partial::after { content: "½"; }
+    .mark.none { color: var(--red); background: #fff; box-shadow: inset 0 0 0 2px var(--red); }
+    .rail {
+      position: sticky; top: 84px;
+      display: flex; flex-direction: column; gap: 4px;
+      padding: 10px; border: 1px solid var(--line); border-radius: 16px;
+      background: #fff; box-shadow: var(--shadow);
+    }
+    .rail button {
+      display: block; width: 100%; padding: 10px 12px;
+      border: 0; border-radius: 10px; background: transparent;
+      color: var(--ink); text-align: left; cursor: pointer; font: inherit;
+    }
+    .rail button strong { display: block; font-size: 15px; }
+    .rail button small { color: var(--muted); }
+    .rail button[aria-current="step"] { background: var(--navy); color: #fff; }
+    .rail button[aria-current="step"] small { color: #c6d9e2; }
+    .scene { min-width: 0; }
+    .scene-kicker {
+      margin: 0 0 6px; color: var(--teal);
+      font-size: 12px; font-weight: 800; letter-spacing: .12em; text-transform: uppercase;
+    }
+    #scene-title { margin: 0 0 14px; scroll-margin-top: 88px; }
+    .prose { max-width: 74ch; }
+    .prose p { margin: 0 0 12px; }
+    blockquote.as {
+      margin: 0 0 12px; padding: 12px 14px;
+      border-left: 3px solid var(--teal); border-radius: 0 12px 12px 0;
+      background: var(--teal-soft); color: var(--navy); font-weight: 650;
+    }
+    .people { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 10px; margin: 4px 0 22px; }
+    .people article { padding: 12px 14px; border: 1px solid var(--line); border-radius: 14px; background: #fff; }
+    .people strong { display: block; color: var(--navy); }
+    .people span { color: var(--muted); font-size: 14px; }
+    .group-label { margin: 18px 0 8px; color: var(--navy); font-size: 15px; }
+    .gcard { margin-bottom: 10px; border: 1px solid var(--line); border-radius: 16px; background: #fff; box-shadow: var(--shadow); }
+    .ghead {
+      display: grid; grid-template-columns: 22px 1fr auto; gap: 12px; align-items: center;
+      width: 100%; padding: 14px; border: 0; background: transparent;
+      text-align: left; cursor: pointer; font: inherit; color: inherit;
+    }
+    .ghead strong { display: block; color: var(--navy); }
+    .ghead em { font-style: normal; font-size: 12px; font-weight: 800; }
+    .ghead em.full { color: var(--teal); }
+    .ghead em.partial { color: var(--amber); }
+    .ghead em.none { color: var(--red); }
+    .ghead .helps { display: block; margin-top: 3px; color: var(--ink); font-weight: 500; }
+    .chev { color: var(--teal); font-size: 13px; font-weight: 800; }
+    .example { padding: 0 16px 16px 48px; }
+    .example .note { margin: 8px 0 0; color: var(--muted); }
+    .check-label {
+      margin: 12px 0 0; color: var(--navy); font-size: 12px; font-weight: 800;
+      letter-spacing: .08em; text-transform: uppercase;
+    }
+    .check-label:first-child { margin-top: 0; }
+    .field-row {
+      display: grid; grid-template-columns: 22px 1fr; gap: 4px 10px;
+      padding: 9px 0; border-bottom: 1px solid var(--line);
+    }
+    .tick { font-weight: 800; line-height: 1.4; }
+    .tick.have { color: var(--teal); }
+    .tick.held { color: var(--amber); }
+    .tick.missing { color: var(--red); }
+    .fname { font-weight: 750; color: var(--navy); }
+    .req {
+      margin-left: 8px; color: var(--muted); font-size: 11px; font-weight: 800;
+      letter-spacing: .04em; text-transform: uppercase;
+    }
+    .purpose, .got { display: block; font-weight: 500; }
+    .purpose { color: var(--muted); }
+    .got { margin-top: 2px; }
+    .ask {
+      margin-top: 12px; padding: 12px 14px; border-radius: 12px; background: var(--red-soft);
+    }
+    .ask strong { display: block; margin-bottom: 4px; color: var(--red); }
+    .ask ul { margin: 0; padding-left: 18px; }
+    .ask li { margin: 4px 0; }
+    .lines { display: grid; gap: 6px; margin: 0; }
+    .lines div { display: grid; grid-template-columns: 200px 1fr; gap: 10px; }
+    .lines dt { color: var(--muted); }
+    .lines dd { margin: 0; font-weight: 650; }
+    .pager { display: flex; justify-content: space-between; gap: 12px; margin-top: 18px; }
+    .navbtn {
+      padding: 10px 14px; border: 1px solid var(--line); border-radius: 10px;
+      background: #fff; color: var(--navy); font: inherit; font-weight: 750; cursor: pointer;
+    }
+    .navbtn:disabled { opacity: .4; cursor: default; }
+    @media (max-width: 860px) {
+      .story { grid-template-columns: 1fr; }
+      .rail { position: static; flex-direction: row; overflow: auto; }
+      .rail button { min-width: 140px; }
+      .example, .lines div { padding-left: 16px; }
+      .lines div { grid-template-columns: 1fr; padding-left: 0; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="brand-mark">ITPG</span> The flow</div>
+    <nav class="nav" aria-label="Primary">
+      <a href="../index.html">Solution design</a>
+      <a href="flow.html" aria-current="page">The flow</a>
+      <a href="config.html">Rules &amp; agents</a>
+      <a href="pm.html">Requirements context</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">User stories</p>
+      <h1>One technology request, told by the people who handle it</h1>
+      <p class="hero-sub">A sponsor wants a single member experience across digital, voice, and assisted channels. Each step is the user story of the group who handles that request. Governance data is entered first, and it is the prerequisite for everything after it.</p>
+    </div>
+  </section>
+
+  <main class="page">
+    <div class="legend" id="legend"></div>
+    <div class="story">
+      <nav class="rail" id="rail" aria-label="Flow"></nav>
+      <div class="scene" id="scene"></div>
+    </div>
+  </main>
+
+  <script>
+    const STATUS = {
+      full: "Fully provided",
+      partial: "Partially provided",
+      none: "Not provided"
+    };
+
+    const LISTS = {
+      valueStreams: {
+        name: "Value streams",
+        status: "partial",
+        note: "36 capabilities, with descriptions. Six name an owner. Thirty owners are blank.",
+        source: "Their workbook, tab 2.",
+        lines: [
+          ["Value stream", "Omni-channel Enablement"],
+          ["Description", "Connects digital, voice, and assisted channels into one experience"],
+          ["Owner", "saurabh.tandon@elevancehealth.com"],
+          ["Active", "Yes"]
+        ]
+      },
+      products: {
+        name: "Products and platforms",
+        status: "none",
+        note: "Section B is still the template. The register needs a product, an owner, and an owning organization. Lucia asked whether this list is the AppLab catalog.",
+        source: "Stand-in. Nothing in their file can be loaded here.",
+        lines: [
+          ["Product", "Digital Front Door"],
+          ["Kind", "Product"],
+          ["Value stream", "Omni-channel Enablement"],
+          ["Owning organization", "Commercial, which is also still missing"],
+          ["Product owner", "No person record to point at"]
+        ]
+      },
+      orgUnits: {
+        name: "Organization units",
+        status: "none",
+        note: "The organization list is still owed. Commercial appears as a label on their portfolio extract. That label is not an organization record.",
+        source: "Stand-in.",
+        lines: [
+          ["Business unit", "Commercial"],
+          ["Cost centre", "CC-4410 Member Experience"]
+        ]
+      },
+      people: {
+        name: "People",
+        status: "none",
+        note: "The people tab does not list members. A user field needs an email. Two owner emails do exist on value streams, including Saurabh on Omni-channel Enablement.",
+        source: "Stand-in, except the value-stream owner.",
+        lines: [
+          ["Requester", "jordan.lee@elevancehealth.com"],
+          ["Sponsor", "priya.shah@elevancehealth.com"],
+          ["Value-stream owner, from their file", "saurabh.tandon@elevancehealth.com"]
+        ]
+      },
+      groups: {
+        name: "Groups",
+        status: "none",
+        note: "Every AD group on the people tab is Create / TBD. Routing and gate approval name groups that do not exist yet.",
+        source: "Stand-in.",
+        lines: [
+          ["Group they named", "Workstream Execution Leads"],
+          ["AD group", "Create / TBD"],
+          ["Also named", "Corporate Investment Leadership"]
+        ]
+      },
+      demandTypes: {
+        name: "Demand types",
+        status: "partial",
+        note: "Five types have a name, a path, and a description. Triage SLA is not a single number of business days, so the records cannot be saved yet. Their sheet says Strategic for this type. The field stores Run, Change, or Mandatory. Working choice is Change, and it still needs a confirmation.",
+        source: "Their workbook, tab 3.",
+        lines: [
+          ["Demand type", "Corporate Investment / SVRO"],
+          ["Class on their sheet", "Strategic"],
+          ["Class stored for now", "Change. Run keeps something going. Change is discretionary work. Mandatory is an obligation."],
+          ["Default path", "Investment"],
+          ["Triage SLA", "Blank"],
+          ["Evidence they require", "Business case, cost and benefit, impacted services, rough effort, governance artifacts, KPIs and milestones"]
+        ]
+      },
+      routing: {
+        name: "Routing rules",
+        status: "partial",
+        note: "The rules are in the file and are checked in priority order. None of them have an email, so a request can match a rule and still cannot be assigned to a person.",
+        source: "Their workbook, tab 4.",
+        lines: [
+          ["Priority", "20"],
+          ["Demand type", "Corporate Investment / SVRO"],
+          ["Value stream", "Omni-channel Enablement"],
+          ["Route to", "SAUARABH"],
+          ["Owner email", "Blank"]
+        ]
+      },
+      reasons: {
+        name: "Triage reason codes",
+        status: "full",
+        note: "One reason for each of the six decisions, with the sentence the requester would see.",
+        source: "Their workbook, tab 5.",
+        lines: [
+          ["Decision", "Accept as investment"],
+          ["Code", "ACC-01"],
+          ["Reason", "Meets the investment threshold"],
+          ["Requester sees", "Your request will proceed as an investment candidate and go through stage-gate governance."]
+        ]
+      },
+      funding: {
+        name: "Funding types",
+        status: "full",
+        note: "Nine ways work is funded, with descriptions. This list says whose money it is. Demand type says what kind of request it is.",
+        source: "Their workbook, tab 10.",
+        lines: [
+          ["Funding type", "Corporate Investments"],
+          ["Description", "Large corporate-sponsored programs managed through the Corporate Investment process."]
+        ]
+      },
+      envelope: {
+        name: "Planning envelope",
+        status: "none",
+        note: "They named FY2027 and left the dollars, the Run / Change / Mandatory split, and the status blank.",
+        source: "Stand-in amount, so the fit check has a number.",
+        lines: [
+          ["Period on their sheet", "FY2027"],
+          ["Total on their sheet", "Blank"],
+          ["Stand-in change envelope", "$40 million"]
+        ]
+      },
+      scoring: {
+        name: "Scoring model and value bands",
+        status: "partial",
+        note: "Weights, a 1-to-5 scale, and four bands are in the file. Version, effective date, the reviewer-gap rule, run-cost bands, and the risk tier on each band are not. The 71 below uses their weights on an illustrated score.",
+        source: "Their workbook, tab 8.",
+        lines: [
+          ["Business value", "30%"],
+          ["Architecture fit", "20%"],
+          ["Platform reuse", "15%"],
+          ["Run cost", "15%"],
+          ["Risk and security", "10%"],
+          ["Tech debt reduction", "10%"],
+          ["Illustrated result", "71, which falls in their Significant band, 60 to 79"]
+        ]
+      },
+      gates: {
+        name: "Stage gates",
+        status: "partial",
+        note: "The L0–L5 steps and the documents are in the file. The model still needs a version, a publication status, and an effective date before it can be saved.",
+        source: "Their workbook, tab 9.",
+        lines: [
+          ["L0 Frame", "The demand record exists. No approval."],
+          ["L1 Shape", "Updated case, high-level cost and benefit, L1 placemat. Workstream Execution Leads approve."],
+          ["L2 Plan", "P50 financials, People Enablement, Governance Task Force record. Finance, architecture, and People Enablement approve."],
+          ["L3 Execution", "Final case, vendor attestation, KPIs, milestones. Corporate Investment Leadership approves."],
+          ["L4 Value", "Actuals, forecast, status, KPIs, lessons learned."],
+          ["L5 Close", "Cost, benefit, and non-monetary actuals are complete."]
+        ]
+      },
+      limits: {
+        name: "Approval limits",
+        status: "partial",
+        note: "They mapped each L-gate to a role. The record also requires a dollar range on 3-year cost. Those amounts are blank, so the rows cannot be saved.",
+        source: "Their workbook, tab 7.",
+        lines: [
+          ["Investment type", "Corporate Investment / SVRO"],
+          ["From / to", "Blank"],
+          ["L2 roles they named", "Finance, architects, People Enablement"],
+          ["L3 roles they named", "Corporate Investment Leadership"],
+          ["Their note", "Dollar thresholds still need to come from Ryan and team."]
+        ]
+      },
+      delegations: {
+        name: "Standing delegations",
+        status: "none",
+        note: "Nothing says who may approve when the named person is away.",
+        source: "Stand-in.",
+        lines: [
+          ["Delegator", "Corporate Investment Leadership"],
+          ["Delegate", "Workstream Execution Lead"],
+          ["Would cover", "L2, up to $5 million, between board cycles"]
+        ]
+      },
+      objectives: {
+        name: "Strategic objectives",
+        status: "partial",
+        note: "Six program goals, each with a measure. Owner is required, and every owner is blank, so the records cannot be saved yet. They noted the enterprise objective catalog is still to come.",
+        source: "Their workbook, tab 11.",
+        lines: [
+          ["Objective", "Link investment to outcomes and realized value"],
+          ["Measure", "Share of approved investments with an owner, a measure, a baseline, and a target"],
+          ["Owner", "Blank"]
+        ]
+      },
+      architecture: {
+        name: "Architecture standards",
+        status: "none",
+        note: "The workbook does not ask for standards. Scoring still has an architecture-fit criterion at 20%.",
+        source: "Stand-in.",
+        lines: [
+          ["Standard", "Extend an approved experience platform before adding a new channel"],
+          ["Domain", "Experience Services"]
+        ]
+      },
+      openDemand: {
+        name: "Open demand already in flight",
+        status: "none",
+        note: "The open-demand tab is empty. They said the SSCR backlog still has to be pulled from ServiceNow. Duplicate checking has nothing of theirs to compare.",
+        source: "Their workbook, tab 14, with no rows.",
+        lines: [
+          ["Rows in the file", "None"],
+          ["What triage would compare", "Open requests, backlog items, and initiatives with a similar title"]
+        ]
+      },
+      vendors: {
+        name: "Vendors",
+        status: "none",
+        note: "The data request does not include a vendor list. L3 still requires a resource and vendor attestation.",
+        source: "Stand-in.",
+        lines: [
+          ["Vendor", "Experience platform implementer"],
+          ["Used for", "The attestation, the spend, and the delivery risk on the initiative"]
+        ]
+      },
+      portfolio: {
+        name: "Active portfolio",
+        status: "partial",
+        note: "147 corporate programs are described, including Network Solutions. The sheet is a load of work already in flight, and this walkthrough does not treat every column as ready to baseline.",
+        source: "Their workbook, tab 13.",
+        lines: [
+          ["Program", "Network Solutions"],
+          ["Id", "PGM0014862"],
+          ["Type", "Corporate Investment / SVRO"],
+          ["Business unit label", "Commercial"]
+        ]
+      }
+    };
+
+    const GROUPS = [
+      ["What a request is", ["demandTypes", "valueStreams", "products", "objectives"]],
+      ["Who it belongs to", ["orgUnits", "people", "groups", "routing", "reasons"]],
+      ["How a decision is made", ["funding", "envelope", "scoring", "gates", "limits", "delegations", "architecture"]]
+    ];
+
+    const STEPS = [
+      {
+        nav: "Governance",
+        kicker: "Prerequisite",
+        title: "Enter the governance data first",
+        prose: [
+          "As the team preparing the workspace, I need our types, owners, routes, gates, and scoring rules entered before anyone raises a request, so every later step is choosing from our operating model.",
+          "Entering the governance data is the prerequisite to the entire flow. Demand, decisioning, capacity, delivery, and value all read these rows. The prerequisite data consists of the following."
+        ],
+        peopleTitle: "Who does this",
+        people: [
+          ["Workspace setup", "Enters and maintains these lists. A requester is not in the flow yet."]
+        ],
+        grouped: true
+      },
+      {
+        nav: "Demand",
+        kicker: "Demand intake",
+        title: "Assess the request",
+        prose: [
+          "Now that the governance data is seeded, demand intake can begin.",
+          "As a requester, I need one form that already offers our types, products, and value streams, so I can describe the member-experience problem without inventing how the portfolio works.",
+          "As a triage owner, I need that request classified, given a due date, and pointed at an owner, so I can assess it and record what happens next.",
+          "To properly assess the demand, triage needs the following data."
+        ],
+        peopleTitle: "Who is involved",
+        people: [
+          ["Requester", "Describes the problem, the outcome they want, and when they need it."],
+          ["Triage owner", "Checks the evidence, confirms where it should go, and records the disposition."]
+        ],
+        items: [
+          ["demandTypes", "This sets the path. A corporate investment continues into decisioning. An SSCR stops at a team backlog. It also says what evidence to ask for, and how many business days triage has."],
+          ["valueStreams", "This says which capability the request serves. Omni-channel Enablement is the one that connects digital, voice, and assisted channels, and it already names an owner."],
+          ["products", "This says which product is affected, so the assessment is about a real thing someone owns. The form cannot be completed until a product exists to pick."],
+          ["orgUnits", "This places the request in a business unit and a cost centre. Product ownership also depends on it, because a product requires an owning organization."],
+          ["routing", "This chooses the team from the type and the value stream. Rule 20 matches this request and sends it to SAUARABH. The first matching rule wins."],
+          ["people", "This turns the route into someone the workflow can assign. The value-stream owner email is real. The routing rule itself still has no email."],
+          ["groups", "This is the team the rule and the later approvals point at. Until the AD group exists, the demand has a destination name and nowhere to land."],
+          ["reasons", "This gives triage the six decisions in their own words, and the sentence the requester is shown. Accept as investment is how this request leaves demand."],
+          ["gates", "Their L0 gate says a demand record has to exist before anyone shapes the idea. That is what this step creates. L1 through L5 are used by the groups after this one."],
+          ["objectives", "This ties the request to a goal the value step will measure. Triage can assess the demand without one. The goal on their sheet still has no owner, so it cannot be saved yet."],
+          ["openDemand", "This gives triage real open requests to compare, so a possible duplicate is shown to a person. Nothing is rejected automatically. Their tab has no rows yet."]
+        ]
+      },
+      {
+        nav: "Decisioning",
+        kicker: "Prioritization",
+        title: "Decide whether to commit it",
+        prose: [
+          "After demand accepts the request as an investment, decisioning begins.",
+          "As a portfolio lead, I need the case, the score, and the gate together, so the decision is about this request.",
+          "As Finance, architecture, and People Enablement, I need the L2 packet, so I can approve the plan. As Corporate Investment Leadership, I need to know whether a cost of this size is mine to approve.",
+          "They need the following data to make an informed decision."
+        ],
+        peopleTitle: "Who is involved",
+        people: [
+          ["Portfolio office", "Builds the case and runs the score."],
+          ["Workstream Execution Leads", "Approve L1, Shape the Idea."],
+          ["Finance, architects, and People Enablement", "Approve L2, Build the Plan."],
+          ["Corporate Investment Leadership", "Commits the decision."]
+        ],
+        items: [
+          ["demandTypes", "This carries the class forward. Mandatory work is funded before it is compared with other work. Change work, which is the working class for this request, is scored."],
+          ["funding", "This says whose money the case would use. Corporate Investments is the funding type. The demand type is a different fact: it says what kind of request this is."],
+          ["scoring", "This ranks the case on the six criteria they weighted and places it in a band. An illustrated score of 71 lands in Significant, their band for 60 to 79."],
+          ["architecture", "Architecture fit is 20% of that score. This list is what the fit is judged against. They have not provided the standards yet."],
+          ["gates", "L1 and L2 say what must be true, which documents are attached, and which of the people above approve, before the case can be committed."],
+          ["limits", "This says which role may approve a 3-year cost of this size. They named the roles and left the dollar ranges blank, so a $4.2 million illustration has no threshold to match."],
+          ["delegations", "This says who may approve when the named person is away. No delegation was provided."],
+          ["objectives", "This keeps the promised outcome on the case, so the commit is tied to something value can measure later."],
+          ["products", "This keeps the affected product on the case the approvers are reading."]
+        ]
+      },
+      {
+        nav: "Capacity",
+        kicker: "Capacity",
+        title: "Check that the commit fits",
+        prose: [
+          "As a capacity planner, I need the money for the period and the people on the team, so we commit work the organization can staff.",
+          "This check sits with the decision. If the case does not fit, it goes back to be packaged again. The planners need the following data."
+        ],
+        peopleTitle: "Who is involved",
+        people: [
+          ["Capacity office", "Owns the envelope, the supply, and the agreed position."],
+          ["The team named on the route", "SAUARABH, for this request. Supply is their capacity, once the group exists."]
+        ],
+        items: [
+          ["envelope", "This is the money for FY2027, split across Run, Change, and Mandatory. Their sheet names the year and leaves the dollars blank. The $40 million used here is a stand-in so the fit check has an amount."],
+          ["funding", "This says which pot the case draws. Corporate Investments tells the planner where the $4.2 million illustration would come from."],
+          ["demandTypes", "This says the draw is Change, so it is tested against the Change share of the envelope. Mandatory work is handled before that comparison."],
+          ["groups", "This is the team whose supply is being forecast. The route names SAUARABH. The AD group and its members are still TBD, so there is no supply to forecast."],
+          ["people", "This is who on that team the plan can assign. Without an email, the forecast has a name and no person."]
+        ]
+      },
+      {
+        nav: "Delivery",
+        kicker: "Execution",
+        title: "Run the approved work",
+        prose: [
+          "As a delivery lead, I need an approved baseline, milestones, and the teams and vendors I depend on, so monthly status is evidence.",
+          "As the owner of a dependency, I need my commitment visible on the initiative, so slippage shows up before the date is missed. As a vendor manager, I need the attestation, the spend, and the risk in the same place.",
+          "Delivery needs the following data. Dependencies and vendors travel with the initiative. They are part of running the work."
+        ],
+        peopleTitle: "Who is involved",
+        people: [
+          ["Execution office", "Baselines the initiative, then ingests progress, detects slippage, and publishes the pack."],
+          ["Dependency owner", "The other capability this work waits on."],
+          ["Vendor manager", "Watches the outside delivery, spend, and risk named at L3."]
+        ],
+        items: [
+          ["gates", "L3 says the final case, the vendor attestation, the KPIs, and the milestones are in place, and Corporate Investment Leadership has approved execution. That approval is the baseline."],
+          ["groups", "This is the approver group on that gate. Corporate Investment Leadership is the role they named. The AD group is still TBD."],
+          ["valueStreams", "This names the other capability the work depends on. Channel routing needs claims network assignment from Enterprise Network Mapping, which is one of their 36 value streams."],
+          ["products", "This is the product the milestones and the spend belong to."],
+          ["vendors", "L3 requires a vendor attestation. This is the outside party that attestation names. No vendor list was in the data request."],
+          ["portfolio", "This is the work already in flight that the new initiative sits beside. Network Solutions, PGM0014862, is one of the 147 corporate programs on their extract."]
+        ]
+      },
+      {
+        nav: "Value",
+        kicker: "Value",
+        title: "Show whether it paid off",
+        prose: [
+          "As an outcome owner, I need the benefit we promised, with a measure, a baseline, and a target, so after delivery I can show what actually happened.",
+          "As Finance and Corporate Investment Leadership, I need the L4 evidence and the L5 close, so realization and closeout use the same gates as the rest of the investment.",
+          "Value needs the following data."
+        ],
+        peopleTitle: "Who is involved",
+        people: [
+          ["Outcome owner", "Reports actuals against the measure. Their objectives do not name this person yet."],
+          ["Finance and Corporate Investment Leadership", "Approve L4, value realization, and L5, closeout."]
+        ],
+        items: [
+          ["objectives", "This is the benefit the decision committed to. Their goal is to link investment to realized value, measured by how many approved investments have an owner, a measure, a baseline, and a target. The owner is blank, so there is nobody to collect from yet."],
+          ["gates", "L4 is the realization evidence: actuals, forecast, status, KPIs, milestones, and lessons learned. L5 closes the investment when the cost, the benefit, and the non-monetary actuals are complete."],
+          ["people", "This is the outcome owner who has to report. Chase and audit both need that person. The people list was not provided."]
+        ]
+      }
+    ];
+
+    const ABOUT = {
+      valueStreams: "The capabilities the enterprise is organized to deliver.",
+      products: "The products and platforms inside those capabilities, each with an owner and an owning organization.",
+      orgUnits: "Business units and cost centres the request, the product, and the funding can point at.",
+      people: "The users a workflow can assign. A person needs an email.",
+      groups: "The teams routing and gate approval point at.",
+      demandTypes: "The kinds of request someone can raise, the path each one takes, and the evidence it requires.",
+      routing: "Where a request goes after it is submitted. Rules are checked in order and the first match wins.",
+      reasons: "The six triage decisions, in their words, and what the requester is told.",
+      funding: "The ways work is funded. This is whose money it is.",
+      envelope: "The money available in the planning period, split across Run, Change, and Mandatory.",
+      scoring: "How an investment is scored, weighted, and placed in a band.",
+      gates: "What must be true to pass each stage, which documents are required, and who approves.",
+      limits: "Who can approve an investment of a given size.",
+      delegations: "Who may approve when the named person is away.",
+      objectives: "The goals an investment can align to, and how each one is measured.",
+      architecture: "The principles a case is judged against when architecture fit is scored."
+    };
+
+    const FIELD_STATE = {
+      have: "✓",
+      held: "!",
+      missing: "✕"
+    };
+
+    const FIELDS = {
+      valueStreams: [
+        ["Title", true, "have", "The capability name people pick.", "Omni-channel Enablement, plus 35 other names."],
+        ["Active", true, "have", "Whether the capability can be chosen.", "Yes."],
+        ["Description", false, "have", "What the capability does, in their words.", "Connects digital, voice, and assisted channels into one experience."],
+        ["Owner", false, "missing", "The person accountable for the capability. Needs an email.", "6 of 36 have an email. 30 are blank."]
+      ],
+      products: [
+        ["Title", true, "missing", "The product or platform name people pick.", "Section B is still the template."],
+        ["Kind", true, "missing", "Product, platform, or shared function.", "Not provided."],
+        ["Owning organization", true, "missing", "Which organization owns it. This has to be an organization unit.", "Not provided."],
+        ["Product owner", true, "missing", "The person accountable for the product. Needs an email.", "Not provided."],
+        ["Active", true, "missing", "Whether intake can offer this product.", "Not provided."]
+      ],
+      orgUnits: [
+        ["Title", true, "missing", "The business unit or cost centre name.", "The organization list is still owed."],
+        ["Org unit type", true, "missing", "Business unit or cost centre. Intake uses this to fill the two dropdowns.", "Not provided."]
+      ],
+      people: [
+        ["Name", true, "missing", "Who the person is.", "The people tab has no member list."],
+        ["Email", true, "held", "The address a user field needs before anyone can be assigned.", "Two value-stream owners have emails, including saurabh.tandon@elevancehealth.com. There is no people list to load."]
+      ],
+      groups: [
+        ["Name", true, "have", "The team routing and approvals point at.", "They named the roles, including Workstream Execution Leads and Corporate Investment Leadership."],
+        ["AD group", true, "missing", "The directory group that actually contains the members.", "Every row says Create / TBD."],
+        ["Owner email", false, "missing", "Who administers the group.", "Blank."],
+        ["Members", false, "missing", "The people in the group, or confirmation to use the AD group.", "Blank."]
+      ],
+      demandTypes: [
+        ["Title", true, "have", "The name a requester picks.", "Corporate Investment / SVRO. Four other types are named too."],
+        ["Class", true, "held", "How the work is funded and compared. The record allows Run, Change, or Mandatory.", "Their sheet says Strategic. That value cannot be stored. Confirm Change."],
+        ["Default handling", true, "have", "Whether this type goes to a backlog or into an investment case.", "Investment."],
+        ["Triage SLA (business days)", true, "missing", "How many business days triage has. This has to be one number.", "Blank on Corporate Investment. The SSCR rows are notes, not a number."],
+        ["Active", true, "have", "Whether a requester can choose this type.", "Yes."],
+        ["Description", false, "have", "What this type is.", "Large corporate-sponsored technology program."],
+        ["Intake guidance", false, "have", "When a requester should use it.", "Large strategic investments that need a business case and staged approval."],
+        ["Required evidence", false, "have", "What must be attached before it is assessed.", "Business case, cost and benefit, impacted services, rough effort, governance artifacts, KPIs."]
+      ],
+      routing: [
+        ["Title", true, "have", "A name for the rule.", "Can be taken from the type and value stream they named."],
+        ["Priority", true, "have", "Lower numbers are checked first. The first match wins.", "20 for Corporate Investment plus Omni-channel Enablement."],
+        ["Active", true, "have", "Whether triage will use the rule.", "Not a column on their sheet. We will set Yes."],
+        ["Demand type", false, "have", "Limits the rule to one type. Blank means any type.", "Corporate Investment / SVRO."],
+        ["Value stream", false, "have", "Limits the rule to one capability. Blank means any.", "Omni-channel Enablement."],
+        ["Accountable team", false, "held", "The group the request is routed to.", "They wrote SAUARABH. That is not an AD group."],
+        ["Product owner", false, "missing", "The person assigned as product owner. Needs an email.", "Blank."],
+        ["Governance lead", false, "missing", "The person assigned as governance lead. Needs an email.", "Blank."]
+      ],
+      reasons: [
+        ["Title", true, "have", "The short name of the reason.", "Meets the investment threshold."],
+        ["Disposition", true, "have", "Which of the six decisions this reason belongs to.", "Accept as investment."],
+        ["Code", true, "have", "The stable code stored on the demand.", "ACC-01."],
+        ["Description", true, "have", "The reason in their words.", "Meets investment / project threshold."],
+        ["Active", true, "have", "Whether triage can choose it.", "Not a column on their sheet. We will set Yes."],
+        ["Requester guidance", false, "have", "The sentence the requester is shown.", "It will proceed as an investment candidate and go through stage-gate governance."]
+      ],
+      funding: [
+        ["Title", true, "have", "The name of the funding source.", "Corporate Investments. Eight other types are named too."],
+        ["Active", true, "have", "Whether a case can use this source.", "Not a column on their sheet. We will set Yes."],
+        ["Description", false, "have", "What this money is for.", "Large corporate-sponsored programs managed through the Corporate Investment process."]
+      ],
+      envelope: [
+        ["Title", true, "missing", "A name for this envelope.", "Not provided. The period FY2027 is the only label they gave."],
+        ["Plan ID", true, "missing", "The identifier that ties the envelope to a capacity plan.", "Not provided."],
+        ["Fiscal year", true, "have", "Which year the money belongs to.", "FY2027."],
+        ["Planned amount", true, "missing", "The dollars available. Their sheet also asked for a Run, Change, and Mandatory split.", "Blank."]
+      ],
+      scoring: {
+        blocks: [
+          ["Scoring model", [
+            ["Title", true, "missing", "A name for this published model.", "Not provided."],
+            ["Version", true, "missing", "Which edition of the model is in force.", "Not provided."],
+            ["Publication status", true, "missing", "Draft, published, or retired.", "Not provided. Their note says the weights are a working proposal."],
+            ["Effective from", true, "missing", "The date this model starts to apply.", "Not provided."],
+            ["Value weight", true, "have", "How much business value counts.", "30%."],
+            ["Fit weight", true, "have", "How much architecture fit counts.", "20%."],
+            ["Reuse weight", true, "have", "How much platform reuse counts.", "15%."],
+            ["Run cost weight", true, "have", "How much ongoing cost counts.", "15%."],
+            ["Risk weight", true, "have", "How much risk and security counts.", "10%."],
+            ["Debt weight", true, "have", "How much tech-debt reduction counts.", "10%."],
+            ["Scale minimum", true, "have", "The lowest score a criterion can take.", "1."],
+            ["Scale maximum", true, "have", "The highest score a criterion can take.", "5."],
+            ["Variance threshold", true, "missing", "How far apart two reviewers can be before someone looks again.", "They wrote TBD."],
+            ["Run-cost score maximums", true, "missing", "The annual run cost that earns a 5, a 4, a 3, and a 2. Four amounts.", "TBD with Finance."],
+            ["Fund mandatory work first", true, "have", "Whether obligations are funded before other work is compared.", "Yes."],
+            ["Scoring rubric", true, "held", "The published meaning of each score, and the evidence expected.", "They wrote low and high meanings per criterion, and marked them as a proposal, not an approved rubric."]
+          ]],
+          ["Value band", [
+            ["Title", true, "have", "The band name a score falls into.", "Strategic, Significant, Tactical, and Below threshold."],
+            ["Lower bound", true, "have", "The lowest score in the band.", "Strategic starts at 80. The other bands are filled in too."],
+            ["Upper bound", true, "have", "The highest score in the band.", "Strategic ends at 100."],
+            ["Active", true, "have", "Whether the band can be used.", "Not a column. We will set Yes once they confirm the bands."],
+            ["Risk tier", false, "missing", "The risk label that travels with the band.", "Blank."],
+            ["Variance tolerance", false, "missing", "How far cost can move inside this band before it is re-opened.", "Blank."]
+          ]]
+        ]
+      },
+      gates: {
+        blocks: [
+          ["Stage-gate model", [
+            ["Title", true, "have", "The name of this gate sequence.", "Corporate Investment / SVRO. SSCR has its own sequence."],
+            ["Investment type", true, "have", "Which demand type uses these gates.", "Corporate Investment / SVRO."],
+            ["Version", true, "missing", "Which edition of the sequence is in force.", "Not provided."],
+            ["Publication status", true, "missing", "Draft, published, or retired.", "Not provided."],
+            ["Effective from", true, "missing", "The date this sequence starts to apply.", "Not provided."]
+          ]],
+          ["One gate, L0 as the example", [
+            ["Title", true, "have", "The gate name.", "L0 – Draft / Frame the initiative."],
+            ["Gate key", true, "have", "The stable code for the gate.", "L0. L1 through L5 are filled in the same way."],
+            ["Sequence", true, "have", "The order the gates run.", "0."],
+            ["Mandatory artefacts", true, "have", "Documents that have to be attached before the gate can pass.", "Business case summary. Later gates name the placemat, the P50 financials, and the closeout actuals."]
+          ]]
+        ]
+      },
+      limits: [
+        ["Title", true, "have", "A name for this threshold.", "Can be taken from the gate role they named."],
+        ["Minimum value", true, "missing", "The 3-year cost where this approver starts.", "Blank."],
+        ["Maximum value", true, "missing", "The 3-year cost where this approver stops.", "Blank."],
+        ["Authority level", true, "have", "The role that may approve inside that range.", "They named Finance, architects, and People Enablement at L2, and Corporate Investment Leadership at L3."],
+        ["Investment type", false, "have", "Limits the threshold to one demand type.", "Corporate Investment / SVRO."],
+        ["Active", true, "have", "Whether the threshold is in force.", "Not a column. We will set Yes once the dollar range exists."]
+      ],
+      delegations: [
+        ["Title", true, "missing", "A name for this delegation.", "No delegation rows were provided."],
+        ["Delegator", true, "missing", "The person who is handing authority on. Needs an email.", "Not provided."],
+        ["Delegate", true, "missing", "The person who may approve in their place. Needs an email.", "Not provided."],
+        ["Authority threshold", true, "missing", "Which dollar range this delegation covers.", "Not provided. The dollar ranges themselves are also blank."],
+        ["Valid from", true, "missing", "The date the delegation starts.", "Not provided."]
+      ],
+      objectives: [
+        ["Title", true, "have", "The goal name.", "Link investment to outcomes and realized value. Five other goals are named too."],
+        ["Statement", true, "have", "What the goal means.", "Connect investment decisions to delivery outcomes and realized benefits."],
+        ["Owner", true, "missing", "The person accountable for the goal. Needs an email.", "Blank on every goal."],
+        ["Active", true, "have", "Whether a case can align to it.", "Not a column. We will set Yes."],
+        ["Measure", false, "have", "How the goal is tracked.", "Share of approved investments with an owner, a measure, a baseline, and a target."],
+        ["Horizon", false, "missing", "The target and the time window.", "They wrote that baseline and target are set during mobilization."]
+      ],
+      architecture: [
+        ["Title", true, "missing", "The name of the principle.", "The workbook does not ask for standards."],
+        ["Domain", true, "missing", "Which architecture area it belongs to. The domain also needs an owner.", "Not provided."],
+        ["Statement", true, "missing", "The principle itself.", "Not provided."],
+        ["Active", true, "missing", "Whether scoring should use it.", "Not provided."]
+      ]
+    };
+
+    let current = 0;
+    let open = new Set();
+    let jump = false;
+
+    function esc(value) {
+      return String(value).replace(/[&<>"']/g, (ch) => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[ch]));
+    }
+
+    function fieldRows(rows) {
+      return rows.map(([name, required, state, purpose, value]) =>
+        `<div class="field-row">
+          <span class="tick ${state}" aria-label="${state === "have" ? "Provided" : state === "held" ? "Provided, cannot be saved as-is" : "Missing"}">${FIELD_STATE[state]}</span>
+          <div>
+            <span class="fname">${esc(name)}</span><span class="req">${required ? "Required" : "Optional"}</span>
+            <span class="purpose">${esc(purpose)}</span>
+            <span class="got">${esc(value)}</span>
+          </div>
+        </div>`
+      ).join("");
+    }
+
+    function fieldChecklist(spec) {
+      const blocks = spec.blocks
+        ? spec.blocks.map(([title, rows]) => `<p class="check-label">${esc(title)}</p>${fieldRows(rows)}`)
+        : [`<p class="check-label">Required to save the record</p>${fieldRows(spec.filter((row) => row[1]))}`,
+           `<p class="check-label">Not required to save it</p>${fieldRows(spec.filter((row) => !row[1]))}`].filter((_, index) => index === 0 || spec.some((row) => !row[1]));
+      const ask = (spec.blocks ? spec.blocks.flatMap((block) => block[1]) : spec)
+        .filter((row) => row[2] !== "have");
+      const askHtml = ask.length
+        ? `<div class="ask"><strong>Ask the customer</strong><ul>${ask.map((row) => `<li><b>${esc(row[0])}.</b> ${esc(row[4])}</li>`).join("")}</ul></div>`
+        : `<p class="note">Nothing further to ask. The fields on this record are covered.</p>`;
+      return `${blocks.join("")}${askHtml}`;
+    }
+
+    function card(id, helps) {
+      const item = LISTS[id];
+      const expanded = open.has(id);
+      const spec = FIELDS[id];
+      const body = spec
+        ? fieldChecklist(spec) + `<p class="note">${esc(item.source)}</p>`
+        : `<p class="note">${esc(item.note)} ${esc(item.source)}</p><dl class="lines">${item.lines.map(([label, value]) =>
+            `<div><dt>${esc(label)}</dt><dd>${esc(value)}</dd></div>`
+          ).join("")}</dl>`;
+      return `<article class="gcard" id="list-${id}">
+        <button class="ghead" type="button" data-toggle="${id}" aria-expanded="${expanded}">
+          <span class="mark ${item.status}" aria-hidden="true"></span>
+          <span>
+            <strong>${esc(item.name)}</strong>
+            <em class="${item.status}">${STATUS[item.status]}</em>
+            ${helps ? `<span class="helps">${esc(helps)}</span>` : ""}
+          </span>
+          <span class="chev">${expanded ? "Hide" : (spec ? "Fields" : "Example")}</span>
+        </button>
+        ${expanded ? `<div class="example">${body}</div>` : ""}
+      </article>`;
+    }
+
+    function renderLegend() {
+      const counts = { full: 0, partial: 0, none: 0 };
+      Object.values(LISTS).forEach((item) => { counts[item.status] += 1; });
+      document.getElementById("legend").innerHTML = ["full", "partial", "none"].map((status) =>
+        `<span><i class="mark ${status}" aria-hidden="true"></i> ${STATUS[status]} · ${counts[status]}</span>`
+      ).join("");
+    }
+
+    function renderRail() {
+      document.getElementById("rail").innerHTML = STEPS.map((step, index) =>
+        `<button type="button" data-step="${index}" aria-current="${index === current ? "step" : "false"}">
+          <strong>${esc(step.nav)}</strong><small>${esc(step.kicker)}</small>
+        </button>`
+      ).join("");
+    }
+
+    function renderScene() {
+      const step = STEPS[current];
+      const prose = step.prose.slice(0, -1).map((text) =>
+        text.startsWith("As ") ? `<blockquote class="as">${esc(text)}</blockquote>` : `<p>${esc(text)}</p>`
+      ).join("");
+      const bridge = `<p>${esc(step.prose[step.prose.length - 1])}</p>`;
+      const people = `<div class="people">${step.people.map(([role, text]) =>
+        `<article><strong>${esc(role)}</strong><span>${esc(text)}</span></article>`
+      ).join("")}</div>`;
+      const data = step.grouped
+        ? GROUPS.map(([label, ids]) =>
+          `<h3 class="group-label">${esc(label)}</h3>${ids.map((id) => card(id, ABOUT[id])).join("")}`
+        ).join("")
+        : step.items.map(([id, helps]) => card(id, helps)).join("");
+      const last = current === STEPS.length - 1;
+      document.getElementById("scene").innerHTML = `
+        <p class="scene-kicker">${esc(step.kicker)}</p>
+        <h2 id="scene-title" tabindex="-1">${esc(step.title)}</h2>
+        <div class="prose">${prose}</div>
+        <h3 class="group-label">${esc(step.peopleTitle)}</h3>
+        ${people}
+        ${bridge}
+        ${data}
+        <div class="pager">
+          <button class="navbtn" type="button" data-nav="-1" ${current === 0 ? "disabled" : ""}>Back</button>
+          <button class="navbtn" type="button" data-nav="1" ${last ? "disabled" : ""}>${last ? "End" : "Next · " + esc(STEPS[current + 1].nav)}</button>
+        </div>`;
+      if (jump) {
+        document.getElementById("scene-title").scrollIntoView({ behavior: "smooth", block: "start" });
+        jump = false;
+      }
+    }
+
+    function render() {
+      renderRail();
+      renderScene();
+    }
+
+    document.body.addEventListener("click", (event) => {
+      const stepButton = event.target.closest("[data-step]");
+      if (stepButton) {
+        const nextIndex = Number(stepButton.dataset.step);
+        if (nextIndex !== current) {
+          current = nextIndex;
+          open = new Set();
+          jump = true;
+        }
+        render();
+        return;
+      }
+      const toggle = event.target.closest("[data-toggle]");
+      if (toggle) {
+        const id = toggle.dataset.toggle;
+        if (open.has(id)) open.delete(id);
+        else open.add(id);
+        render();
+        return;
+      }
+      const nav = event.target.closest("[data-nav]");
+      if (nav && !nav.disabled) {
+        current += Number(nav.dataset.nav);
+        open = new Set();
+        jump = true;
+        render();
+      }
+    });
+
+    renderLegend();
+    render();
+  </script>
+</body>
+</html>
